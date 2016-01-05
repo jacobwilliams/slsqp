@@ -1186,8 +1186,7 @@
                      npp1 = npp1 + 1
                      DO jz = iz1 , iz2
                         jj = Index(jz)
-                        CALL H12(2,nsetp,npp1,M,A(1,j),1,up,A(1,jj),1,  &
-                                 Mda,1)
+                        CALL H12(2,nsetp,npp1,M,A(1,j),1,up,A(1,jj),1,Mda,1)
                      ENDDO
                      k = MIN(npp1,Mda)
                      W(j) = zero
@@ -1197,8 +1196,7 @@
 ! .....ENTRY LOOP B
 
  62                  DO ip = nsetp , 1 , -1
-                        IF ( ip/=nsetp )                                &
-                             CALL DAXPY(ip,-Z(ip+1),A(1,jj),1,Z,1)
+                        IF ( ip/=nsetp ) CALL DAXPY(ip,-Z(ip+1),A(1,jj),1,Z,1)
                         jj = Index(ip)
                         Z(ip) = Z(ip)/A(ip,jj)
                      ENDDO
@@ -1370,16 +1368,26 @@
 		  CALL H12(2,j,j+1,M,A(1,j),1,H(j),B,1,Mdb,Nb)
 	   ENDDO
 
-!   DETERMINE PSEUDORANK
+!!   DETERMINE PSEUDORANK
+!
+!	   DO j = 1 , ldiag
+!		  IF ( ABS(A(j,j))<=Tau ) GOTO 100
+!	   ENDDO
+!	   k = ldiag
+!	   GOTO 200
+!	ENDIF
+!100  k = j - 1
+!200  kp1 = k + 1
 
-	   DO j = 1 , ldiag
-		  IF ( ABS(A(j,j))<=Tau ) GOTO 100
-	   ENDDO
-	   k = ldiag
-	   GOTO 200
-	ENDIF
-100  k = j - 1
-200  kp1 = k + 1
+!determine pseudorank:
+
+        do j=1,ldiag
+            if (abs(a(j,j))<=tau) exit
+        end do
+        k=j-1
+        kp1=j
+
+    END IF
 
 !   NORM OF RESIDUALS
 
