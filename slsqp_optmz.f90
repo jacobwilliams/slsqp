@@ -1,111 +1,105 @@
-module slsqp_module
+!*******************************************************************************
+    module slsqp_module
 
-implicit none
+    use support_module
 
-contains
+    implicit none
 
-!***********************************************************************
-!                              optimizer                               *
-!***********************************************************************
+    contains
+!*******************************************************************************
 
-      SUBROUTINE SLSQP(M,Meq,La,N,X,Xl,Xu,F,C,G,A,Acc,Iter,Mode,W,L_w,  &
-                       Jw,L_jw)
-      IMPLICIT NONE
-
+!*******************************************************************************
 !   SLSQP       S EQUENTIAL  L EAST  SQ UARES  P ROGRAMMING
 !            TO SOLVE GENERAL NONLINEAR OPTIMIZATION PROBLEMS
-
 !***********************************************************************
-!*                                                                     *
-!*                                                                     *
-!*            A NONLINEAR PROGRAMMING METHOD WITH                      *
-!*            QUADRATIC  PROGRAMMING  SUBPROBLEMS                      *
-!*                                                                     *
-!*                                                                     *
-!*  THIS SUBROUTINE SOLVES THE GENERAL NONLINEAR PROGRAMMING PROBLEM   *
-!*                                                                     *
-!*            MINIMIZE    F(X)                                         *
-!*                                                                     *
-!*            SUBJECT TO  C (X) .EQ. 0  ,  J = 1,...,MEQ               *
-!*                         J                                           *
-!*                                                                     *
-!*                        C (X) .GE. 0  ,  J = MEQ+1,...,M             *
-!*                         J                                           *
-!*                                                                     *
-!*                        XL .LE. X .LE. XU , I = 1,...,N.             *
-!*                          I      I       I                           *
-!*                                                                     *
-!*  THE ALGORITHM IMPLEMENTS THE METHOD OF HAN AND POWELL              *
-!*  WITH BFGS-UPDATE OF THE B-MATRIX AND L1-TEST FUNCTION              *
-!*  WITHIN THE STEPLENGTH ALGORITHM.                                   *
-!*                                                                     *
-!*    PARAMETER DESCRIPTION:                                           *
-!*    ( * MEANS THIS PARAMETER WILL BE CHANGED DURING CALCULATION )    *
-!*                                                                     *
-!*    M              IS THE TOTAL NUMBER OF CONSTRAINTS, M .GE. 0      *
-!*    MEQ            IS THE NUMBER OF EQUALITY CONSTRAINTS, MEQ .GE. 0 *
-!*    LA             SEE A, LA .GE. MAX(M,1)                           *
-!*    N              IS THE NUMBER OF VARIBLES, N .GE. 1               *
-!*  * X()            X() STORES THE CURRENT ITERATE OF THE N VECTOR X  *
-!*                   ON ENTRY X() MUST BE INITIALIZED. ON EXIT X()     *
-!*                   STORES THE SOLUTION VECTOR X IF MODE = 0.         *
-!*    XL()           XL() STORES AN N VECTOR OF LOWER BOUNDS XL TO X.  *
-!*    XU()           XU() STORES AN N VECTOR OF UPPER BOUNDS XU TO X.  *
-!*    F              IS THE VALUE OF THE OBJECTIVE FUNCTION.           *
-!*    C()            C() STORES THE M VECTOR C OF CONSTRAINTS,         *
-!*                   EQUALITY CONSTRAINTS (IF ANY) FIRST.              *
-!*                   DIMENSION OF C MUST BE GREATER OR EQUAL LA,       *
-!*                   which must be GREATER OR EQUAL MAX(1,M).          *
-!*    G()            G() STORES THE N VECTOR G OF PARTIALS OF THE      *
-!*                   OBJECTIVE FUNCTION; DIMENSION OF G MUST BE        *
-!*                   GREATER OR EQUAL N+1.                             *
-!*    A(),LA,M,N     THE LA BY N + 1 ARRAY A() STORES                  *
-!*                   THE M BY N MATRIX A OF CONSTRAINT NORMALS.        *
-!*                   A() HAS FIRST DIMENSIONING PARAMETER LA,          *
-!*                   WHICH MUST BE GREATER OR EQUAL MAX(1,M).          *
-!*    F,C,G,A        MUST ALL BE SET BY THE USER BEFORE EACH CALL.     *
-!*  * ACC            ABS(ACC) CONTROLS THE FINAL ACCURACY.             *
-!*                   IF ACC .LT. ZERO AN EXACT LINESEARCH IS PERFORMED,*
-!*                   OTHERWISE AN ARMIJO-TYPE LINESEARCH IS USED.      *
-!*  * ITER           PRESCRIBES THE MAXIMUM NUMBER OF ITERATIONS.      *
-!*                   ON EXIT ITER INDICATES THE NUMBER OF ITERATIONS.  *
-!*  * MODE           MODE CONTROLS CALCULATION:                        *
-!*                   REVERSE COMMUNICATION IS USED IN THE SENSE THAT   *
-!*                   THE PROGRAM IS INITIALIZED BY MODE = 0; THEN IT IS*
-!*                   TO BE CALLED REPEATEDLY BY THE USER UNTIL A RETURN*
-!*                   WITH MODE .NE. IABS(1) TAKES PLACE.               *
-!*                   IF MODE = -1 GRADIENTS HAVE TO BE CALCULATED,     *
+!*
+!*            A NONLINEAR PROGRAMMING METHOD WITH
+!*            QUADRATIC  PROGRAMMING  SUBPROBLEMS
+!*
+!*  THIS SUBROUTINE SOLVES THE GENERAL NONLINEAR PROGRAMMING PROBLEM
+!*
+!*            MINIMIZE    F(X)
+!*
+!*            SUBJECT TO  C (X) == 0  ,  J = 1,...,MEQ
+!*                         J
+!*
+!*                        C (X) >= 0  ,  J = MEQ+1,...,M
+!*                         J
+!*
+!*                        XL <= X <= XU , I = 1,...,N.
+!*                          I    I     I
+!*
+!*  THE ALGORITHM IMPLEMENTS THE METHOD OF HAN AND POWELL
+!*  WITH BFGS-UPDATE OF THE B-MATRIX AND L1-TEST FUNCTION
+!*  WITHIN THE STEPLENGTH ALGORITHM.
+!*
+!*    PARAMETER DESCRIPTION:
+!*    ( * MEANS THIS PARAMETER WILL BE CHANGED DURING CALCULATION )
+!*
+!*    M              IS THE TOTAL NUMBER OF CONSTRAINTS, M >= 0
+!*    MEQ            IS THE NUMBER OF EQUALITY CONSTRAINTS, MEQ >= 0
+!*    LA             SEE A, LA >= MAX(M,1)
+!*    N              IS THE NUMBER OF VARIBLES, N >= 1
+!*  * X()            X() STORES THE CURRENT ITERATE OF THE N VECTOR X
+!*                   ON ENTRY X() MUST BE INITIALIZED. ON EXIT X()
+!*                   STORES THE SOLUTION VECTOR X IF MODE = 0.
+!*    XL()           XL() STORES AN N VECTOR OF LOWER BOUNDS XL TO X.
+!*    XU()           XU() STORES AN N VECTOR OF UPPER BOUNDS XU TO X.
+!*    F              IS THE VALUE OF THE OBJECTIVE FUNCTION.
+!*    C()            C() STORES THE M VECTOR C OF CONSTRAINTS,
+!*                   EQUALITY CONSTRAINTS (IF ANY) FIRST.
+!*                   DIMENSION OF C MUST BE GREATER OR EQUAL LA,
+!*                   which must be GREATER OR EQUAL MAX(1,M).
+!*    G()            G() STORES THE N VECTOR G OF PARTIALS OF THE
+!*                   OBJECTIVE FUNCTION; DIMENSION OF G MUST BE
+!*                   GREATER OR EQUAL N+1.
+!*    A(),LA,M,N     THE LA BY N + 1 ARRAY A() STORES
+!*                   THE M BY N MATRIX A OF CONSTRAINT NORMALS.
+!*                   A() HAS FIRST DIMENSIONING PARAMETER LA,
+!*                   WHICH MUST BE GREATER OR EQUAL MAX(1,M).
+!*    F,C,G,A        MUST ALL BE SET BY THE USER BEFORE EACH CALL.
+!*  * ACC            ABS(ACC) CONTROLS THE FINAL ACCURACY.
+!*                   IF ACC < ZERO AN EXACT LINESEARCH IS PERFORMED,
+!*                   OTHERWISE AN ARMIJO-TYPE LINESEARCH IS USED.
+!*  * ITER           PRESCRIBES THE MAXIMUM NUMBER OF ITERATIONS.
+!*                   ON EXIT ITER INDICATES THE NUMBER OF ITERATIONS.
+!*  * MODE           MODE CONTROLS CALCULATION:
+!*                   REVERSE COMMUNICATION IS USED IN THE SENSE THAT
+!*                   THE PROGRAM IS INITIALIZED BY MODE = 0; THEN IT IS
+!*                   TO BE CALLED REPEATEDLY BY THE USER UNTIL A RETURN
+!*                   WITH MODE /= IABS(1) TAKES PLACE.
+!*                   IF MODE = -1 GRADIENTS HAVE TO BE CALCULATED,
 !*                   WHILE WITH MODE = 1 FUNCTIONS HAVE TO BE CALCULATED
-!*                   MODE MUST NOT BE CHANGED BETWEEN SUBSEQUENT CALLS *
-!*                   OF SQP.                                           *
-!*                   EVALUATION MODES:                                 *
-!*        MODE = -1: GRADIENT EVALUATION, (G&A)                        *
-!*                0: ON ENTRY: INITIALIZATION, (F,G,C&A)               *
-!*                   ON EXIT : REQUIRED ACCURACY FOR SOLUTION OBTAINED *
-!*                1: FUNCTION EVALUATION, (F&C)                        *
-!*                                                                     *
-!*                   FAILURE MODES:                                    *
-!*                2: NUMBER OF EQUALITY CONTRAINTS LARGER THAN N       *
-!*                3: MORE THAN 3*N ITERATIONS IN LSQ SUBPROBLEM        *
-!*                4: INEQUALITY CONSTRAINTS INCOMPATIBLE               *
-!*                5: SINGULAR MATRIX E IN LSQ SUBPROBLEM               *
-!*                6: SINGULAR MATRIX C IN LSQ SUBPROBLEM               *
-!*                7: RANK-DEFICIENT EQUALITY CONSTRAINT SUBPROBLEM HFTI*
-!*                8: POSITIVE DIRECTIONAL DERIVATIVE FOR LINESEARCH    *
-!*                9: MORE THAN ITER ITERATIONS IN SQP                  *
-!*             >=10: WORKING SPACE W OR JW TOO SMALL,                  *
-!*                   W SHOULD BE ENLARGED TO L_W=MODE/1000             *
-!*                   JW SHOULD BE ENLARGED TO L_JW=MODE-1000*L_W       *
-!*  * W(), L_W       W() IS A ONE DIMENSIONAL WORKING SPACE,           *
-!*                   THE LENGTH L_W OF WHICH SHOULD BE AT LEAST        *
-!*                   (3*N1+M)*(N1+1)                        for LSQ    *
-!*                  +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ         for LSI    *
-!*                  +(N1+MINEQ)*(N1-MEQ) + 2*MEQ + N1       for LSEI   *
-!*                  + N1*N/2 + 2*M + 3*N + 3*N1 + 1         for SLSQPB *
-!*                   with MINEQ = M - MEQ + 2*N1  &  N1 = N+1          *
-!*        NOTICE:    FOR PROPER DIMENSIONING OF W IT IS RECOMMENDED TO *
-!*                   COPY THE FOLLOWING STATEMENTS INTO THE HEAD OF    *
-!*                   THE CALLING PROGRAM (AND REMOVE THE COMMENT C)    *
+!*                   MODE MUST NOT BE CHANGED BETWEEN SUBSEQUENT CALLS
+!*                   OF SQP.
+!*                   EVALUATION MODES:
+!*        MODE = -1: GRADIENT EVALUATION, (G&A)
+!*                0: ON ENTRY: INITIALIZATION, (F,G,C&A)
+!*                   ON EXIT : REQUIRED ACCURACY FOR SOLUTION OBTAINED
+!*                1: FUNCTION EVALUATION, (F&C)
+!*
+!*                   FAILURE MODES:
+!*                2: NUMBER OF EQUALITY CONTRAINTS LARGER THAN N
+!*                3: MORE THAN 3*N ITERATIONS IN LSQ SUBPROBLEM
+!*                4: INEQUALITY CONSTRAINTS INCOMPATIBLE
+!*                5: SINGULAR MATRIX E IN LSQ SUBPROBLEM
+!*                6: SINGULAR MATRIX C IN LSQ SUBPROBLEM
+!*                7: RANK-DEFICIENT EQUALITY CONSTRAINT SUBPROBLEM HFTI
+!*                8: POSITIVE DIRECTIONAL DERIVATIVE FOR LINESEARCH
+!*                9: MORE THAN ITER ITERATIONS IN SQP
+!*             >=10: WORKING SPACE W OR JW TOO SMALL,
+!*                   W SHOULD BE ENLARGED TO L_W=MODE/1000
+!*                   JW SHOULD BE ENLARGED TO L_JW=MODE-1000*L_W
+!*  * W(), L_W       W() IS A ONE DIMENSIONAL WORKING SPACE,
+!*                   THE LENGTH L_W OF WHICH SHOULD BE AT LEAST
+!*                   (3*N1+M)*(N1+1)                        for LSQ
+!*                  +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ         for LSI
+!*                  +(N1+MINEQ)*(N1-MEQ) + 2*MEQ + N1       for LSEI
+!*                  + N1*N/2 + 2*M + 3*N + 3*N1 + 1         for SLSQPB
+!*                   with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
+!*        NOTICE:    FOR PROPER DIMENSIONING OF W IT IS RECOMMENDED TO
+!*                   COPY THE FOLLOWING STATEMENTS INTO THE HEAD OF
+!*                   THE CALLING PROGRAM (AND REMOVE THE COMMENT C)
 !#######################################################################
 !     INTEGER LEN_W, LEN_JW, M, N, N1, MEQ, MINEQ
 !     PARAMETER (M=... , MEQ=... , N=...  )
@@ -119,72 +113,76 @@ contains
 !     DOUBLE PRECISION W(LEN_W)
 !     INTEGER          JW(LEN_JW)
 !#######################################################################
-!*                   THE FIRST M+N+N*N1/2 ELEMENTS OF W MUST NOT BE    *
-!*                   CHANGED BETWEEN SUBSEQUENT CALLS OF SLSQP.        *
-!*                   ON RETURN W(1) ... W(M) CONTAIN THE MULTIPLIERS   *
-!*                   ASSOCIATED WITH THE GENERAL CONSTRAINTS, WHILE    *
-!*                   W(M+1) ... W(M+N(N+1)/2) STORE THE CHOLESKY FACTOR*
-!*                   L*D*L(T) OF THE APPROXIMATE HESSIAN OF THE        *
-!*                   LAGRANGIAN COLUMNWISE DENSE AS LOWER TRIANGULAR   *
-!*                   UNIT MATRIX L WITH D IN ITS 'DIAGONAL' and        *
-!*                   W(M+N(N+1)/2+N+2 ... W(M+N(N+1)/2+N+2+M+2N)       *
-!*                   CONTAIN THE MULTIPLIERS ASSOCIATED WITH ALL       *
-!*                   ALL CONSTRAINTS OF THE QUADRATIC PROGRAM FINDING  *
-!*                   THE SEARCH DIRECTION TO THE SOLUTION X*           *
-!*  * JW(), L_JW     JW() IS A ONE DIMENSIONAL INTEGER WORKING SPACE   *
-!*                   THE LENGTH L_JW OF WHICH SHOULD BE AT LEAST       *
-!*                   MINEQ                                             *
-!*                   with MINEQ = M - MEQ + 2*N1  &  N1 = N+1          *
-!*                                                                     *
-!*  THE USER HAS TO PROVIDE THE FOLLOWING SUBROUTINES:                 *
-!*     LDL(N,A,Z,SIG,W) :   UPDATE OF THE LDL'-FACTORIZATION.          *
-!*     LINMIN(A,B,F,TOL) :  LINESEARCH ALGORITHM IF EXACT = 1          *
-!*     LSQ(M,MEQ,LA,N,NC,C,D,A,B,XL,XU,X,LAMBDA,W,....) :              *
-!*                                                                     *
-!*        SOLUTION OF THE QUADRATIC PROGRAM                            *
-!*                QPSOL IS RECOMMENDED:                                *
-!*     PE GILL, W MURRAY, MA SAUNDERS, MH WRIGHT:                      *
-!*     USER'S GUIDE FOR SOL/QPSOL:                                     *
-!*     A FORTRAN PACKAGE FOR QUADRATIC PROGRAMMING,                    *
-!*     TECHNICAL REPORT SOL 83-7, JULY 1983                            *
-!*     DEPARTMENT OF OPERATIONS RESEARCH, STANFORD UNIVERSITY          *
-!*     STANFORD, CA 94305                                              *
-!*     QPSOL IS THE MOST ROBUST AND EFFICIENT QP-SOLVER                *
-!*     AS IT ALLOWS WARM STARTS WITH PROPER WORKING SETS               *
-!*                                                                     *
-!*     IF IT IS NOT AVAILABLE USE LSEI, A CONSTRAINT LINEAR LEAST      *
-!*     SQUARES SOLVER IMPLEMENTED USING THE SOFTWARE HFTI, LDP, NNLS   *
-!*     FROM C.L. LAWSON, R.J.HANSON: SOLVING LEAST SQUARES PROBLEMS,   *
-!*     PRENTICE HALL, ENGLEWOOD CLIFFS, 1974.                          *
-!*     LSEI COMES WITH THIS PACKAGE, together with all necessary SR's. *
-!*                                                                     *
-!*     TOGETHER WITH A COUPLE OF SUBROUTINES FROM BLAS LEVEL 1         *
-!*                                                                     *
-!*     SQP IS HEAD SUBROUTINE FOR BODY SUBROUTINE SQPBDY               *
-!*     IN WHICH THE ALGORITHM HAS BEEN IMPLEMENTED.                    *
-!*                                                                     *
-!*  IMPLEMENTED BY: DIETER KRAFT, DFVLR OBERPFAFFENHOFEN               *
-!*  as described in Dieter Kraft: A Software Package for               *
-!*                                Sequential Quadratic Programming     *
-!*                                DFVLR-FB 88-28, 1988                 *
-!*  which should be referenced if the user publishes results of SLSQP  *
-!*                                                                     *
-!*  DATE:           APRIL - OCTOBER, 1981.                             *
-!*  STATUS:         DECEMBER, 31-ST, 1984.                             *
-!*  STATUS:         MARCH   , 21-ST, 1987, REVISED TO FORTAN 77        *
-!*  STATUS:         MARCH   , 20-th, 1989, REVISED TO MS-FORTRAN       *
-!*  STATUS:         APRIL   , 14-th, 1989, HESSE   in-line coded       *
-!*  STATUS:         FEBRUARY, 28-th, 1991, FORTRAN/2 Version 1.04      *
-!*                                         accepts Statement Functions *
-!*  STATUS:         MARCH   ,  1-st, 1991, tested with SALFORD         *
-!*                                         FTN77/386 COMPILER VERS 2.40*
-!*                                         in protected mode           *
-!*                                                                     *
+!*                   THE FIRST M+N+N*N1/2 ELEMENTS OF W MUST NOT BE
+!*                   CHANGED BETWEEN SUBSEQUENT CALLS OF SLSQP.
+!*                   ON RETURN W(1) ... W(M) CONTAIN THE MULTIPLIERS
+!*                   ASSOCIATED WITH THE GENERAL CONSTRAINTS, WHILE
+!*                   W(M+1) ... W(M+N(N+1)/2) STORE THE CHOLESKY FACTOR
+!*                   L*D*L(T) OF THE APPROXIMATE HESSIAN OF THE
+!*                   LAGRANGIAN COLUMNWISE DENSE AS LOWER TRIANGULAR
+!*                   UNIT MATRIX L WITH D IN ITS 'DIAGONAL' and
+!*                   W(M+N(N+1)/2+N+2 ... W(M+N(N+1)/2+N+2+M+2N)
+!*                   CONTAIN THE MULTIPLIERS ASSOCIATED WITH ALL
+!*                   ALL CONSTRAINTS OF THE QUADRATIC PROGRAM FINDING
+!*                   THE SEARCH DIRECTION TO THE SOLUTION X*
+!*  * JW(), L_JW     JW() IS A ONE DIMENSIONAL INTEGER WORKING SPACE
+!*                   THE LENGTH L_JW OF WHICH SHOULD BE AT LEAST
+!*                   MINEQ
+!*                   with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
+!*
+!*  THE USER HAS TO PROVIDE THE FOLLOWING SUBROUTINES:
+!*     LDL(N,A,Z,SIG,W) :   UPDATE OF THE LDL'-FACTORIZATION.
+!*     LINMIN(A,B,F,TOL) :  LINESEARCH ALGORITHM IF EXACT = 1
+!*     LSQ(M,MEQ,LA,N,NC,C,D,A,B,XL,XU,X,LAMBDA,W,....) :
+!*
+!*        SOLUTION OF THE QUADRATIC PROGRAM
+!*                QPSOL IS RECOMMENDED:
+!*     PE GILL, W MURRAY, MA SAUNDERS, MH WRIGHT:
+!*     USER'S GUIDE FOR SOL/QPSOL:
+!*     A FORTRAN PACKAGE FOR QUADRATIC PROGRAMMING,
+!*     TECHNICAL REPORT SOL 83-7, JULY 1983
+!*     DEPARTMENT OF OPERATIONS RESEARCH, STANFORD UNIVERSITY
+!*     STANFORD, CA 94305
+!*     QPSOL IS THE MOST ROBUST AND EFFICIENT QP-SOLVER
+!*     AS IT ALLOWS WARM STARTS WITH PROPER WORKING SETS
+!*
+!*     IF IT IS NOT AVAILABLE USE LSEI, A CONSTRAINT LINEAR LEAST
+!*     SQUARES SOLVER IMPLEMENTED USING THE SOFTWARE HFTI, LDP, NNLS
+!*     FROM C.L. LAWSON, R.J.HANSON: SOLVING LEAST SQUARES PROBLEMS,
+!*     PRENTICE HALL, ENGLEWOOD CLIFFS, 1974.
+!*     LSEI COMES WITH THIS PACKAGE, together with all necessary SR's.
+!*
+!*     TOGETHER WITH A COUPLE OF SUBROUTINES FROM BLAS LEVEL 1
+!*
+!*     SQP IS HEAD SUBROUTINE FOR BODY SUBROUTINE SQPBDY
+!*     IN WHICH THE ALGORITHM HAS BEEN IMPLEMENTED.
+!*
+!*  IMPLEMENTED BY: DIETER KRAFT, DFVLR OBERPFAFFENHOFEN
+!*  as described in Dieter Kraft: A Software Package for
+!*                                Sequential Quadratic Programming
+!*                                DFVLR-FB 88-28, 1988
+!*  which should be referenced if the user publishes results of SLSQP
+!*
+!*  DATE:           APRIL - OCTOBER, 1981.
+!*  STATUS:         DECEMBER, 31-ST, 1984.
+!*  STATUS:         MARCH   , 21-ST, 1987, REVISED TO FORTAN 77
+!*  STATUS:         MARCH   , 20-th, 1989, REVISED TO MS-FORTRAN
+!*  STATUS:         APRIL   , 14-th, 1989, HESSE   in-line coded
+!*  STATUS:         FEBRUARY, 28-th, 1991, FORTRAN/2 Version 1.04
+!*                                         accepts Statement Functions
+!*  STATUS:         MARCH   ,  1-st, 1991, tested with SALFORD
+!*                                         FTN77/386 COMPILER VERS 2.40
+!*                                         in protected mode
+!*
 !***********************************************************************
-!*                                                                     *
-!*  Copyright 1991: Dieter Kraft, FHM                                  *
-!*                                                                     *
+!*
+!*  Copyright 1991: Dieter Kraft, FHM
+!*
 !***********************************************************************
+
+    SUBROUTINE SLSQP(M,Meq,La,N,X,Xl,Xu,F,C,G,A,Acc,Iter,Mode,W,L_w,  &
+                     Jw,L_jw)
+    IMPLICIT NONE
 
       INTEGER il , im , ir , is , Iter , iu , iv , iw , ix , L_w ,      &
               L_jw , Jw(L_jw) , La , M , Meq , mineq , Mode , N , n1
@@ -228,16 +226,16 @@ contains
                   W(ix),W(im),W(is),W(iu),W(iv),W(iw),Jw)
 
       END SUBROUTINE SLSQP
+!*******************************************************************************
 
-      SUBROUTINE SLSQPB(M,Meq,La,N,X,Xl,Xu,F,C,G,A,Acc,Iter,Mode,R,L,X0,&
-                        Mu,S,U,V,W,Iw)
-      IMPLICIT NONE
-
+!*******************************************************************************
 !   NONLINEAR PROGRAMMING BY SOLVING SEQUENTIALLY QUADRATIC PROGRAMS
-
+!
 !        -  L1 - LINE SEARCH,  POSITIVE DEFINITE  BFGS UPDATE  -
 
-!                      BODY SUBROUTINE FOR SLSQP
+    SUBROUTINE SLSQPB(M,Meq,La,N,X,Xl,Xu,F,C,G,A,Acc,Iter,Mode,R,L,X0,&
+                      Mu,S,U,V,W,Iw)
+    IMPLICIT NONE
 
       INTEGER Iw(*) , i , iexact , incons , ireset , Iter , itermx , k ,&
               j , La , line , M , Meq , Mode , N , n1 , n2 , n3
@@ -520,14 +518,10 @@ contains
          Mode = -1
       ENDIF
 
-!   END OF SLSQPB
-
       END SUBROUTINE SLSQPB
+!*******************************************************************************
 
-
-      SUBROUTINE LSQ(M,Meq,N,Nl,La,L,G,A,B,Xl,Xu,X,Y,W,Jw,Mode)
-      IMPLICIT NONE
-
+!*******************************************************************************
 !   MINIMIZE with respect to X
 
 !             ||E*X - F||
@@ -568,6 +562,9 @@ contains
 
 !     coded            Dieter Kraft, april 1987
 !     revised                        march 1989
+
+    SUBROUTINE LSQ(M,Meq,N,Nl,La,L,G,A,B,Xl,Xu,X,Y,W,Jw,Mode)
+    IMPLICIT NONE
 
       DOUBLE PRECISION L , G , A , B , W , Xl , Xu , X , Y , diag ,     &
                        zero , one , DDOT , xnorm
@@ -710,11 +707,10 @@ contains
 !   END OF SUBROUTINE LSQ
 
       END SUBROUTINE LSQ
+!*******************************************************************************
 
-
-      SUBROUTINE LSEI(C,D,E,F,G,H,Lc,Mc,Le,Me,Lg,Mg,N,X,Xnrm,W,Jw,Mode)
-      IMPLICIT NONE
-
+!*******************************************************************************
+!
 !     FOR MODE=1, THE SUBROUTINE RETURNS THE SOLUTION X OF
 !     EQUALITY & INEQUALITY CONSTRAINED LEAST SQUARES PROBLEM LSEI :
 
@@ -756,6 +752,9 @@ contains
 
 !     18.5.1981, DIETER KRAFT, DFVLR OBERPFAFFENHOFEN
 !     20.3.1987, DIETER KRAFT, DFVLR OBERPFAFFENHOFEN
+
+    SUBROUTINE LSEI(C,D,E,F,G,H,Lc,Mc,Le,Me,Lg,Mg,N,X,Xnrm,W,Jw,Mode)
+    IMPLICIT NONE
 
       INTEGER Jw(*) , i , ie , if , ig , iw , j , k , krank , l , Lc , &
               Le , Lg , Mc , mc1 , Me , Mg , Mode , N
@@ -855,13 +854,10 @@ contains
          ENDDO
       ENDIF
 
-!  END OF SUBROUTINE LSEI
-
       END SUBROUTINE LSEI
+!*******************************************************************************
 
-
-      SUBROUTINE LSI(E,F,G,H,Le,Me,Lg,Mg,N,X,Xnorm,W,Jw,Mode)
-      IMPLICIT NONE
+!*******************************************************************************
 
 !     FOR MODE=1, THE SUBROUTINE RETURNS THE SOLUTION X OF
 !     INEQUALITY CONSTRAINED LINEAR LEAST SQUARES PROBLEM:
@@ -898,6 +894,9 @@ contains
 
 !     03.01.1980, DIETER KRAFT: CODED
 !     20.03.1987, DIETER KRAFT: REVISED TO FORTRAN 77
+
+    SUBROUTINE LSI(E,F,G,H,Le,Me,Lg,Mg,N,X,Xnorm,W,Jw,Mode)
+    IMPLICIT NONE
 
       INTEGER i , j , Le , Lg , Me , Mg , Mode , N , Jw(Lg)
       DOUBLE PRECISION E(Le,N) , F(Le) , G(Lg,N) , H(Lg) , X(N) , W(*) ,&
@@ -940,13 +939,11 @@ contains
          Xnorm = SQRT(Xnorm*Xnorm+t*t)
       ENDIF
 
-!  END OF SUBROUTINE LSI
-
       END SUBROUTINE LSI
+!*******************************************************************************
 
-      SUBROUTINE LDP(G,Mg,M,N,H,X,Xnorm,W,Index,Mode)
-      IMPLICIT NONE
-
+!*******************************************************************************
+!
 !                     T
 !     MINIMIZE   1/2 X X    SUBJECT TO   G * X >= H.
 
@@ -977,9 +974,12 @@ contains
 !     MODE         MODE IS A SUCCESS-FAILURE FLAG WITH THE FOLLOWING
 !                  MEANINGS:
 !          MODE=1: SUCCESSFUL COMPUTATION
-!               2: ERROR RETURN BECAUSE OF WRONG DIMENSIONS (N.LE.0)
+!               2: ERROR RETURN BECAUSE OF WRONG DIMENSIONS (N<=0)
 !               3: ITERATION COUNT EXCEEDED BY NNLS
 !               4: INEQUALITY CONSTRAINTS INCOMPATIBLE
+
+    SUBROUTINE LDP(G,Mg,M,N,H,X,Xnorm,W,Index,Mode)
+    IMPLICIT NONE
 
       DOUBLE PRECISION G , H , X , Xnorm , W , u , v , zero , one ,     &
                        fac , rnorm , DNRM2 , DDOT
@@ -1050,20 +1050,20 @@ contains
          ENDIF
       ENDIF
 
-!  END OF SUBROUTINE LDP
-
       END SUBROUTINE LDP
+!*******************************************************************************
 
-      function DIFF(u,v) result(d)  !! replaced statement function in original code
-          implicit none
-          double precision,intent(in) :: u
-          double precision,intent(in) :: v
-          double precision :: d
-          d = u - v
-      end function DIFF
+!*******************************************************************************
+    function DIFF(u,v) result(d)  !! replaced statement function in original code
+        implicit none
+        double precision,intent(in) :: u
+        double precision,intent(in) :: v
+        double precision :: d
+        d = u - v
+    end function DIFF
+!*******************************************************************************
 
-      SUBROUTINE NNLS(A,Mda,M,N,B,X,Rnorm,W,Z,Index,Mode)
-      IMPLICIT NONE
+!*******************************************************************************
 
 !     C.L.LAWSON AND R.J.HANSON, JET PROPULSION LABORATORY:
 !     'SOLVING LEAST SQUARES PROBLEMS'. PRENTICE-HALL.1974
@@ -1105,6 +1105,9 @@ contains
 !            2    THE DIMENSIONS OF THE PROBLEM ARE WRONG,
 !                 EITHER M <= 0 OR N <= 0.
 !            3    ITERATION COUNT EXCEEDED, MORE THAN 3*N ITERATIONS.
+
+    SUBROUTINE NNLS(A,Mda,M,N,B,X,Rnorm,W,Z,Index,Mode)
+    IMPLICIT NONE
 
       INTEGER i , ii , ip , iter , itmax , iz , izmax , iz1 , iz2 , j , &
               jj , jz , k , l , M , Mda , Mode , N , npp1 , nsetp ,     &
@@ -1275,167 +1278,168 @@ contains
          ENDIF
       ENDIF
 
-! END OF SUBROUTINE NNLS
-
       END SUBROUTINE NNLS
+!*******************************************************************************
 
-		SUBROUTINE HFTI(A,Mda,M,N,B,Mdb,Nb,Tau,Krank,Rnorm,H,G,Ip)
-		IMPLICIT NONE
+!*******************************************************************************
+!
+!     RANK-DEFICIENT LEAST SQUARES ALGORITHM AS DESCRIBED IN:
+!     C.L.LAWSON AND R.J.HANSON, JET PROPULSION LABORATORY, 1973 JUN 12
+!     TO APPEAR IN 'SOLVING LEAST SQUARES PROBLEMS', PRENTICE-HALL, 1974
 
-	!     RANK-DEFICIENT LEAST SQUARES ALGORITHM AS DESCRIBED IN:
-	!     C.L.LAWSON AND R.J.HANSON, JET PROPULSION LABORATORY, 1973 JUN 12
-	!     TO APPEAR IN 'SOLVING LEAST SQUARES PROBLEMS', PRENTICE-HALL, 1974
+!     A(*,*),MDA,M,N   THE ARRAY A INITIALLY CONTAINS THE M x N MATRIX A
+!                      OF THE LEAST SQUARES PROBLEM AX = B.
+!                      THE FIRST DIMENSIONING PARAMETER MDA MUST SATISFY
+!                      MDA >= M. EITHER M >= N OR M < N IS PERMITTED.
+!                      THERE IS NO RESTRICTION ON THE RANK OF A.
+!                      THE MATRIX A WILL BE MODIFIED BY THE SUBROUTINE.
+!     B(*,*),MDB,NB    IF NB = 0 THE SUBROUTINE WILL MAKE NO REFERENCE
+!                      TO THE ARRAY B. IF NB > 0 THE ARRAY B() MUST
+!                      INITIALLY CONTAIN THE M x NB MATRIX B  OF THE
+!                      THE LEAST SQUARES PROBLEM AX = B AND ON RETURN
+!                      THE ARRAY B() WILL CONTAIN THE N x NB SOLUTION X.
+!                      IF NB>1 THE ARRAY B() MUST BE DOUBLE SUBSCRIPTED
+!                      WITH FIRST DIMENSIONING PARAMETER MDB>=MAX(M,N),
+!                      IF NB=1 THE ARRAY B() MAY BE EITHER SINGLE OR
+!                      DOUBLE SUBSCRIPTED.
+!     TAU              ABSOLUTE TOLERANCE PARAMETER FOR PSEUDORANK
+!                      DETERMINATION, PROVIDED BY THE USER.
+!     KRANK            PSEUDORANK OF A, SET BY THE SUBROUTINE.
+!     RNORM            ON EXIT, RNORM(J) WILL CONTAIN THE EUCLIDIAN
+!                      NORM OF THE RESIDUAL VECTOR FOR THE PROBLEM
+!                      DEFINED BY THE J-TH COLUMN VECTOR OF THE ARRAY B.
+!     H(), G()         ARRAYS OF WORKING SPACE OF LENGTH >= N.
+!     IP()             INTEGER ARRAY OF WORKING SPACE OF LENGTH >= N
+!                      RECORDING PERMUTATION INDICES OF COLUMN VECTORS
 
-	!     A(*,*),MDA,M,N   THE ARRAY A INITIALLY CONTAINS THE M x N MATRIX A
-	!                      OF THE LEAST SQUARES PROBLEM AX = B.
-	!                      THE FIRST DIMENSIONING PARAMETER MDA MUST SATISFY
-	!                      MDA >= M. EITHER M >= N OR M < N IS PERMITTED.
-	!                      THERE IS NO RESTRICTION ON THE RANK OF A.
-	!                      THE MATRIX A WILL BE MODIFIED BY THE SUBROUTINE.
-	!     B(*,*),MDB,NB    IF NB = 0 THE SUBROUTINE WILL MAKE NO REFERENCE
-	!                      TO THE ARRAY B. IF NB > 0 THE ARRAY B() MUST
-	!                      INITIALLY CONTAIN THE M x NB MATRIX B  OF THE
-	!                      THE LEAST SQUARES PROBLEM AX = B AND ON RETURN
-	!                      THE ARRAY B() WILL CONTAIN THE N x NB SOLUTION X.
-	!                      IF NB>1 THE ARRAY B() MUST BE DOUBLE SUBSCRIPTED
-	!                      WITH FIRST DIMENSIONING PARAMETER MDB>=MAX(M,N),
-	!                      IF NB=1 THE ARRAY B() MAY BE EITHER SINGLE OR
-	!                      DOUBLE SUBSCRIPTED.
-	!     TAU              ABSOLUTE TOLERANCE PARAMETER FOR PSEUDORANK
-	!                      DETERMINATION, PROVIDED BY THE USER.
-	!     KRANK            PSEUDORANK OF A, SET BY THE SUBROUTINE.
-	!     RNORM            ON EXIT, RNORM(J) WILL CONTAIN THE EUCLIDIAN
-	!                      NORM OF THE RESIDUAL VECTOR FOR THE PROBLEM
-	!                      DEFINED BY THE J-TH COLUMN VECTOR OF THE ARRAY B.
-	!     H(), G()         ARRAYS OF WORKING SPACE OF LENGTH >= N.
-	!     IP()             INTEGER ARRAY OF WORKING SPACE OF LENGTH >= N
-	!                      RECORDING PERMUTATION INDICES OF COLUMN VECTORS
+    SUBROUTINE HFTI(A,Mda,M,N,B,Mdb,Nb,Tau,Krank,Rnorm,H,G,Ip)
+    IMPLICIT NONE
 
-		INTEGER i , j , jb , k , kp1 , Krank , l , ldiag , lmax , M ,     &
-				Mda , Mdb , N , Nb , Ip(N)
-		DOUBLE PRECISION A(Mda,N) , B(Mdb,Nb) , H(N) , G(N) , Rnorm(Nb) , &
-						 factor , Tau , zero , hmax , DIFF , tmp ,        &
-						 DDOT_SL , DNRM2_ , u , v
-		DIFF(u,v) = u - v
-		DATA zero/0.0D0/ , factor/1.0D-3/
+	INTEGER i , j , jb , k , kp1 , Krank , l , ldiag , lmax , M ,     &
+			Mda , Mdb , N , Nb , Ip(N)
+	DOUBLE PRECISION A(Mda,N) , B(Mdb,Nb) , H(N) , G(N) , Rnorm(Nb) , &
+					 factor , Tau , zero , hmax , DIFF , tmp ,        &
+					 DDOT_SL , DNRM2_ , u , v
+	DIFF(u,v) = u - v
+	DATA zero/0.0D0/ , factor/1.0D-3/
 
-		k = 0
-		ldiag = MIN(M,N)
-		IF ( ldiag<=0 ) THEN
-		   Krank = k
-		   return
-		ELSE
+	k = 0
+	ldiag = MIN(M,N)
+	IF ( ldiag<=0 ) THEN
+	   Krank = k
+	   return
+	ELSE
 
-	!   COMPUTE LMAX
+!   COMPUTE LMAX
 
-		   DO j = 1 , ldiag
-			  IF ( j/=1 ) THEN
-				 lmax = j
-				 DO l = j , N
-					H(l) = H(l) - A(j-1,l)**2
-					IF ( H(l)>H(lmax) ) lmax = l
-				 ENDDO
-				 IF ( DIFF(hmax+factor*H(lmax),hmax)>zero ) GOTO 20
-			  ENDIF
-			  lmax = j
-			  DO l = j , N
-				 H(l) = zero
-				 DO i = j , M
-					H(l) = H(l) + A(i,l)**2
-				 ENDDO
-				 IF ( H(l)>H(lmax) ) lmax = l
-			  ENDDO
-			  hmax = H(lmax)
+	   DO j = 1 , ldiag
+		  IF ( j/=1 ) THEN
+			 lmax = j
+			 DO l = j , N
+				H(l) = H(l) - A(j-1,l)**2
+				IF ( H(l)>H(lmax) ) lmax = l
+			 ENDDO
+			 IF ( DIFF(hmax+factor*H(lmax),hmax)>zero ) GOTO 20
+		  ENDIF
+		  lmax = j
+		  DO l = j , N
+			 H(l) = zero
+			 DO i = j , M
+				H(l) = H(l) + A(i,l)**2
+			 ENDDO
+			 IF ( H(l)>H(lmax) ) lmax = l
+		  ENDDO
+		  hmax = H(lmax)
 
-	!   COLUMN INTERCHANGES IF NEEDED
+!   COLUMN INTERCHANGES IF NEEDED
 
-	20         Ip(j) = lmax
-			  IF ( Ip(j)/=j ) THEN
-				 DO i = 1 , M
-					tmp = A(i,j)
-					A(i,j) = A(i,lmax)
-					A(i,lmax) = tmp
-				 ENDDO
-				 H(lmax) = H(j)
-			  ENDIF
+20         Ip(j) = lmax
+		  IF ( Ip(j)/=j ) THEN
+			 DO i = 1 , M
+				tmp = A(i,j)
+				A(i,j) = A(i,lmax)
+				A(i,lmax) = tmp
+			 ENDDO
+			 H(lmax) = H(j)
+		  ENDIF
 
-	!   J-TH TRANSFORMATION AND APPLICATION TO A AND B
+!   J-TH TRANSFORMATION AND APPLICATION TO A AND B
 
-			  i = MIN(j+1,N)
-			  CALL H12(1,j,j+1,M,A(1,j),1,H(j),A(1,i),1,Mda,N-j)
-			  CALL H12(2,j,j+1,M,A(1,j),1,H(j),B,1,Mdb,Nb)
-		   ENDDO
+		  i = MIN(j+1,N)
+		  CALL H12(1,j,j+1,M,A(1,j),1,H(j),A(1,i),1,Mda,N-j)
+		  CALL H12(2,j,j+1,M,A(1,j),1,H(j),B,1,Mdb,Nb)
+	   ENDDO
 
-	!   DETERMINE PSEUDORANK
+!   DETERMINE PSEUDORANK
 
-		   DO j = 1 , ldiag
-			  IF ( ABS(A(j,j))<=Tau ) GOTO 100
-		   ENDDO
-		   k = ldiag
-		   GOTO 200
-		ENDIF
-	100  k = j - 1
-	200  kp1 = k + 1
+	   DO j = 1 , ldiag
+		  IF ( ABS(A(j,j))<=Tau ) GOTO 100
+	   ENDDO
+	   k = ldiag
+	   GOTO 200
+	ENDIF
+100  k = j - 1
+200  kp1 = k + 1
 
-	!   NORM OF RESIDUALS
+!   NORM OF RESIDUALS
 
-		DO jb = 1 , Nb
-		   Rnorm(jb) = DNRM2_(M-k,B(kp1,jb),1)
-		ENDDO
-		IF ( k>0 ) THEN
-		   IF ( k/=N ) THEN
+	DO jb = 1 , Nb
+	   Rnorm(jb) = DNRM2_(M-k,B(kp1,jb),1)
+	ENDDO
+	IF ( k>0 ) THEN
+	   IF ( k/=N ) THEN
 
-	!   HOUSEHOLDER DECOMPOSITION OF FIRST K ROWS
+!   HOUSEHOLDER DECOMPOSITION OF FIRST K ROWS
 
-			  DO i = k , 1 , -1
-				 CALL H12(1,i,kp1,N,A(i,1),Mda,G(i),A,Mda,1,i-1)
-			  ENDDO
-		   ENDIF
-		   DO jb = 1 , Nb
+		  DO i = k , 1 , -1
+			 CALL H12(1,i,kp1,N,A(i,1),Mda,G(i),A,Mda,1,i-1)
+		  ENDDO
+	   ENDIF
+	   DO jb = 1 , Nb
 
-	!   SOLVE K*K TRIANGULAR SYSTEM
+!   SOLVE K*K TRIANGULAR SYSTEM
 
-			  DO i = k , 1 , -1
-				 j = MIN(i+1,N)
-				 B(i,jb) = (B(i,jb)-DDOT_SL(k-i,A(i,j),Mda,B(j,jb),1))    &
-						   /A(i,i)
-			  ENDDO
+		  DO i = k , 1 , -1
+			 j = MIN(i+1,N)
+			 B(i,jb) = (B(i,jb)-DDOT_SL(k-i,A(i,j),Mda,B(j,jb),1))    &
+					   /A(i,i)
+		  ENDDO
 
-	!   COMPLETE SOLUTION VECTOR
+!   COMPLETE SOLUTION VECTOR
 
-			  IF ( k/=N ) THEN
-				 DO j = kp1 , N
-					B(j,jb) = zero
-				 ENDDO
-				 DO i = 1 , k
-					CALL H12(2,i,kp1,N,A(i,1),Mda,G(i),B(1,jb),1,Mdb,1)
-				 ENDDO
-			  ENDIF
+		  IF ( k/=N ) THEN
+			 DO j = kp1 , N
+				B(j,jb) = zero
+			 ENDDO
+			 DO i = 1 , k
+				CALL H12(2,i,kp1,N,A(i,1),Mda,G(i),B(1,jb),1,Mdb,1)
+			 ENDDO
+		  ENDIF
 
-	!   REORDER SOLUTION ACCORDING TO PREVIOUS COLUMN INTERCHANGES
+!   REORDER SOLUTION ACCORDING TO PREVIOUS COLUMN INTERCHANGES
 
-			  DO j = ldiag , 1 , -1
-				 IF ( Ip(j)/=j ) THEN
-					l = Ip(j)
-					tmp = B(l,jb)
-					B(l,jb) = B(j,jb)
-					B(j,jb) = tmp
-				 ENDIF
-			  ENDDO
-		   ENDDO
-		ELSE
-		   DO jb = 1 , Nb
-			  DO i = 1 , N
-				 B(i,jb) = zero
-			  ENDDO
-		   ENDDO
-		ENDIF
-		Krank = k
-		END SUBROUTINE HFTI
+		  DO j = ldiag , 1 , -1
+			 IF ( Ip(j)/=j ) THEN
+				l = Ip(j)
+				tmp = B(l,jb)
+				B(l,jb) = B(j,jb)
+				B(j,jb) = tmp
+			 ENDIF
+		  ENDDO
+	   ENDDO
+	ELSE
+	   DO jb = 1 , Nb
+		  DO i = 1 , N
+			 B(i,jb) = zero
+		  ENDDO
+	   ENDDO
+	ENDIF
+	Krank = k
+	END SUBROUTINE HFTI
+!*******************************************************************************
 
-      SUBROUTINE H12(Mode,Lpivot,L1,M,U,Iue,Up,C,Ice,Icv,Ncv)
-      IMPLICIT NONE
-
+!*******************************************************************************
+!
 !     C.L.LAWSON AND R.J.HANSON, JET PROPULSION LABORATORY, 1973 JUN 12
 !     TO APPEAR IN 'SOLVING LEAST SQUARES PROBLEMS', PRENTICE-HALL, 1974
 
@@ -1463,6 +1467,9 @@ contains
 !     ICV    STORAGE INCREMENT BETWEEN VECTORS IN C().
 !     NCV    NUMBER OF VECTORS IN C() TO BE TRANSFORMED.
 !            IF NCV <= 0 NO OPERATIONS WILL BE DONE ON C().
+
+    SUBROUTINE H12(Mode,Lpivot,L1,M,U,Iue,Up,C,Ice,Icv,Ncv)
+    IMPLICIT NONE
 
       INTEGER incr , Ice , Icv , Iue , Lpivot , L1 , Mode , Ncv
       INTEGER i , i2 , i3 , i4 , j , M
@@ -1523,9 +1530,10 @@ contains
          ENDIF
       ENDIF
       END SUBROUTINE H12
+!*******************************************************************************
 
-      SUBROUTINE LDL(N,A,Z,Sigma,W)
-      IMPLICIT NONE
+!*******************************************************************************
+!
 !   LDL     LDL' - RANK-ONE - UPDATE
 
 !   PURPOSE:
@@ -1545,7 +1553,7 @@ contains
 !     A     : UPDATED LDL' FACTORS
 
 !   WORKING ARRAY:
-!     W     : VECTOR OP DIMENSION N (USED ONLY IF SIGMA .LT. ZERO)
+!     W     : VECTOR OP DIMENSION N (USED ONLY IF SIGMA < ZERO)
 
 !   METHOD:
 !     THAT OF FLETCHER AND POWELL AS DESCRIBED IN :
@@ -1558,7 +1566,8 @@ contains
 
 !   STATUS: 15. JANUARY 1980
 
-!   SUBROUTINES REQUIRED: NONE
+    SUBROUTINE LDL(N,A,Z,Sigma,W)
+    IMPLICIT NONE
 
       INTEGER i , ij , j , N
       DOUBLE PRECISION A(*) , t , v , W(*) , Z(*) , u , tp , one , &
@@ -1621,11 +1630,12 @@ contains
             t = tp
          ENDDO
       ENDIF
-! END OF LDL
-      END SUBROUTINE LDL
 
-      DOUBLE PRECISION FUNCTION LINMIN(Mode,Ax,Bx,F,Tol)
-      IMPLICIT NONE
+      END SUBROUTINE LDL
+!*******************************************************************************
+
+!*******************************************************************************
+!
 !   LINMIN  LINESEARCH WITHOUT DERIVATIVES
 
 !   PURPOSE:
@@ -1669,7 +1679,8 @@ contains
 
 !   STATUS: 31. AUGUST  1984
 
-!   SUBROUTINES REQUIRED: NONE
+    DOUBLE PRECISION FUNCTION LINMIN(Mode,Ax,Bx,F,Tol)
+    IMPLICIT NONE
 
       INTEGER Mode
       DOUBLE PRECISION F , Tol , a , b , c , d , e , p , q , r , u , v ,&
@@ -1789,515 +1800,7 @@ contains
          Mode = 2
       ENDIF
 
-!  END OF LINMIN
-
       END FUNCTION LINMIN
-
-!## Following a selection from BLAS Level 1
-
-      SUBROUTINE DAXPY(N,Da,Dx,Incx,Dy,Incy)
-      IMPLICIT NONE
-
-!     CONSTANT TIMES A VECTOR PLUS A VECTOR.
-!     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.
-!     JACK DONGARRA, LINPACK, 3/11/78.
-
-      DOUBLE PRECISION Dx(*) , Dy(*) , Da
-      INTEGER i , Incx , Incy , ix , iy , m , mp1 , N
-
-      IF ( N<=0 ) RETURN
-      IF ( Da==0.0D0 ) RETURN
-      IF ( Incx==1 .AND. Incy==1 ) THEN
-
-!        CODE FOR BOTH INCREMENTS EQUAL TO 1
-
-!        CLEAN-UP LOOP
-
-         m = MOD(N,4)
-         IF ( m/=0 ) THEN
-            DO i = 1 , m
-               Dy(i) = Dy(i) + Da*Dx(i)
-            ENDDO
-            IF ( N<4 ) RETURN
-         ENDIF
-         mp1 = m + 1
-         DO i = mp1 , N , 4
-            Dy(i) = Dy(i) + Da*Dx(i)
-            Dy(i+1) = Dy(i+1) + Da*Dx(i+1)
-            Dy(i+2) = Dy(i+2) + Da*Dx(i+2)
-            Dy(i+3) = Dy(i+3) + Da*Dx(i+3)
-         ENDDO
-      ELSE
-
-!        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS
-!        NOT EQUAL TO 1
-
-         ix = 1
-         iy = 1
-         IF ( Incx<0 ) ix = (-N+1)*Incx + 1
-         IF ( Incy<0 ) iy = (-N+1)*Incy + 1
-         DO i = 1 , N
-            Dy(iy) = Dy(iy) + Da*Dx(ix)
-            ix = ix + Incx
-            iy = iy + Incy
-         ENDDO
-         RETURN
-      ENDIF
-      END SUBROUTINE DAXPY
-
-      SUBROUTINE DCOPY(N,Dx,Incx,Dy,Incy)
-      IMPLICIT NONE
-
-!     COPIES A VECTOR, X, TO A VECTOR, Y.
-!     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.
-!     JACK DONGARRA, LINPACK, 3/11/78.
-
-      DOUBLE PRECISION Dx(*) , Dy(*)
-      INTEGER i , Incx , Incy , ix , iy , m , mp1 , N
-
-      IF ( N<=0 ) RETURN
-      IF ( Incx==1 .AND. Incy==1 ) THEN
-
-!        CODE FOR BOTH INCREMENTS EQUAL TO 1
-
-!        CLEAN-UP LOOP
-
-         m = MOD(N,7)
-         IF ( m/=0 ) THEN
-            DO i = 1 , m
-               Dy(i) = Dx(i)
-            ENDDO
-            IF ( N<7 ) RETURN
-         ENDIF
-         mp1 = m + 1
-         DO i = mp1 , N , 7
-            Dy(i) = Dx(i)
-            Dy(i+1) = Dx(i+1)
-            Dy(i+2) = Dx(i+2)
-            Dy(i+3) = Dx(i+3)
-            Dy(i+4) = Dx(i+4)
-            Dy(i+5) = Dx(i+5)
-            Dy(i+6) = Dx(i+6)
-         ENDDO
-      ELSE
-
-!        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS
-!        NOT EQUAL TO 1
-
-         ix = 1
-         iy = 1
-         IF ( Incx<0 ) ix = (-N+1)*Incx + 1
-         IF ( Incy<0 ) iy = (-N+1)*Incy + 1
-         DO i = 1 , N
-            Dy(iy) = Dx(ix)
-            ix = ix + Incx
-            iy = iy + Incy
-         ENDDO
-         RETURN
-      ENDIF
-      END SUBROUTINE DCOPY
-
-      DOUBLE PRECISION FUNCTION DDOT(N,Dx,Incx,Dy,Incy)
-      IMPLICIT NONE
-
-!     FORMS THE DOT PRODUCT OF TWO VECTORS.
-!     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.
-!     JACK DONGARRA, LINPACK, 3/11/78.
-
-      DOUBLE PRECISION Dx(*) , Dy(*) , dtemp
-      INTEGER i , Incx , Incy , ix , iy , m , mp1 , N
-
-      DDOT = 0.0D0
-      dtemp = 0.0D0
-      IF ( N<=0 ) RETURN
-      IF ( Incx==1 .AND. Incy==1 ) THEN
-
-!        CODE FOR BOTH INCREMENTS EQUAL TO 1
-
-!        CLEAN-UP LOOP
-
-         m = MOD(N,5)
-         IF ( m/=0 ) THEN
-            DO i = 1 , m
-               dtemp = dtemp + Dx(i)*Dy(i)
-            ENDDO
-            IF ( N<5 ) THEN
-               DDOT = dtemp
-               return
-            ENDIF
-         ENDIF
-         mp1 = m + 1
-         DO i = mp1 , N , 5
-            dtemp = dtemp + Dx(i)*Dy(i) + Dx(i+1)*Dy(i+1) + Dx(i+2)     &
-                    *Dy(i+2) + Dx(i+3)*Dy(i+3) + Dx(i+4)*Dy(i+4)
-         ENDDO
-         DDOT = dtemp
-      ELSE
-
-!        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS
-!          NOT EQUAL TO 1
-
-         ix = 1
-         iy = 1
-         IF ( Incx<0 ) ix = (-N+1)*Incx + 1
-         IF ( Incy<0 ) iy = (-N+1)*Incy + 1
-         DO i = 1 , N
-            dtemp = dtemp + Dx(ix)*Dy(iy)
-            ix = ix + Incx
-            iy = iy + Incy
-         ENDDO
-         DDOT = dtemp
-         RETURN
-      ENDIF
-      END FUNCTION DDOT
-
-      DOUBLE PRECISION FUNCTION DNRM1(N,X,I,J)
-      IMPLICIT NONE
-      INTEGER N , I , J , k
-      DOUBLE PRECISION snormx , sum , X(N) , zero , one , scale , temp
-      DATA zero/0.0D0/ , one/1.0D0/
-
-!      DNRM1 - COMPUTES THE I-NORM OF A VECTOR
-!              BETWEEN THE ITH AND THE JTH ELEMENTS
-
-!      INPUT -
-!      N       LENGTH OF VECTOR
-!      X       VECTOR OF LENGTH N
-!      I       INITIAL ELEMENT OF VECTOR TO BE USED
-!      J       FINAL ELEMENT TO USE
-
-!      OUTPUT -
-!      DNRM1   NORM
-
-      snormx = zero
-      DO k = I , J
-         snormx = MAX(snormx,ABS(X(k)))
-      ENDDO
-      DNRM1 = snormx
-      IF ( snormx==zero ) RETURN
-      scale = snormx
-      IF ( snormx>=one ) scale = SQRT(snormx)
-      sum = zero
-      DO k = I , J
-         temp = zero
-         IF ( ABS(X(k))+scale/=scale ) temp = X(k)/snormx
-         IF ( one+temp/=one ) sum = sum + temp*temp
-      ENDDO
-      sum = SQRT(sum)
-      DNRM1 = snormx*sum
-      END FUNCTION DNRM1
-
-!replaced original routine with this one from BLAS:
-!  http://netlib.sandia.gov/blas/dnrm2.f
-
-        DOUBLE PRECISION FUNCTION DNRM2(N,X,Incx)
-        IMPLICIT NONE
-  !     .. Scalar Arguments ..
-        INTEGER Incx , N
-  !     ..
-  !     .. Array Arguments ..
-        DOUBLE PRECISION X(*)
-  !     ..
-  !
-  !  Purpose
-  !  =======
-  !
-  !  DNRM2 returns the euclidean norm of a vector via the function
-  !  name, so that
-  !
-  !     DNRM2 := sqrt( x'*x )
-  !
-  !  Further Details
-  !  ===============
-  !
-  !  -- This version written on 25-October-1982.
-  !     Modified on 14-October-1993 to inline the call to DLASSQ.
-  !     Sven Hammarling, Nag Ltd.
-  !
-  !  =====================================================================
-  !
-  !     .. Parameters ..
-        DOUBLE PRECISION ONE , ZERO
-        PARAMETER (ONE=1.0D+0,ZERO=0.0D+0)
-  !     ..
-  !     .. Local Scalars ..
-        DOUBLE PRECISION absxi , norm , scale , ssq
-        INTEGER ix
-  !     ..
-  !     .. Intrinsic Functions ..
-        INTRINSIC ABS , SQRT
-  !     ..
-        IF ( N<1 .OR. Incx<1 ) THEN
-           norm = ZERO
-        ELSEIF ( N==1 ) THEN
-           norm = ABS(X(1))
-        ELSE
-           scale = ZERO
-           ssq = ONE
-  !        The following loop is equivalent to this call to the LAPACK
-  !        auxiliary routine:
-  !        CALL DLASSQ( N, X, INCX, SCALE, SSQ )
-  !
-           DO ix = 1 , 1 + (N-1)*Incx , Incx
-              IF ( X(ix)/=ZERO ) THEN
-                 absxi = ABS(X(ix))
-                 IF ( scale<absxi ) THEN
-                    ssq = ONE + ssq*(scale/absxi)**2
-                    scale = absxi
-                 ELSE
-                    ssq = ssq + (absxi/scale)**2
-                 ENDIF
-              ENDIF
-           ENDDO
-           norm = scale*SQRT(ssq)
-        ENDIF
-  !
-        DNRM2 = norm
-  !
-  !     End of DNRM2.
-  !
-        END FUNCTION DNRM2
-
-!      DOUBLE PRECISION FUNCTION DNRM2(N,Dx,Incx)
-!      IMPLICIT NONE
-!      INTEGER N , i , j , nn , next , Incx
-!      DOUBLE PRECISION Dx(*) , cutlo , cuthi , hitest , sum , xmax ,    &
-!                       zero , one
-!      DATA zero , one/0.0D0 , 1.0D0/
-!
-!!     EUCLIDEAN NORM OF THE N-VECTOR STORED IN DX() WITH STORAGE
-!!     INCREMENT INCX .
-!!     IF    N .LE. 0 RETURN WITH RESULT = 0.
-!!     IF N .GE. 1 THEN INCX MUST BE .GE. 1
-!
-!!           C.L.LAWSON, 1978 JAN 08
-!
-!!     FOUR PHASE METHOD     USING TWO BUILT-IN CONSTANTS THAT ARE
-!!     HOPEFULLY APPLICABLE TO ALL MACHINES.
-!!         CUTLO = MAXIMUM OF  SQRT(U/EPS)   OVER ALL KNOWN MACHINES.
-!!         CUTHI = MINIMUM OF  SQRT(V)       OVER ALL KNOWN MACHINES.
-!!     WHERE
-!!         EPS = SMALLEST NO. SUCH THAT EPS + 1. .GT. 1.
-!!         U   = SMALLEST POSITIVE NO.   (UNDERFLOW LIMIT)
-!!         V   = LARGEST  NO.            (OVERFLOW  LIMIT)
-!
-!!     BRIEF OUTLINE OF ALGORITHM..
-!
-!!     PHASE 1    SCANS ZERO COMPONENTS.
-!!     MOVE TO PHASE 2 WHEN A COMPONENT IS NONZERO AND .LE. CUTLO
-!!     MOVE TO PHASE 3 WHEN A COMPONENT IS .GT. CUTLO
-!!     MOVE TO PHASE 4 WHEN A COMPONENT IS .GE. CUTHI/M
-!!     WHERE M = N FOR X() REAL AND M = 2*N FOR COMPLEX.
-!
-!!     VALUES FOR CUTLO AND CUTHI..
-!!     FROM THE ENVIRONMENTAL PARAMETERS LISTED IN THE IMSL CONVERTER
-!!     DOCUMENT THE LIMITING VALUES ARE AS FOLLOWS..
-!!     CUTLO, S.P.   U/EPS = 2**(-102) FOR  HONEYWELL.  CLOSE SECONDS ARE
-!!                   UNIVAC AND DEC AT 2**(-103)
-!!                   THUS CUTLO = 2**(-51) = 4.44089E-16
-!!     CUTHI, S.P.   V = 2**127 FOR UNIVAC, HONEYWELL, AND DEC.
-!!                   THUS CUTHI = 2**(63.5) = 1.30438E19
-!!     CUTLO, D.P.   U/EPS = 2**(-67) FOR HONEYWELL AND DEC.
-!!                   THUS CUTLO = 2**(-33.5) = 8.23181D-11
-!!     CUTHI, D.P.   SAME AS S.P.  CUTHI = 1.30438D19
-!!     DATA CUTLO, CUTHI / 8.232D-11,  1.304D19 /
-!!     DATA CUTLO, CUTHI / 4.441E-16,  1.304E19 /
-!      DATA cutlo , cuthi/8.232D-11 , 1.304D19/
-!
-!      IF ( N>0 ) THEN
-!
-!         ASSIGN 200 TO next
-!         sum = zero
-!         nn = N*Incx
-!!                       BEGIN MAIN LOOP
-!         i = 1
-!      ELSE
-!         DNRM2 = zero
-!         return
-!      ENDIF
-! 100  GOTO next
-! 200  IF ( ABS(Dx(i))>cutlo ) GOTO 800
-!      ASSIGN 300 TO next
-!      xmax = zero
-!
-!!                        PHASE 1.  SUM IS ZERO
-!
-! 300  IF ( Dx(i)==zero ) GOTO 900
-!      IF ( ABS(Dx(i))>cutlo ) GOTO 800
-!
-!!                        PREPARE FOR PHASE 2.
-!
-!      ASSIGN 600 TO next
-!      GOTO 500
-!
-!!                        PREPARE FOR PHASE 4.
-!
-! 400  i = j
-!      ASSIGN 700 TO next
-!      sum = (sum/Dx(i))/Dx(i)
-! 500  xmax = ABS(Dx(i))
-!
-!      sum = sum + (Dx(i)/xmax)**2
-!      GOTO 900
-!
-!!                   PHASE 2.  SUM IS SMALL.
-!!                             SCALE TO AVOID DESTRUCTIVE UNDERFLOW.
-!
-! 600  IF ( ABS(Dx(i))>cutlo ) THEN
-!
-!!                  PREPARE FOR PHASE 3.
-!
-!         sum = (sum*xmax)*xmax
-!         GOTO 800
-!      ENDIF
-!
-!!                   COMMON CODE FOR PHASES 2 AND 4.
-!!                   IN PHASE 4 SUM IS LARGE.  SCALE TO AVOID OVERFLOW.
-!
-! 700  IF ( ABS(Dx(i))<=xmax ) THEN
-!         sum = sum + (Dx(i)/xmax)**2
-!      ELSE
-!         sum = one + sum*(xmax/Dx(i))**2
-!         xmax = ABS(Dx(i))
-!      ENDIF
-!      GOTO 900
-!
-!!     FOR REAL OR D.P. SET HITEST = CUTHI/N
-!!     FOR COMPLEX      SET HITEST = CUTHI/(2*N)
-!
-! 800  hitest = cuthi/FLOAT(N)
-!
-!!                   PHASE 3.  SUM IS MID-RANGE.  NO SCALING.
-!
-!      DO j = i , nn , Incx
-!         IF ( ABS(Dx(j))>=hitest ) GOTO 400
-!         sum = sum + Dx(j)**2
-!      ENDDO
-!      DNRM2 = SQRT(sum)
-!      return
-!
-! 900  i = i + Incx
-!      IF ( i<=nn ) GOTO 100
-!
-!!              END OF MAIN LOOP.
-!
-!!              COMPUTE SQUARE ROOT AND ADJUST FOR SCALING.
-!
-!      DNRM2 = xmax*SQRT(sum)
-!      END FUNCTION DNRM2
-
-      SUBROUTINE DSROT(N,Dx,Incx,Dy,Incy,C,S)
-      IMPLICIT NONE
-
-!     APPLIES A PLANE ROTATION.
-!     JACK DONGARRA, LINPACK, 3/11/78.
-
-      DOUBLE PRECISION Dx(*) , Dy(*) , dtemp , C , S
-      INTEGER i , Incx , Incy , ix , iy , N
-
-      IF ( N<=0 ) RETURN
-      IF ( Incx==1 .AND. Incy==1 ) THEN
-
-!       CODE FOR BOTH INCREMENTS EQUAL TO 1
-
-         DO i = 1 , N
-            dtemp = C*Dx(i) + S*Dy(i)
-            Dy(i) = C*Dy(i) - S*Dx(i)
-            Dx(i) = dtemp
-         ENDDO
-         return
-      ENDIF
-
-!       CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS NOT EQUAL
-!         TO 1
-
-      ix = 1
-      iy = 1
-      IF ( Incx<0 ) ix = (-N+1)*Incx + 1
-      IF ( Incy<0 ) iy = (-N+1)*Incy + 1
-      DO i = 1 , N
-         dtemp = C*Dx(ix) + S*Dy(iy)
-         Dy(iy) = C*Dy(iy) - S*Dx(ix)
-         Dx(ix) = dtemp
-         ix = ix + Incx
-         iy = iy + Incy
-      ENDDO
-      RETURN
-      END SUBROUTINE DSROT
-
-      SUBROUTINE DSROTG(Da,Db,C,S)
-      IMPLICIT NONE
-
-!     CONSTRUCT GIVENS PLANE ROTATION.
-!     JACK DONGARRA, LINPACK, 3/11/78.
-!                    MODIFIED 9/27/86.
-
-      DOUBLE PRECISION Da , Db , C , S , roe , scale , r , z , one ,    &
-                       zero
-      DATA one , zero/1.0D+00 , 0.0D+00/
-
-      roe = Db
-      IF ( ABS(Da)>ABS(Db) ) roe = Da
-      scale = ABS(Da) + ABS(Db)
-      IF ( scale/=zero ) THEN
-         r = scale*SQRT((Da/scale)**2+(Db/scale)**2)
-         r = SIGN(one,roe)*r
-         C = Da/r
-         S = Db/r
-      ELSE
-         C = one
-         S = zero
-         r = zero
-      ENDIF
-      z = S
-      IF ( ABS(C)>zero .AND. ABS(C)<=S ) z = one/C
-      Da = r
-      Db = z
-      END SUBROUTINE DSROTG
-
-      SUBROUTINE DSCAL(N,Da,Dx,Incx)
-      IMPLICIT NONE
-
-!     SCALES A VECTOR BY A CONSTANT.
-!     USES UNROLLED LOOPS FOR INCREMENT EQUAL TO ONE.
-!     JACK DONGARRA, LINPACK, 3/11/78.
-
-      DOUBLE PRECISION Da , Dx(*)
-      INTEGER i , Incx , m , mp1 , N , nincx
-
-      IF ( N<=0 ) RETURN
-      IF ( Incx==1 ) THEN
-
-!        CODE FOR INCREMENT EQUAL TO 1
-
-!        CLEAN-UP LOOP
-
-         m = MOD(N,5)
-         IF ( m/=0 ) THEN
-            DO i = 1 , m
-               Dx(i) = Da*Dx(i)
-            ENDDO
-            IF ( N<5 ) RETURN
-         ENDIF
-         mp1 = m + 1
-         DO i = mp1 , N , 5
-            Dx(i) = Da*Dx(i)
-            Dx(i+1) = Da*Dx(i+1)
-            Dx(i+2) = Da*Dx(i+2)
-            Dx(i+3) = Da*Dx(i+3)
-            Dx(i+4) = Da*Dx(i+4)
-         ENDDO
-      ELSE
-
-!        CODE FOR INCREMENT NOT EQUAL TO 1
-
-         nincx = N*Incx
-         DO i = 1 , nincx , Incx
-            Dx(i) = Da*Dx(i)
-         ENDDO
-
-      ENDIF
-
-      END SUBROUTINE DSCAL
+!*******************************************************************************
 
 end module slsqp_module
