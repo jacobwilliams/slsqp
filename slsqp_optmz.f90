@@ -63,7 +63,7 @@
 !*******************************************************************************
 
 !*******************************************************************************
-    subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu)
+    subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok)
 
     implicit none
 
@@ -77,14 +77,26 @@
     real(wp),dimension(n),intent(in)  :: xl
     real(wp),dimension(n),intent(in)  :: xu
     real(wp),intent(in)               :: acc
+    logical,intent(out)               :: status_ok !! will be false if there were errors
 
     integer :: n1,mineq
 
+    status_ok = .false.
     call me%destroy()
 
-    if (size(xl)==size(xu) .and. size(xl)==n .and. &
-        meq>=0 .and. m>=0 .and. n>=1 .and. meq<=m) then
+    if (size(xl)/=size(xu) .or. size(xl)/=n) then
+        write(*,*) 'Error: invalid upper or lower bound vector size'
+    else if (meq<0 .or. meq>m) then
+        write(*,*) 'Error: invalid MEQ value:', meq
+    else if (m<0) then
+        write(*,*) 'Error: invalid M value:', m
+    else if (n<1) then
+        write(*,*) 'Error: invalid N value:', n
+    else if (any(xl>xu)) then
+        write(*,*) 'Error: Lower bounds must be <= upper bounds.'
+    else
 
+        status_ok = .true.
         me%n = n
         me%m = m
         me%meq = meq
@@ -110,8 +122,6 @@
         allocate(me%jw(me%l_jw))
         me%jw = 0
 
-    else
-        error stop 'Invalid input to initialize_slsqp.'
     end if
 
     end subroutine initialize_slsqp
@@ -131,29 +141,26 @@
 !*******************************************************************************
 
 !*******************************************************************************
-    subroutine slsqp_wrapper(me,x)
+    subroutine slsqp_wrapper(me,x,istat)
 
     implicit none
 
     class(slsqp_solver),intent(inout)   :: me
     real(wp),dimension(:),intent(inout) :: x
+    integer,intent(out)                 :: istat    !! status code
 
     real(wp)                               :: f     !! objective function
     real(wp),dimension(max(1,me%m))        :: c     !! constraint vector
     real(wp),dimension(max(1,me%m),me%n+1) :: a     !! a matrix for slsqp
     real(wp),dimension(me%n+1)             :: g     !! g matrix for slsqp
 
-
     real(wp),dimension(me%m)        :: cvec     !! constraint vector
     real(wp),dimension(me%n)        :: dfdx     !! objective function partials
     real(wp),dimension(me%m,me%n)   :: dcdx     !! constraint partials
-    integer :: mode
-    integer :: la
-    integer :: iter
+    integer :: i,mode,la,iter
     real(wp) :: acc
-    integer :: i
 
-    logical :: exact_linesearch = .false.   !
+    logical :: exact_linesearch = .false.   !! for now
 
     !check setup:
     if (size(x)/=me%n) error stop 'Invalid size(x) in slsqp_wrapper'
@@ -188,7 +195,7 @@
 
             write(*,*) i,x,f,norm2(c)
             i = i + 1
-            
+
         end if
 
         if (mode==0 .or. mode==-1) then  !gradient evaluation (G&A)
@@ -244,6 +251,8 @@
         end select
 
     end do
+
+    istat = mode
 
     end subroutine slsqp_wrapper
 !*******************************************************************************
@@ -420,15 +429,15 @@
 !
 !***********************************************************************
 
-    SUBROUTINE SLSQP(M,Meq,La,N,X,Xl,Xu,F,C,G,A,Acc,Iter,Mode,W,L_w,  &
+    SUBROUTINE SLSQP(M,Meq,La,N,X,Xl,Xu,F,C,G,A,Acc,Iter,Mode,W,L_w, &
                      Jw,L_jw)
     IMPLICIT NONE
 
-      INTEGER il , im , ir , is , Iter , iu , iv , iw , ix , L_w ,      &
-              L_jw , Jw(L_jw) , La , M , Meq , mineq , Mode , N , n1
+      INTEGER :: il , im , ir , is , Iter , iu , iv , iw , ix , L_w , &
+                 L_jw , Jw(L_jw) , La , M , Meq , mineq , Mode , N , n1
 
-      DOUBLE PRECISION Acc , A(La,N+1) , C(La) , F , G(N+1) , X(N) ,    &
-                       Xl(N) , Xu(N) , W(L_w)
+      real(wp) :: Acc , A(La,N+1) , C(La) , F , G(N+1) , X(N) , &
+                  Xl(N) , Xu(N) , W(L_w)
 
 !     dim(W) =         N1*(N1+1) + MEQ*(N1+1) + MINEQ*(N1+1)  for LSQ
 !                    +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ          for LSI
@@ -477,15 +486,15 @@
                       Mu,S,U,V,W,Iw)
     IMPLICIT NONE
 
-      INTEGER Iw(*) , i , iexact , incons , ireset , Iter , itermx , k ,&
-              j , La , line , M , Meq , Mode , N , n1 , n2 , n3
+      INTEGER :: Iw(*) , i , iexact , incons , ireset , Iter , itermx , k , &
+                 j , La , line , M , Meq , Mode , N , n1 , n2 , n3
 
-      DOUBLE PRECISION A(La,N+1) , C(La) , G(N+1) , L((N+1)*(N+2)/2) ,  &
-                       Mu(La) , R(M+N+N+2) , S(N+1) , U(N+1) , V(N+1) , &
-                       W(*) , X(N) , Xl(N) , Xu(N) , X0(N) ,  &
-                       Acc , alfmin , alpha , F , f0 ,&
-                       gs , h1 , h2 , h3 , h4 , hun , one , t , t0 ,    &
-                       ten , tol , two , zero
+      real(wp) :: A(La,N+1) , C(La) , G(N+1) , L((N+1)*(N+2)/2) , &
+                  Mu(La) , R(M+N+N+2) , S(N+1) , U(N+1) , V(N+1) , &
+                  W(*) , X(N) , Xl(N) , Xu(N) , X0(N) , &
+                  Acc , alpha , F , f0 , &
+                  gs , h1 , h2 , h3 , h4 , t , t0 , &
+                  tol
 
 !     dim(W) =         N1*(N1+1) + MEQ*(N1+1) + MINEQ*(N1+1)  for LSQ
 !                     +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ
@@ -495,8 +504,12 @@
       SAVE alpha , f0 , gs , h1 , h2 , h3 , h4 , t , t0 , tol , iexact ,&
          incons , ireset , itermx , line , n1 , n2 , n3
 
-      DATA zero/0.0D0/ , one/1.0D0/ , alfmin/1.0D-1/ , hun/1.0D+2/ ,    &
-           ten/1.0D+1/ , two/2.0D0/
+      real(wp),parameter :: zero   = 0.0_wp
+      real(wp),parameter :: one    = 1.0_wp
+      real(wp),parameter :: two    = 2.0_wp
+      real(wp),parameter :: ten    = 10.0_wp
+      real(wp),parameter :: hun    = 100.0_wp
+      real(wp),parameter :: alfmin = 0.1_wp
 
       IF ( Mode<0 ) THEN
 
@@ -543,7 +556,7 @@
 
          h1 = DDOT(N,S,1,U,1)
          h2 = DDOT(N,S,1,V,1)
-         h3 = 0.2D0*h2
+         h3 = 0.2_wp*h2
          IF ( h1<h3 ) THEN
             h4 = (h2-h3)/(h2-h1)
             h1 = h3
@@ -763,20 +776,20 @@
 
 !*******************************************************************************
 !   MINIMIZE with respect to X
-
+!
 !             ||E*X - F||
 !                                      1/2  T
 !   WITH UPPER TRIANGULAR MATRIX E = +D   *L ,
-
+!
 !                                      -1/2  -1
 !                     AND VECTOR F = -D    *L  *G,
-
+!
 !  WHERE THE UNIT LOWER TRIDIANGULAR MATRIX L IS STORED COLUMNWISE
 !  DENSE IN THE N*(N+1)/2 ARRAY L WITH VECTOR D STORED IN ITS
 ! 'DIAGONAL' THUS SUBSTITUTING THE ONE-ELEMENTS OF L
-
+!
 !   SUBJECT TO
-
+!
 !             A(J)*X - B(J) = 0 ,         J=1,...,MEQ,
 !             A(J)*X - B(J) >=0,          J=MEQ+1,...,M,
 !             XL(I) <= X(I) <= XU(I),     I=1,...,N,
@@ -799,24 +812,24 @@
 !               5: MATRIX E IS NOT OF FULL RANK
 !               6: MATRIX C IS NOT OF FULL RANK
 !               7: RANK DEFECT IN HFTI
-
+!
 !     coded            Dieter Kraft, april 1987
 !     revised                        march 1989
 
     SUBROUTINE LSQ(M,Meq,N,Nl,La,L,G,A,B,Xl,Xu,X,Y,W,Jw,Mode)
     IMPLICIT NONE
 
-      DOUBLE PRECISION L , G , A , B , W , Xl , Xu , X , Y , diag ,     &
-                       zero , one , xnorm
+      real(wp) :: L , G , A , B , W , Xl , Xu , X , Y , diag , xnorm
 
-      INTEGER Jw(*) , i , ic , id , ie , if , ig , ih , il , im , ip ,  &
-              iu , iw , i1 , i2 , i3 , i4 , La , M , Meq , mineq ,      &
-              Mode , m1 , N , Nl , n1 , n2 , n3
+      INTEGER :: Jw(*) , i , ic , id , ie , if , ig , ih , il , im , ip ,  &
+                 iu , iw , i1 , i2 , i3 , i4 , La , M , Meq , mineq ,      &
+                 Mode , m1 , N , Nl , n1 , n2 , n3
 
       DIMENSION A(La,N) , B(La) , G(N) , L(Nl) , W(*) , X(N) , Xl(N) ,  &
                 Xu(N) , Y(M+N+N)
 
-      DATA zero/0.0D0/ , one/1.0D0/
+      real(wp),parameter :: zero = 0.0_wp
+      real(wp),parameter :: one  = 1.0_wp
 
       n1 = N + 1
       mineq = M - Meq
@@ -944,8 +957,6 @@
 
       ENDIF
 
-!   END OF SUBROUTINE LSQ
-
       END SUBROUTINE LSQ
 !*******************************************************************************
 
@@ -953,16 +964,16 @@
 !
 !     FOR MODE=1, THE SUBROUTINE RETURNS THE SOLUTION X OF
 !     EQUALITY & INEQUALITY CONSTRAINED LEAST SQUARES PROBLEM LSEI :
-
+!
 !                MIN ||E*X - F||
 !                 X
-
+!
 !                S.T.  C*X  = D,
 !                      G*X >= H.
-
+!
 !     USING QR DECOMPOSITION & ORTHOGONAL BASIS OF NULLSPACE OF C
 !     CHAPTER 23.6 OF LAWSON & HANSON: SOLVING LEAST SQUARES PROBLEMS.
-
+!
 !     THE FOLLOWING DIMENSIONS OF THE ARRAYS DEFINING THE PROBLEM
 !     ARE NECESSARY
 !     DIM(E) :   FORMAL (LE,N),    ACTUAL (ME,N)
@@ -989,19 +1000,20 @@
 !               5: MATRIX E IS NOT OF FULL RANK
 !               6: MATRIX C IS NOT OF FULL RANK
 !               7: RANK DEFECT IN HFTI
-
+!
 !     18.5.1981, DIETER KRAFT, DFVLR OBERPFAFFENHOFEN
 !     20.3.1987, DIETER KRAFT, DFVLR OBERPFAFFENHOFEN
 
     SUBROUTINE LSEI(C,D,E,F,G,H,Lc,Mc,Le,Me,Lg,Mg,N,X,Xnrm,W,Jw,Mode)
     IMPLICIT NONE
 
-      INTEGER Jw(*) , i , ie , if , ig , iw , j , k , krank , l , Lc , &
-              Le , Lg , Mc , mc1 , Me , Mg , Mode , N
-      DOUBLE PRECISION C(Lc,N) , E(Le,N) , G(Lg,N) , D(Lc) , F(Le) , &
-                       H(Lg) , X(N) , W(*) , t , Xnrm , dum(1), &
-                       epmach , zero
-      DATA epmach/2.22D-16/ , zero/0.0D+00/
+      INTEGER :: Jw(*) , i , ie , if , ig , iw , j , k , krank , l , Lc , &
+                 Le , Lg , Mc , mc1 , Me , Mg , Mode , N
+      real(wp) :: C(Lc,N) , E(Le,N) , G(Lg,N) , D(Lc) , F(Le) , &
+                  H(Lg) , X(N) , W(*) , t , Xnrm , dum(1)
+
+      real(wp),parameter :: epmach = epsilon(1.0_wp)
+      real(wp),parameter :: zero   = 0.0_wp
 
       Mode = 2
       IF ( Mc<=N ) THEN
@@ -1098,18 +1110,18 @@
 !*******************************************************************************
 
 !*******************************************************************************
-
+!
 !     FOR MODE=1, THE SUBROUTINE RETURNS THE SOLUTION X OF
 !     INEQUALITY CONSTRAINED LINEAR LEAST SQUARES PROBLEM:
-
+!
 !                    MIN ||E*X-F||
 !                     X
-
+!
 !                    S.T.  G*X >= H
-
+!
 !     THE ALGORITHM IS BASED ON QR DECOMPOSITION AS DESCRIBED IN
 !     CHAPTER 23.5 OF LAWSON & HANSON: SOLVING LEAST SQUARES PROBLEMS
-
+!
 !     THE FOLLOWING DIMENSIONS OF THE ARRAYS DEFINING THE PROBLEM
 !     ARE NECESSARY
 !     DIM(E) :   FORMAL (LE,N),    ACTUAL (ME,N)
@@ -1131,17 +1143,19 @@
 !               3: ITERATION COUNT EXCEEDED BY NNLS
 !               4: INEQUALITY CONSTRAINTS INCOMPATIBLE
 !               5: MATRIX E IS NOT OF FULL RANK
-
+!
 !     03.01.1980, DIETER KRAFT: CODED
 !     20.03.1987, DIETER KRAFT: REVISED TO FORTRAN 77
 
     SUBROUTINE LSI(E,F,G,H,Le,Me,Lg,Mg,N,X,Xnorm,W,Jw,Mode)
     IMPLICIT NONE
 
-      INTEGER i , j , Le , Lg , Me , Mg , Mode , N , Jw(Lg)
-      DOUBLE PRECISION E(Le,N) , F(Le) , G(Lg,N) , H(Lg) , X(N) , W(*) ,&
-                        Xnorm , epmach , t , one
-      DATA epmach/2.22D-16/ , one/1.0D+00/
+      INTEGER :: i , j , Le , Lg , Me , Mg , Mode , N , Jw(Lg)
+      real(wp) :: E(Le,N) , F(Le) , G(Lg,N) , H(Lg) , X(N) , W(*) , &
+                  Xnorm , t
+
+      real(wp),parameter :: epmach = epsilon(1.0_wp)
+      real(wp),parameter :: one    = 1.0_wp
 
 !  QR-FACTORS OF E AND APPLICATION TO F
 
@@ -1186,20 +1200,20 @@
 !
 !                     T
 !     MINIMIZE   1/2 X X    SUBJECT TO   G * X >= H.
-
+!
 !       C.L. LAWSON, R.J. HANSON: 'SOLVING LEAST SQUARES PROBLEMS'
 !       PRENTICE HALL, ENGLEWOOD CLIFFS, NEW JERSEY, 1974.
-
+!
 !     PARAMETER DESCRIPTION:
-
+!
 !     G(),MG,M,N   ON ENTRY G() STORES THE M BY N MATRIX OF
 !                  LINEAR INEQUALITY CONSTRAINTS. G() HAS FIRST
 !                  DIMENSIONING PARAMETER MG
 !     H()          ON ENTRY H() STORES THE M VECTOR H REPRESENTING
 !                  THE RIGHT SIDE OF THE INEQUALITY SYSTEM
-
+!
 !     REMARK: G(),H() WILL NOT BE CHANGED DURING CALCULATIONS BY LDP
-
+!
 !     X()          ON ENTRY X() NEED NOT BE INITIALIZED.
 !                  ON EXIT X() STORES THE SOLUTION VECTOR X IF MODE=1.
 !     XNORM        ON EXIT XNORM STORES THE EUCLIDIAN NORM OF THE
@@ -1221,13 +1235,14 @@
     SUBROUTINE LDP(G,Mg,M,N,H,X,Xnorm,W,Index,Mode)
     IMPLICIT NONE
 
-      DOUBLE PRECISION G , H , X , Xnorm , W , u , v , zero , one ,     &
-                       fac , rnorm
-      INTEGER Index , i , if , iw , iwdual , iy , iz , j , M , Mg ,     &
-              Mode , N , n1
+      real(wp) :: G , H , X , Xnorm , W , u , v , fac , rnorm
+      INTEGER :: Index , i , if , iw , iwdual , iy , iz , j , M , Mg , &
+                 Mode , N , n1
+
       DIMENSION G(Mg,N) , H(M) , X(N) , W(*) , Index(M)
 
-      DATA zero , one/0.0D0 , 1.0D0/
+      real(wp),parameter :: zero = 0.0_wp
+      real(wp),parameter :: one  = 1.0_wp
 
       Mode = 2
       IF ( N>0 ) THEN
@@ -1261,8 +1276,7 @@
 
 !  SOLVE DUAL PROBLEM
 
-            CALL NNLS(W,n1,n1,M,W(if),W(iy),rnorm,W(iwdual),W(iz),Index,&
-                      Mode)
+            CALL NNLS(W,n1,n1,M,W(if),W(iy),rnorm,W(iwdual),W(iz),Index,Mode)
 
             IF ( Mode==1 ) THEN
                Mode = 4
@@ -1297,9 +1311,9 @@
     pure elemental function DIFF(u,v) result(d)
         !! replaced statement function in original code
         implicit none
-        double precision,intent(in) :: u
-        double precision,intent(in) :: v
-        double precision :: d
+        real(wp),intent(in) :: u
+        real(wp),intent(in) :: v
+        real(wp) :: d
         d = u - v
     end function DIFF
 !*******************************************************************************
@@ -1352,15 +1366,16 @@
     SUBROUTINE NNLS(A,Mda,M,N,B,X,Rnorm,W,Z,Index,Mode)
     IMPLICIT NONE
 
-      INTEGER i , ii , ip , iter , itmax , iz , izmax , iz1 , iz2 , j , &
-              jj , jz , k , l , M , Mda , Mode , N , npp1 , nsetp ,     &
-              Index(N)
+      INTEGER :: i , ii , ip , iter , itmax , iz , izmax , iz1 , iz2 , j , &
+                 jj , jz , k , l , M , Mda , Mode , N , npp1 , nsetp , &
+                 Index(N)
 
-      DOUBLE PRECISION A(Mda,N) , B(M) , X(N) , W(N) , Z(M) , asave ,   &
-                       factor , zero , one , wmax ,    &
-                       alpha , c , s , t , u , v , up , Rnorm , unorm
+      real(wp) :: A(Mda,N) , B(M) , X(N) , W(N) , Z(M) , asave , &
+                  wmax , alpha , c , s , t , u , v , up , Rnorm , unorm
 
-      DATA zero , one , factor/0.0D0 , 1.0D0 , 1.0D-2/
+      real(wp),parameter :: zero   = 0.0_wp
+      real(wp),parameter :: one    = 1.0_wp
+      real(wp),parameter :: factor = 1.0e-2_wp
 
       Mode = 2
       IF ( M>0 .AND. N>0 ) THEN
@@ -1524,7 +1539,7 @@
 !     RANK-DEFICIENT LEAST SQUARES ALGORITHM AS DESCRIBED IN:
 !     C.L.LAWSON AND R.J.HANSON, JET PROPULSION LABORATORY, 1973 JUN 12
 !     TO APPEAR IN 'SOLVING LEAST SQUARES PROBLEMS', PRENTICE-HALL, 1974
-
+!
 !     A(*,*),MDA,M,N   THE ARRAY A INITIALLY CONTAINS THE M x N MATRIX A
 !                      OF THE LEAST SQUARES PROBLEM AX = B.
 !                      THE FIRST DIMENSIONING PARAMETER MDA MUST SATISFY
@@ -1553,13 +1568,14 @@
     SUBROUTINE HFTI(A,Mda,M,N,B,Mdb,Nb,Tau,Krank,Rnorm,H,G,Ip)
     IMPLICIT NONE
 
-	INTEGER i , j , jb , k , kp1 , Krank , l , ldiag , lmax , M ,     &
-			Mda , Mdb , N , Nb , Ip(N)
-	DOUBLE PRECISION A(Mda,N) , B(Mdb,Nb) , H(N) , G(N) , Rnorm(Nb) , &
-					 factor , Tau , zero , hmax , DIFF , tmp ,        &
-					 u , v
-	DIFF(u,v) = u - v
-	DATA zero/0.0D0/ , factor/1.0D-3/
+	INTEGER :: i , j , jb , k , kp1 , Krank , l , ldiag , lmax , M , &
+			   Mda , Mdb , N , Nb , Ip(N)
+	real(wp) :: A(Mda,N) , B(Mdb,Nb) , H(N) , G(N) , Rnorm(Nb) , &
+			    Tau , hmax , tmp , &
+			    u , v
+
+    real(wp),parameter :: zero   = 0.0_wp
+    real(wp),parameter :: factor = 1.0e-3_wp
 
 	k = 0
 	ldiag = MIN(M,N)
@@ -1568,7 +1584,7 @@
 	   return
 	ELSE
 
-!   COMPUTE LMAX
+       ! COMPUTE LMAX
 
 	   DO j = 1 , ldiag
 		  IF ( j/=1 ) THEN
@@ -1589,9 +1605,9 @@
 		  ENDDO
 		  hmax = H(lmax)
 
-!   COLUMN INTERCHANGES IF NEEDED
+          ! COLUMN INTERCHANGES IF NEEDED
 
-20         Ip(j) = lmax
+20        Ip(j) = lmax
 		  IF ( Ip(j)/=j ) THEN
 			 DO i = 1 , M
 				tmp = A(i,j)
@@ -1601,59 +1617,45 @@
 			 H(lmax) = H(j)
 		  ENDIF
 
-!   J-TH TRANSFORMATION AND APPLICATION TO A AND B
+          ! J-TH TRANSFORMATION AND APPLICATION TO A AND B
 
 		  i = MIN(j+1,N)
 		  CALL H12(1,j,j+1,M,A(1,j),1,H(j),A(1,i),1,Mda,N-j)
 		  CALL H12(2,j,j+1,M,A(1,j),1,H(j),B,1,Mdb,Nb)
 	   ENDDO
 
-!!   DETERMINE PSEUDORANK
-!
-!	   DO j = 1 , ldiag
-!		  IF ( ABS(A(j,j))<=Tau ) GOTO 100
-!	   ENDDO
-!	   k = ldiag
-!	   GOTO 200
-!	ENDIF
-!100  k = j - 1
-!200  kp1 = k + 1
+       !determine pseudorank:
 
-!determine pseudorank:
-
-        do j=1,ldiag
-            if (abs(a(j,j))<=tau) exit
-        end do
-        k=j-1
-        kp1=j
+       do j=1,ldiag
+          if (abs(a(j,j))<=tau) exit
+       end do
+       k=j-1
+       kp1=j
 
     END IF
 
-!   NORM OF RESIDUALS
+    ! NORM OF RESIDUALS
 
 	DO jb = 1 , Nb
 	   Rnorm(jb) = DNRM2(M-k,B(kp1,jb),1)
 	ENDDO
 	IF ( k>0 ) THEN
 	   IF ( k/=N ) THEN
-
-!   HOUSEHOLDER DECOMPOSITION OF FIRST K ROWS
-
+          ! HOUSEHOLDER DECOMPOSITION OF FIRST K ROWS
 		  DO i = k , 1 , -1
 			 CALL H12(1,i,kp1,N,A(i,1),Mda,G(i),A,Mda,1,i-1)
 		  ENDDO
 	   ENDIF
 	   DO jb = 1 , Nb
 
-!   SOLVE K*K TRIANGULAR SYSTEM
+          ! SOLVE K*K TRIANGULAR SYSTEM
 
 		  DO i = k , 1 , -1
 			 j = MIN(i+1,N)
-			 B(i,jb) = (B(i,jb)-DDOT(k-i,A(i,j),Mda,B(j,jb),1))    &
-					   /A(i,i)
+			 B(i,jb) = (B(i,jb)-DDOT(k-i,A(i,j),Mda,B(j,jb),1))/A(i,i)
 		  ENDDO
 
-!   COMPLETE SOLUTION VECTOR
+          ! COMPLETE SOLUTION VECTOR
 
 		  IF ( k/=N ) THEN
 			 DO j = kp1 , N
@@ -1664,7 +1666,7 @@
 			 ENDDO
 		  ENDIF
 
-!   REORDER SOLUTION ACCORDING TO PREVIOUS COLUMN INTERCHANGES
+          ! REORDER SOLUTION ACCORDING TO PREVIOUS COLUMN INTERCHANGES
 
 		  DO j = ldiag , 1 , -1
 			 IF ( Ip(j)/=j ) THEN
@@ -1690,10 +1692,10 @@
 !
 !     C.L.LAWSON AND R.J.HANSON, JET PROPULSION LABORATORY, 1973 JUN 12
 !     TO APPEAR IN 'SOLVING LEAST SQUARES PROBLEMS', PRENTICE-HALL, 1974
-
+!
 !     CONSTRUCTION AND/OR APPLICATION OF A SINGLE
 !     HOUSEHOLDER TRANSFORMATION  Q = I + U*(U**T)/B
-
+!
 !     MODE    = 1 OR 2   TO SELECT ALGORITHM  H1  OR  H2 .
 !     LPIVOT IS THE INDEX OF THE PIVOT ELEMENT.
 !     L1,M   IF L1 <= M   THE TRANSFORMATION WILL BE CONSTRUCTED TO
@@ -1719,17 +1721,20 @@
     SUBROUTINE H12(Mode,Lpivot,L1,M,U,Iue,Up,C,Ice,Icv,Ncv)
     IMPLICIT NONE
 
-      INTEGER incr , Ice , Icv , Iue , Lpivot , L1 , Mode , Ncv
-      INTEGER i , i2 , i3 , i4 , j , M
-      DOUBLE PRECISION U , Up , C , cl , clinv , b , sm , one , zero
+      INTEGER :: incr , Ice , Icv , Iue , Lpivot , L1 , Mode , Ncv
+      INTEGER :: i , i2 , i3 , i4 , j , M
+      real(wp) :: U , Up , C , cl , clinv , b , sm
+
       DIMENSION U(Iue,*) , C(*)
-      DATA one/1.0D+00/ , zero/0.0D+00/
+
+      real(wp),parameter :: one  = 1.0_wp
+      real(wp),parameter :: zero = 0.0_wp
 
       IF ( 0<Lpivot .AND. Lpivot<L1 .AND. L1<=M ) THEN
          cl = ABS(U(1,Lpivot))
          IF ( Mode/=2 ) THEN
 
-!     ****** CONSTRUCT THE TRANSFORMATION ******
+             ! ****** CONSTRUCT THE TRANSFORMATION ******
 
             DO j = L1 , M
                sm = ABS(U(1,j))
@@ -1745,7 +1750,8 @@
             IF ( U(1,Lpivot)>zero ) cl = -cl
             Up = U(1,Lpivot) - cl
             U(1,Lpivot) = cl
-!     ****** APPLY THE TRANSFORMATION  I+U*(U**T)/B  TO C ******
+
+            ! ****** APPLY THE TRANSFORMATION  I+U*(U**T)/B  TO C ******
 
          ELSEIF ( cl<=zero ) THEN
             return
@@ -1777,17 +1783,18 @@
             ENDIF
          ENDIF
       ENDIF
+
       END SUBROUTINE H12
 !*******************************************************************************
 
 !*******************************************************************************
 !
 !   LDL     LDL' - RANK-ONE - UPDATE
-
+!
 !   PURPOSE:
 !           UPDATES THE LDL' FACTORS OF MATRIX A BY RANK-ONE MATRIX
 !           SIGMA*Z*Z'
-
+!
 !   INPUT ARGUMENTS: (* MEANS PARAMETERS ARE CHANGED DURING EXECUTION)
 !     N     : ORDER OF THE COEFFICIENT MATRIX A
 !   * A     : POSITIVE DEFINITE MATRIX OF DIMENSION N;
@@ -1796,38 +1803,41 @@
 !   * Z     : VECTOR OF DIMENSION N OF UPDATING ELEMENTS
 !     SIGMA : SCALAR FACTOR BY WHICH THE MODIFYING DYADE Z*Z' IS
 !             MULTIPLIED
-
+!
 !   OUTPUT ARGUMENTS:
 !     A     : UPDATED LDL' FACTORS
-
+!
 !   WORKING ARRAY:
 !     W     : VECTOR OP DIMENSION N (USED ONLY IF SIGMA < ZERO)
-
+!
 !   METHOD:
 !     THAT OF FLETCHER AND POWELL AS DESCRIBED IN :
 !     FLETCHER,R.,(1974) ON THE MODIFICATION OF LDL' FACTORIZATION.
 !     POWELL,M.J.D.      MATH.COMPUTATION 28, 1067-1078.
-
+!
 !   IMPLEMENTED BY:
 !     KRAFT,D., DFVLR - INSTITUT FUER DYNAMIK DER FLUGSYSTEME
 !               D-8031  OBERPFAFFENHOFEN
-
+!
 !   STATUS: 15. JANUARY 1980
 
     SUBROUTINE LDL(N,A,Z,Sigma,W)
     IMPLICIT NONE
 
-      INTEGER i , ij , j , N
-      DOUBLE PRECISION A(*) , t , v , W(*) , Z(*) , u , tp , one , &
-                       beta , four , zero , alpha , delta , gamma , &
-                       Sigma , epmach
-      DATA zero , one , four , epmach/0.0D0 , 1.0D0 , 4.0D0 , 2.22D-16/
+      INTEGER :: i , ij , j , N
+      real(wp) :: A(*) , t , v , W(*) , Z(*) , u , tp , &
+                       beta , alpha , delta , gamma , Sigma
+
+      real(wp),parameter :: zero   = 0.0_wp
+      real(wp),parameter :: one    = 1.0_wp
+      real(wp),parameter :: four   = 4.0_wp
+      real(wp),parameter :: epmach = epsilon(1.0_wp)
 
       IF ( Sigma/=zero ) THEN
          ij = 1
          t = one/Sigma
          IF ( Sigma<=zero ) THEN
-! PREPARE NEGATIVE UPDATE
+            ! PREPARE NEGATIVE UPDATE
             DO i = 1 , N
                W(i) = Z(i)
             ENDDO
@@ -1849,7 +1859,7 @@
                t = t - u*u/A(ij)
             ENDDO
          ENDIF
-! HERE UPDATING BEGINS
+         ! HERE UPDATING BEGINS
          DO i = 1 , N
             v = Z(i)
             delta = v/A(ij)
@@ -1885,72 +1895,68 @@
 !*******************************************************************************
 !
 !   LINMIN  LINESEARCH WITHOUT DERIVATIVES
-
+!
 !   PURPOSE:
-
+!
 !  TO FIND THE ARGUMENT LINMIN WHERE THE FUNCTION F TAKES IT'S MINIMUM
 !  ON THE INTERVAL AX, BX.
 !  COMBINATION OF GOLDEN SECTION AND SUCCESSIVE QUADRATIC INTERPOLATION.
-
+!
 !   INPUT ARGUMENTS: (* MEANS PARAMETERS ARE CHANGED DURING EXECUTION)
-
+!
 ! *MODE   SEE OUTPUT ARGUMENTS
 !  AX     LEFT ENDPOINT OF INITIAL INTERVAL
 !  BX     RIGHT ENDPOINT OF INITIAL INTERVAL
 !  F      FUNCTION VALUE AT LINMIN WHICH IS TO BE BROUGHT IN BY
 !         REVERSE COMMUNICATION CONTROLLED BY MODE
 !  TOL    DESIRED LENGTH OF INTERVAL OF UNCERTAINTY OF FINAL RESULT
-
+!
 !   OUTPUT ARGUMENTS:
-
+!
 !  LINMIN ABSCISSA APPROXIMATING THE POINT WHERE F ATTAINS A MINIMUM
 !  MODE   CONTROLS REVERSE COMMUNICATION
 !         MUST BE SET TO 0 INITIALLY, RETURNS WITH INTERMEDIATE
 !         VALUES 1 AND 2 WHICH MUST NOT BE CHANGED BY THE USER,
 !         ENDS WITH CONVERGENCE WITH VALUE 3.
-
-!   WORKING ARRAY:
-
-!  NONE
-
+!
 !   METHOD:
-
+!
 !  THIS FUNCTION SUBPROGRAM IS A SLIGHTLY MODIFIED VERSION OF THE
 !  ALGOL 60 PROCEDURE LOCALMIN GIVEN IN
 !  R.P. BRENT: ALGORITHMS FOR MINIMIZATION WITHOUT DERIVATIVES,
 !              PRENTICE-HALL (1973).
-
+!
 !   IMPLEMENTED BY:
-
+!
 !     KRAFT, D., DFVLR - INSTITUT FUER DYNAMIK DER FLUGSYSTEME
 !                D-8031  OBERPFAFFENHOFEN
-
+!
 !   STATUS: 31. AUGUST  1984
 
-    DOUBLE PRECISION FUNCTION LINMIN(Mode,Ax,Bx,F,Tol)
+    real(wp) FUNCTION LINMIN(Mode,Ax,Bx,F,Tol)
     IMPLICIT NONE
 
-      INTEGER Mode
-      DOUBLE PRECISION F , Tol , a , b , c , d , e , p , q , r , u , v ,&
-                       w , x , m , fu , fv , fw , fx , eps , tol1 , &
-                       tol2 , zero , Ax , Bx
-      DATA c/0.381966011D0/ , eps/1.5D-8/ , zero/0.0D0/
+      INTEGER :: Mode
+      real(wp) :: F , Tol , a , b , d , e , p , q , r , u , v ,&
+                  w , x , m , fu , fv , fw , fx , tol1 , &
+                  tol2 , Ax , Bx
 
-!  EPS = SQUARE - ROOT OF MACHINE PRECISION
-!  C = GOLDEN SECTION RATIO = (3-SQRT(5))/2
+      real(wp),parameter :: c    = (3.0_wp-sqrt(5.0_wp))/2.0_wp  !! golden section ratio = `0.381966011`
+      real(wp),parameter :: eps  = sqrt(epsilon(1.0_wp))         !! square - root of machine precision
+      real(wp),parameter :: zero = 0.0_wp
 
       IF ( Mode==1 ) THEN
 
-!  MAIN LOOP STARTS HERE
+          !  MAIN LOOP STARTS HERE
 
          fx = F
          fv = fx
          fw = fv
+
       ELSEIF ( Mode==2 ) THEN
+
          fu = F
-
-!  UPDATE A, B, V, W, AND X
-
+         !  UPDATE A, B, V, W, AND X
          IF ( fu>fx ) THEN
             IF ( u<x ) a = u
             IF ( u>=x ) b = u
@@ -1974,9 +1980,7 @@
             fx = fu
          ENDIF
       ELSE
-
-!  INITIALIZATION
-
+         !  INITIALIZATION
          a = Ax
          b = Bx
          e = zero
@@ -1987,16 +1991,14 @@
          Mode = 1
          return
       ENDIF
-      m = 0.5D0*(a+b)
+      m = 0.5_wp*(a+b)
       tol1 = eps*ABS(x) + Tol
       tol2 = tol1 + tol1
 
-!  TEST CONVERGENCE
+      !  TEST CONVERGENCE
 
-      IF ( ABS(x-m)<=tol2-0.5D0*(b-a) ) THEN
-
-!  END OF MAIN LOOP
-
+      IF ( ABS(x-m)<=tol2-0.5_wp*(b-a) ) THEN
+         !  END OF MAIN LOOP
          LINMIN = x
          Mode = 3
       ELSE
@@ -2004,9 +2006,7 @@
          q = r
          p = q
          IF ( ABS(e)>tol1 ) THEN
-
-!  FIT PARABOLA
-
+            !  FIT PARABOLA
             r = (x-w)*(fx-fv)
             q = (x-v)*(fx-fw)
             p = (x-v)*q - (x-w)*r
@@ -2018,34 +2018,26 @@
             e = d
          ENDIF
 
-!  IS PARABOLA ACCEPTABLE
-
-         IF ( ABS(p)>=0.5D0*ABS(q*r) .OR. p<=q*(a-x) .OR. p>=q*(b-x) )  &
-              THEN
-
-!  GOLDEN SECTION STEP
-
+         !  IS PARABOLA ACCEPTABLE
+         IF ( ABS(p)>=0.5_wp*ABS(q*r) .OR. p<=q*(a-x) .OR. p>=q*(b-x) ) THEN
+            !  GOLDEN SECTION STEP
             IF ( x>=m ) e = a - x
             IF ( x<m ) e = b - x
             d = c*e
          ELSE
-
-!  PARABOLIC INTERPOLATION STEP
-
+            !  PARABOLIC INTERPOLATION STEP
             d = p/q
-
-!  F MUST NOT BE EVALUATED TOO CLOSE TO A OR B
-
+            !  F MUST NOT BE EVALUATED TOO CLOSE TO A OR B
             IF ( u-a<tol2 ) d = SIGN(tol1,m-x)
             IF ( b-u<tol2 ) d = SIGN(tol1,m-x)
          ENDIF
 
-!  F MUST NOT BE EVALUATED TOO CLOSE TO X
-
+         !  F MUST NOT BE EVALUATED TOO CLOSE TO X
          IF ( ABS(d)<tol1 ) d = SIGN(tol1,d)
          u = x + d
          LINMIN = u
          Mode = 2
+
       ENDIF
 
       END FUNCTION LINMIN

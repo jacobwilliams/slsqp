@@ -15,11 +15,18 @@
     real(wp),parameter              :: acc = 1.0e-8_wp
 
     real(wp),dimension(n) :: x
+    integer :: istat
+    logical :: status_ok
 
     x = [0.1_wp, 0.1_wp] !initial guess
 
-    call solver%initialize(n,m,meq,max_iter,acc,rosenbrock_func,rosenbrock_grad,xl,xu)
-    call solver%optimize(x)
+    call solver%initialize(n,m,meq,max_iter,acc,rosenbrock_func,rosenbrock_grad,xl,xu,status_ok)
+    if (status_ok) then
+        call solver%optimize(x,istat)
+        write(*,*) 'istat=',istat
+    else
+        error stop 'error calling slsqp.'
+    end if
 
     !solution:  x1 = 0.78641515415520813
     !           x2 = 0.61769831254040897
@@ -44,6 +51,7 @@
     end subroutine rosenbrock_func
 
     subroutine rosenbrock_grad(me,x,g,a)
+        !! gradients for [[rosenbrock_func]].
         implicit none
         class(slsqp_solver),intent(inout)   :: me
         real(wp),dimension(:),intent(in)    :: x    !! optimization variable vector
