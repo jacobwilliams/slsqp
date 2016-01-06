@@ -1,109 +1,349 @@
 !*******************************************************************************
     module slsqp_module
 
+    use iso_fortran_env, only: wp => real64
     use support_module
 
     implicit none
 
+    type,public :: slsqp_solver
+
+        private
+
+        integer :: n        = 0
+        integer :: m        = 0
+        integer :: meq      = 0
+        integer :: max_iter = 0    !! maximum number of iterations
+
+        real(wp) :: acc = 0.0_wp   !! accuracy tolerance
+
+        real(wp),dimension(:),allocatable :: xl  !! lower bound on x
+        real(wp),dimension(:),allocatable :: xu  !! upper bound on x
+
+        integer :: l_w = 0 !! size of `work`
+        real(wp),dimension(:),allocatable :: w !! real work array
+
+        integer :: l_jw = 0 !! size of `jwork`
+        integer,dimension(:),allocatable :: jw  !! integer work array
+
+        procedure(func),pointer :: f => null()  !! problem function subroutine
+        procedure(grad),pointer :: g => null()  !! gradient subroutine
+
     contains
+
+        private
+
+        procedure,public :: initialize => initialize_slsqp
+        procedure,public :: destroy    => destroy_slsqp
+        procedure,public :: optimize   => slsqp_wrapper
+
+    end type slsqp_solver
+
+    abstract interface
+        subroutine func(me,x,f,c)  !! function computation
+            import :: wp,slsqp_solver
+            implicit none
+            class(slsqp_solver),intent(inout) :: me
+            real(wp),dimension(:),intent(in)  :: x  !! optimization variable vector
+            real(wp),intent(out)              :: f  !! value of the objective function
+            real(wp),dimension(:),intent(out) :: c  !! the constraint vector `dimension(m)`,
+                                                    !! equality constraints (if any) first.
+        end subroutine func
+        subroutine grad(me,x,g,a)
+            import :: wp,slsqp_solver
+            implicit none
+            class(slsqp_solver),intent(inout)   :: me
+            real(wp),dimension(:),intent(in)    :: x  !! optimization variable vector
+            real(wp),dimension(:),intent(out)   :: g  !! objective function partials w.r.t x `dimension(n)`
+            real(wp),dimension(:,:),intent(out) :: a  !! gradient matrix of constraints w.r.t. x `dimension(m,n)`
+        end subroutine grad
+    end interface
+
+    contains
+!*******************************************************************************
+
+!*******************************************************************************
+    subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu)
+
+    implicit none
+
+    class(slsqp_solver),intent(inout) :: me
+    integer,intent(in)                :: n         !! the number of varibles, n >= 1
+    integer,intent(in)                :: m         !! total number of constraints, m >= 0
+    integer,intent(in)                :: meq       !! number of equality constraints, meq >= 0
+    integer,intent(in)                :: max_iter  !! maximum number of iterations
+    procedure(func)                   :: f
+    procedure(grad)                   :: g
+    real(wp),dimension(n),intent(in)  :: xl
+    real(wp),dimension(n),intent(in)  :: xu
+    real(wp),intent(in)               :: acc
+
+    integer :: n1,mineq
+
+    call me%destroy()
+
+    if (size(xl)==size(xu) .and. size(xl)==n .and. &
+        meq>=0 .and. m>=0 .and. n>=1 .and. meq<=m) then
+
+        me%n = n
+        me%m = m
+        me%meq = meq
+        me%max_iter = max_iter
+        me%acc = acc
+        me%f => f
+        me%g => g
+
+        allocate(me%xl(n)); me%xl = xl
+        allocate(me%xu(n)); me%xu = xu
+
+        !work arrays:
+        n1 = n+1
+        mineq = m - meq + 2*n1
+        me%l_w = n1*(n1+1) + meq*(n1+1) + mineq*(n1+1) + &   !for lsq
+                 (n1-meq+1)*(mineq+2) + 2*mineq        + &   !for lsi
+                 (n1+mineq)*(n1-meq) + 2*meq + n1      + &   !for lsei
+                  n1*n/2 + 2*m + 3*n +3*n1 + 1               !for slsqpb
+        allocate(me%w(me%l_w))
+        me%w = 0.0_wp
+
+        me%l_jw = mineq
+        allocate(me%jw(me%l_jw))
+        me%jw = 0
+
+    else
+        error stop 'Invalid input to initialize_slsqp.'
+    end if
+
+    end subroutine initialize_slsqp
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  Destructor for [[slsqp_solver]].
+
+    subroutine destroy_slsqp(me)
+
+    implicit none
+
+    class(slsqp_solver),intent(out) :: me
+
+    end subroutine destroy_slsqp
+!*******************************************************************************
+
+!*******************************************************************************
+    subroutine slsqp_wrapper(me,x)
+
+    implicit none
+
+    class(slsqp_solver),intent(inout)   :: me
+    real(wp),dimension(:),intent(inout) :: x
+
+    real(wp)                               :: f     !! objective function
+    real(wp),dimension(max(1,me%m))        :: c     !! constraint vector
+    real(wp),dimension(max(1,me%m),me%n+1) :: a     !! a matrix for slsqp
+    real(wp),dimension(me%n+1)             :: g     !! g matrix for slsqp
+
+
+    real(wp),dimension(me%m)        :: cvec     !! constraint vector
+    real(wp),dimension(me%n)        :: dfdx     !! objective function partials
+    real(wp),dimension(me%m,me%n)   :: dcdx     !! constraint partials
+    integer :: mode
+    integer :: la
+    integer :: iter
+    real(wp) :: acc
+    integer :: i
+
+    logical :: exact_linesearch = .false.   !
+
+    !check setup:
+    if (size(x)/=me%n) error stop 'Invalid size(x) in slsqp_wrapper'
+
+    !initialize:
+    i    = 0
+    iter = me%max_iter
+    la   = max(1,me%m)
+    mode = 0
+    a    = 0.0_wp
+    g    = 0.0_wp
+    c    = 0.0_wp
+
+    if (exact_linesearch) then
+        acc = -abs(me%acc)  !exact linesearch
+    else
+        acc = abs(me%acc)   !armijo-type linesearch
+    end if
+
+    !main solver loop:
+    do
+
+        if (mode==0 .or. mode==1) then  !function evaluation (f&c)
+            call me%f(x,f,cvec)
+            c(1:me%m)   = cvec
+
+            !write(*,*) ''
+            !write(*,*) 'func'       !........
+            !write(*,*) 'x=',x
+            !write(*,*) 'f=',f
+            !write(*,*) 'c=',c
+
+            write(*,*) i,x,f,norm2(c)
+            i = i + 1
+            
+        end if
+
+        if (mode==0 .or. mode==-1) then  !gradient evaluation (G&A)
+            call me%g(x,dfdx,dcdx)
+            g(1:me%n)        = dfdx
+            a(1:me%m,1:me%n) = dcdx
+
+            !write(*,*) ''
+            !write(*,*) 'grad'       !........
+            !write(*,*) 'x=',x
+            !write(*,*) 'g=',g
+            !write(*,*) 'a=',a
+
+        end if
+
+        call slsqp(me%m,me%meq,la,me%n,x,me%xl,me%xu,f,c,g,a,acc,iter,mode,me%w,me%l_w,me%jw,me%l_jw)
+
+        select case (mode)
+        case(0) !required accuracy for solution obtained
+            write(*,*) ''
+            write(*,*) 'solution: ',x
+            write(*,*) ''
+            exit
+        case(1,-1)
+            !continue to next call
+        case(2);
+            write(*,*) 'NUMBER OF EQUALITY CONTRAINTS LARGER THAN N'
+            exit
+        case(3);
+            write(*,*) 'MORE THAN 3*N ITERATIONS IN LSQ SUBPROBLEM'
+            exit
+        case(4);
+            write(*,*) 'INEQUALITY CONSTRAINTS INCOMPATIBLE'
+            exit
+        case(5);
+            write(*,*) 'SINGULAR MATRIX E IN LSQ SUBPROBLEM'
+            exit
+        case(6);
+            write(*,*) 'SINGULAR MATRIX C IN LSQ SUBPROBLEM'
+            exit
+        case(7);
+            write(*,*) 'RANK-DEFICIENT EQUALITY CONSTRAINT SUBPROBLEM HFTI'
+            exit
+        case(8);
+            write(*,*) 'POSITIVE DIRECTIONAL DERIVATIVE FOR LINESEARCH'
+            exit
+        case(9);
+            write(*,*) 'MORE THAN ITER ITERATIONS IN SQP'
+            exit
+        case default
+            write(*,*) 'unknown SLSQP error'
+            exit
+        end select
+
+    end do
+
+    end subroutine slsqp_wrapper
 !*******************************************************************************
 
 !*******************************************************************************
 !   SLSQP       S EQUENTIAL  L EAST  SQ UARES  P ROGRAMMING
 !            TO SOLVE GENERAL NONLINEAR OPTIMIZATION PROBLEMS
 !***********************************************************************
-!*
-!*            A NONLINEAR PROGRAMMING METHOD WITH
-!*            QUADRATIC  PROGRAMMING  SUBPROBLEMS
-!*
-!*  THIS SUBROUTINE SOLVES THE GENERAL NONLINEAR PROGRAMMING PROBLEM
-!*
-!*            MINIMIZE    F(X)
-!*
-!*            SUBJECT TO  C (X) == 0  ,  J = 1,...,MEQ
-!*                         J
-!*
-!*                        C (X) >= 0  ,  J = MEQ+1,...,M
-!*                         J
-!*
-!*                        XL <= X <= XU , I = 1,...,N.
-!*                          I    I     I
-!*
-!*  THE ALGORITHM IMPLEMENTS THE METHOD OF HAN AND POWELL
-!*  WITH BFGS-UPDATE OF THE B-MATRIX AND L1-TEST FUNCTION
-!*  WITHIN THE STEPLENGTH ALGORITHM.
-!*
-!*    PARAMETER DESCRIPTION:
-!*    ( * MEANS THIS PARAMETER WILL BE CHANGED DURING CALCULATION )
-!*
-!*    M              IS THE TOTAL NUMBER OF CONSTRAINTS, M >= 0
-!*    MEQ            IS THE NUMBER OF EQUALITY CONSTRAINTS, MEQ >= 0
-!*    LA             SEE A, LA >= MAX(M,1)
-!*    N              IS THE NUMBER OF VARIBLES, N >= 1
-!*  * X()            X() STORES THE CURRENT ITERATE OF THE N VECTOR X
-!*                   ON ENTRY X() MUST BE INITIALIZED. ON EXIT X()
-!*                   STORES THE SOLUTION VECTOR X IF MODE = 0.
-!*    XL()           XL() STORES AN N VECTOR OF LOWER BOUNDS XL TO X.
-!*    XU()           XU() STORES AN N VECTOR OF UPPER BOUNDS XU TO X.
-!*    F              IS THE VALUE OF THE OBJECTIVE FUNCTION.
-!*    C()            C() STORES THE M VECTOR C OF CONSTRAINTS,
-!*                   EQUALITY CONSTRAINTS (IF ANY) FIRST.
-!*                   DIMENSION OF C MUST BE GREATER OR EQUAL LA,
-!*                   which must be GREATER OR EQUAL MAX(1,M).
-!*    G()            G() STORES THE N VECTOR G OF PARTIALS OF THE
-!*                   OBJECTIVE FUNCTION; DIMENSION OF G MUST BE
-!*                   GREATER OR EQUAL N+1.
-!*    A(),LA,M,N     THE LA BY N + 1 ARRAY A() STORES
-!*                   THE M BY N MATRIX A OF CONSTRAINT NORMALS.
-!*                   A() HAS FIRST DIMENSIONING PARAMETER LA,
-!*                   WHICH MUST BE GREATER OR EQUAL MAX(1,M).
-!*    F,C,G,A        MUST ALL BE SET BY THE USER BEFORE EACH CALL.
-!*  * ACC            ABS(ACC) CONTROLS THE FINAL ACCURACY.
-!*                   IF ACC < ZERO AN EXACT LINESEARCH IS PERFORMED,
-!*                   OTHERWISE AN ARMIJO-TYPE LINESEARCH IS USED.
-!*  * ITER           PRESCRIBES THE MAXIMUM NUMBER OF ITERATIONS.
-!*                   ON EXIT ITER INDICATES THE NUMBER OF ITERATIONS.
-!*  * MODE           MODE CONTROLS CALCULATION:
-!*                   REVERSE COMMUNICATION IS USED IN THE SENSE THAT
-!*                   THE PROGRAM IS INITIALIZED BY MODE = 0; THEN IT IS
-!*                   TO BE CALLED REPEATEDLY BY THE USER UNTIL A RETURN
-!*                   WITH MODE /= IABS(1) TAKES PLACE.
-!*                   IF MODE = -1 GRADIENTS HAVE TO BE CALCULATED,
-!*                   WHILE WITH MODE = 1 FUNCTIONS HAVE TO BE CALCULATED
-!*                   MODE MUST NOT BE CHANGED BETWEEN SUBSEQUENT CALLS
-!*                   OF SQP.
-!*                   EVALUATION MODES:
-!*        MODE = -1: GRADIENT EVALUATION, (G&A)
-!*                0: ON ENTRY: INITIALIZATION, (F,G,C&A)
-!*                   ON EXIT : REQUIRED ACCURACY FOR SOLUTION OBTAINED
-!*                1: FUNCTION EVALUATION, (F&C)
-!*
-!*                   FAILURE MODES:
-!*                2: NUMBER OF EQUALITY CONTRAINTS LARGER THAN N
-!*                3: MORE THAN 3*N ITERATIONS IN LSQ SUBPROBLEM
-!*                4: INEQUALITY CONSTRAINTS INCOMPATIBLE
-!*                5: SINGULAR MATRIX E IN LSQ SUBPROBLEM
-!*                6: SINGULAR MATRIX C IN LSQ SUBPROBLEM
-!*                7: RANK-DEFICIENT EQUALITY CONSTRAINT SUBPROBLEM HFTI
-!*                8: POSITIVE DIRECTIONAL DERIVATIVE FOR LINESEARCH
-!*                9: MORE THAN ITER ITERATIONS IN SQP
-!*             >=10: WORKING SPACE W OR JW TOO SMALL,
-!*                   W SHOULD BE ENLARGED TO L_W=MODE/1000
-!*                   JW SHOULD BE ENLARGED TO L_JW=MODE-1000*L_W
-!*  * W(), L_W       W() IS A ONE DIMENSIONAL WORKING SPACE,
-!*                   THE LENGTH L_W OF WHICH SHOULD BE AT LEAST
-!*                   (3*N1+M)*(N1+1)                        for LSQ
-!*                  +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ         for LSI
-!*                  +(N1+MINEQ)*(N1-MEQ) + 2*MEQ + N1       for LSEI
-!*                  + N1*N/2 + 2*M + 3*N + 3*N1 + 1         for SLSQPB
-!*                   with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
-!*        NOTICE:    FOR PROPER DIMENSIONING OF W IT IS RECOMMENDED TO
-!*                   COPY THE FOLLOWING STATEMENTS INTO THE HEAD OF
-!*                   THE CALLING PROGRAM (AND REMOVE THE COMMENT C)
+!
+!             A NONLINEAR PROGRAMMING METHOD WITH
+!             QUADRATIC  PROGRAMMING  SUBPROBLEMS
+!
+!   THIS SUBROUTINE SOLVES THE GENERAL NONLINEAR PROGRAMMING PROBLEM
+!
+!             MINIMIZE    F(X)
+!
+!             SUBJECT TO  C (X) == 0  ,  J = 1,...,MEQ
+!                          J
+!
+!                         C (X) >= 0  ,  J = MEQ+1,...,M
+!                          J
+!
+!                         XL <= X <= XU , I = 1,...,N.
+!                           I    I     I
+!
+!   THE ALGORITHM IMPLEMENTS THE METHOD OF HAN AND POWELL
+!   WITH BFGS-UPDATE OF THE B-MATRIX AND L1-TEST FUNCTION
+!   WITHIN THE STEPLENGTH ALGORITHM.
+!
+!     PARAMETER DESCRIPTION:
+!     ( * MEANS THIS PARAMETER WILL BE CHANGED DURING CALCULATION )
+!
+!     M              IS THE TOTAL NUMBER OF CONSTRAINTS, M >= 0
+!     MEQ            IS THE NUMBER OF EQUALITY CONSTRAINTS, MEQ >= 0
+!     LA             SEE A, LA >= MAX(M,1)
+!     N              IS THE NUMBER OF VARIBLES, N >= 1
+!   * X()            X() STORES THE CURRENT ITERATE OF THE N VECTOR X
+!                    ON ENTRY X() MUST BE INITIALIZED. ON EXIT X()
+!                    STORES THE SOLUTION VECTOR X IF MODE = 0.
+!     XL()           XL() STORES AN N VECTOR OF LOWER BOUNDS XL TO X.
+!     XU()           XU() STORES AN N VECTOR OF UPPER BOUNDS XU TO X.
+!     F              IS THE VALUE OF THE OBJECTIVE FUNCTION.
+!     C()            C() STORES THE M VECTOR C OF CONSTRAINTS,
+!                    EQUALITY CONSTRAINTS (IF ANY) FIRST.
+!                    DIMENSION OF C MUST BE GREATER OR EQUAL LA,
+!                    which must be GREATER OR EQUAL MAX(1,M).
+!     G()            G() STORES THE N VECTOR G OF PARTIALS OF THE
+!                    OBJECTIVE FUNCTION; DIMENSION OF G MUST BE
+!                    GREATER OR EQUAL N+1.
+!     A(),LA,M,N     THE LA BY N + 1 ARRAY A() STORES
+!                    THE M BY N MATRIX A OF CONSTRAINT NORMALS.
+!                    A() HAS FIRST DIMENSIONING PARAMETER LA,
+!                    WHICH MUST BE GREATER OR EQUAL MAX(1,M).
+!     F,C,G,A        MUST ALL BE SET BY THE USER BEFORE EACH CALL.
+!   * ACC            ABS(ACC) CONTROLS THE FINAL ACCURACY.
+!                    IF ACC < ZERO AN EXACT LINESEARCH IS PERFORMED,
+!                    OTHERWISE AN ARMIJO-TYPE LINESEARCH IS USED.
+!   * ITER           PRESCRIBES THE MAXIMUM NUMBER OF ITERATIONS.
+!                    ON EXIT ITER INDICATES THE NUMBER OF ITERATIONS.
+!   * MODE           MODE CONTROLS CALCULATION:
+!                    REVERSE COMMUNICATION IS USED IN THE SENSE THAT
+!                    THE PROGRAM IS INITIALIZED BY MODE = 0; THEN IT IS
+!                    TO BE CALLED REPEATEDLY BY THE USER UNTIL A RETURN
+!                    WITH MODE /= IABS(1) TAKES PLACE.
+!                    IF MODE = -1 GRADIENTS HAVE TO BE CALCULATED,
+!                    WHILE WITH MODE = 1 FUNCTIONS HAVE TO BE CALCULATED
+!                    MODE MUST NOT BE CHANGED BETWEEN SUBSEQUENT CALLS
+!                    OF SQP.
+!                    EVALUATION MODES:
+!         MODE = -1: GRADIENT EVALUATION, (G&A)
+!                 0: ON ENTRY: INITIALIZATION, (F,G,C&A)
+!                    ON EXIT : REQUIRED ACCURACY FOR SOLUTION OBTAINED
+!                 1: FUNCTION EVALUATION, (F&C)
+!
+!                    FAILURE MODES:
+!                 2: NUMBER OF EQUALITY CONTRAINTS LARGER THAN N
+!                 3: MORE THAN 3*N ITERATIONS IN LSQ SUBPROBLEM
+!                 4: INEQUALITY CONSTRAINTS INCOMPATIBLE
+!                 5: SINGULAR MATRIX E IN LSQ SUBPROBLEM
+!                 6: SINGULAR MATRIX C IN LSQ SUBPROBLEM
+!                 7: RANK-DEFICIENT EQUALITY CONSTRAINT SUBPROBLEM HFTI
+!                 8: POSITIVE DIRECTIONAL DERIVATIVE FOR LINESEARCH
+!                 9: MORE THAN ITER ITERATIONS IN SQP
+!              >=10: WORKING SPACE W OR JW TOO SMALL,
+!                    W SHOULD BE ENLARGED TO L_W=MODE/1000
+!                    JW SHOULD BE ENLARGED TO L_JW=MODE-1000*L_W
+!   * W(), L_W       W() IS A ONE DIMENSIONAL WORKING SPACE,
+!                    THE LENGTH L_W OF WHICH SHOULD BE AT LEAST
+!                    (3*N1+M)*(N1+1)                        for LSQ
+!                   +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ         for LSI
+!                   +(N1+MINEQ)*(N1-MEQ) + 2*MEQ + N1       for LSEI
+!                   + N1*N/2 + 2*M + 3*N + 3*N1 + 1         for SLSQPB
+!                    with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
+!         NOTICE:    FOR PROPER DIMENSIONING OF W IT IS RECOMMENDED TO
+!                    COPY THE FOLLOWING STATEMENTS INTO THE HEAD OF
+!                    THE CALLING PROGRAM (AND REMOVE THE COMMENT C)
 !#######################################################################
 !     INTEGER LEN_W, LEN_JW, M, N, N1, MEQ, MINEQ
 !     PARAMETER (M=... , MEQ=... , N=...  )
-!     PARAMETER (N1= N+1, MINEQ= M-MEQ+N1+N1)
+!     PARAMETER (N1= N+1, c= M-MEQ+N1+N1)
 !     PARAMETER (LEN_W=
 !    $           (3*N1+M)*(N1+1)
 !    $          +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ
@@ -113,71 +353,71 @@
 !     DOUBLE PRECISION W(LEN_W)
 !     INTEGER          JW(LEN_JW)
 !#######################################################################
-!*                   THE FIRST M+N+N*N1/2 ELEMENTS OF W MUST NOT BE
-!*                   CHANGED BETWEEN SUBSEQUENT CALLS OF SLSQP.
-!*                   ON RETURN W(1) ... W(M) CONTAIN THE MULTIPLIERS
-!*                   ASSOCIATED WITH THE GENERAL CONSTRAINTS, WHILE
-!*                   W(M+1) ... W(M+N(N+1)/2) STORE THE CHOLESKY FACTOR
-!*                   L*D*L(T) OF THE APPROXIMATE HESSIAN OF THE
-!*                   LAGRANGIAN COLUMNWISE DENSE AS LOWER TRIANGULAR
-!*                   UNIT MATRIX L WITH D IN ITS 'DIAGONAL' and
-!*                   W(M+N(N+1)/2+N+2 ... W(M+N(N+1)/2+N+2+M+2N)
-!*                   CONTAIN THE MULTIPLIERS ASSOCIATED WITH ALL
-!*                   ALL CONSTRAINTS OF THE QUADRATIC PROGRAM FINDING
-!*                   THE SEARCH DIRECTION TO THE SOLUTION X*
-!*  * JW(), L_JW     JW() IS A ONE DIMENSIONAL INTEGER WORKING SPACE
-!*                   THE LENGTH L_JW OF WHICH SHOULD BE AT LEAST
-!*                   MINEQ
-!*                   with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
-!*
-!*  THE USER HAS TO PROVIDE THE FOLLOWING SUBROUTINES:
-!*     LDL(N,A,Z,SIG,W) :   UPDATE OF THE LDL'-FACTORIZATION.
-!*     LINMIN(A,B,F,TOL) :  LINESEARCH ALGORITHM IF EXACT = 1
-!*     LSQ(M,MEQ,LA,N,NC,C,D,A,B,XL,XU,X,LAMBDA,W,....) :
-!*
-!*        SOLUTION OF THE QUADRATIC PROGRAM
-!*                QPSOL IS RECOMMENDED:
-!*     PE GILL, W MURRAY, MA SAUNDERS, MH WRIGHT:
-!*     USER'S GUIDE FOR SOL/QPSOL:
-!*     A FORTRAN PACKAGE FOR QUADRATIC PROGRAMMING,
-!*     TECHNICAL REPORT SOL 83-7, JULY 1983
-!*     DEPARTMENT OF OPERATIONS RESEARCH, STANFORD UNIVERSITY
-!*     STANFORD, CA 94305
-!*     QPSOL IS THE MOST ROBUST AND EFFICIENT QP-SOLVER
-!*     AS IT ALLOWS WARM STARTS WITH PROPER WORKING SETS
-!*
-!*     IF IT IS NOT AVAILABLE USE LSEI, A CONSTRAINT LINEAR LEAST
-!*     SQUARES SOLVER IMPLEMENTED USING THE SOFTWARE HFTI, LDP, NNLS
-!*     FROM C.L. LAWSON, R.J.HANSON: SOLVING LEAST SQUARES PROBLEMS,
-!*     PRENTICE HALL, ENGLEWOOD CLIFFS, 1974.
-!*     LSEI COMES WITH THIS PACKAGE, together with all necessary SR's.
-!*
-!*     TOGETHER WITH A COUPLE OF SUBROUTINES FROM BLAS LEVEL 1
-!*
-!*     SQP IS HEAD SUBROUTINE FOR BODY SUBROUTINE SQPBDY
-!*     IN WHICH THE ALGORITHM HAS BEEN IMPLEMENTED.
-!*
-!*  IMPLEMENTED BY: DIETER KRAFT, DFVLR OBERPFAFFENHOFEN
-!*  as described in Dieter Kraft: A Software Package for
-!*                                Sequential Quadratic Programming
-!*                                DFVLR-FB 88-28, 1988
-!*  which should be referenced if the user publishes results of SLSQP
-!*
-!*  DATE:           APRIL - OCTOBER, 1981.
-!*  STATUS:         DECEMBER, 31-ST, 1984.
-!*  STATUS:         MARCH   , 21-ST, 1987, REVISED TO FORTAN 77
-!*  STATUS:         MARCH   , 20-th, 1989, REVISED TO MS-FORTRAN
-!*  STATUS:         APRIL   , 14-th, 1989, HESSE   in-line coded
-!*  STATUS:         FEBRUARY, 28-th, 1991, FORTRAN/2 Version 1.04
-!*                                         accepts Statement Functions
-!*  STATUS:         MARCH   ,  1-st, 1991, tested with SALFORD
-!*                                         FTN77/386 COMPILER VERS 2.40
-!*                                         in protected mode
-!*
+!                    THE FIRST M+N+N*N1/2 ELEMENTS OF W MUST NOT BE
+!                    CHANGED BETWEEN SUBSEQUENT CALLS OF SLSQP.
+!                    ON RETURN W(1) ... W(M) CONTAIN THE MULTIPLIERS
+!                    ASSOCIATED WITH THE GENERAL CONSTRAINTS, WHILE
+!                    W(M+1) ... W(M+N(N+1)/2) STORE THE CHOLESKY FACTOR
+!                    L*D*L(T) OF THE APPROXIMATE HESSIAN OF THE
+!                    LAGRANGIAN COLUMNWISE DENSE AS LOWER TRIANGULAR
+!                    UNIT MATRIX L WITH D IN ITS 'DIAGONAL' and
+!                    W(M+N(N+1)/2+N+2 ... W(M+N(N+1)/2+N+2+M+2N)
+!                    CONTAIN THE MULTIPLIERS ASSOCIATED WITH ALL
+!                    ALL CONSTRAINTS OF THE QUADRATIC PROGRAM FINDING
+!                    THE SEARCH DIRECTION TO THE SOLUTION X*
+!   * JW(), L_JW     JW() IS A ONE DIMENSIONAL INTEGER WORKING SPACE
+!                    THE LENGTH L_JW OF WHICH SHOULD BE AT LEAST
+!                    MINEQ
+!                    with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
+!
+!   THE USER HAS TO PROVIDE THE FOLLOWING SUBROUTINES:
+!      LDL(N,A,Z,SIG,W) :   UPDATE OF THE LDL'-FACTORIZATION.
+!      LINMIN(A,B,F,TOL) :  LINESEARCH ALGORITHM IF EXACT = 1
+!      LSQ(M,MEQ,LA,N,NC,C,D,A,B,XL,XU,X,LAMBDA,W,....) :
+!
+!         SOLUTION OF THE QUADRATIC PROGRAM
+!                 QPSOL IS RECOMMENDED:
+!      PE GILL, W MURRAY, MA SAUNDERS, MH WRIGHT:
+!      USER'S GUIDE FOR SOL/QPSOL:
+!      A FORTRAN PACKAGE FOR QUADRATIC PROGRAMMING,
+!      TECHNICAL REPORT SOL 83-7, JULY 1983
+!      DEPARTMENT OF OPERATIONS RESEARCH, STANFORD UNIVERSITY
+!      STANFORD, CA 94305
+!      QPSOL IS THE MOST ROBUST AND EFFICIENT QP-SOLVER
+!      AS IT ALLOWS WARM STARTS WITH PROPER WORKING SETS
+!
+!      IF IT IS NOT AVAILABLE USE LSEI, A CONSTRAINT LINEAR LEAST
+!      SQUARES SOLVER IMPLEMENTED USING THE SOFTWARE HFTI, LDP, NNLS
+!      FROM C.L. LAWSON, R.J.HANSON: SOLVING LEAST SQUARES PROBLEMS,
+!      PRENTICE HALL, ENGLEWOOD CLIFFS, 1974.
+!      LSEI COMES WITH THIS PACKAGE, together with all necessary SR's.
+!
+!      TOGETHER WITH A COUPLE OF SUBROUTINES FROM BLAS LEVEL 1
+!
+!      SQP IS HEAD SUBROUTINE FOR BODY SUBROUTINE SQPBDY
+!      IN WHICH THE ALGORITHM HAS BEEN IMPLEMENTED.
+!
+!   IMPLEMENTED BY: DIETER KRAFT, DFVLR OBERPFAFFENHOFEN
+!   as described in Dieter Kraft: A Software Package for
+!                                 Sequential Quadratic Programming
+!                                 DFVLR-FB 88-28, 1988
+!   which should be referenced if the user publishes results of SLSQP
+!
+!   DATE:           APRIL - OCTOBER, 1981.
+!   STATUS:         DECEMBER, 31-ST, 1984.
+!   STATUS:         MARCH   , 21-ST, 1987, REVISED TO FORTAN 77
+!   STATUS:         MARCH   , 20-th, 1989, REVISED TO MS-FORTRAN
+!   STATUS:         APRIL   , 14-th, 1989, HESSE   in-line coded
+!   STATUS:         FEBRUARY, 28-th, 1991, FORTRAN/2 Version 1.04
+!                                          accepts Statement Functions
+!   STATUS:         MARCH   ,  1-st, 1991, tested with SALFORD
+!                                          FTN77/386 COMPILER VERS 2.40
+!                                          in protected mode
+!
 !***********************************************************************
-!*
-!*  Copyright 1991: Dieter Kraft, FHM
-!*
+!
+!   Copyright 1991: Dieter Kraft, FHM
+!
 !***********************************************************************
 
     SUBROUTINE SLSQP(M,Meq,La,N,X,Xl,Xu,F,C,G,A,Acc,Iter,Mode,W,L_w,  &
@@ -242,8 +482,8 @@
 
       DOUBLE PRECISION A(La,N+1) , C(La) , G(N+1) , L((N+1)*(N+2)/2) ,  &
                        Mu(La) , R(M+N+N+2) , S(N+1) , U(N+1) , V(N+1) , &
-                       W(*) , X(N) , Xl(N) , Xu(N) , X0(N) , DDOT ,  &
-                       DNRM2 , LINMIN , Acc , alfmin , alpha , F , f0 ,&
+                       W(*) , X(N) , Xl(N) , Xu(N) , X0(N) ,  &
+                       Acc , alfmin , alpha , F , f0 ,&
                        gs , h1 , h2 , h3 , h4 , hun , one , t , t0 ,    &
                        ten , tol , two , zero
 
@@ -567,7 +807,7 @@
     IMPLICIT NONE
 
       DOUBLE PRECISION L , G , A , B , W , Xl , Xu , X , Y , diag ,     &
-                       zero , one , DDOT , xnorm
+                       zero , one , xnorm
 
       INTEGER Jw(*) , i , ic , id , ie , if , ig , ih , il , im , ip ,  &
               iu , iw , i1 , i2 , i3 , i4 , La , M , Meq , mineq ,      &
@@ -759,8 +999,8 @@
       INTEGER Jw(*) , i , ie , if , ig , iw , j , k , krank , l , Lc , &
               Le , Lg , Mc , mc1 , Me , Mg , Mode , N
       DOUBLE PRECISION C(Lc,N) , E(Le,N) , G(Lg,N) , D(Lc) , F(Le) , &
-                       H(Lg) , X(N) , W(*) , t , DDOT , Xnrm , dum(1), &
-                       DNRM2 , epmach , zero
+                       H(Lg) , X(N) , W(*) , t , Xnrm , dum(1), &
+                       epmach , zero
       DATA epmach/2.22D-16/ , zero/0.0D+00/
 
       Mode = 2
@@ -900,7 +1140,7 @@
 
       INTEGER i , j , Le , Lg , Me , Mg , Mode , N , Jw(Lg)
       DOUBLE PRECISION E(Le,N) , F(Le) , G(Lg,N) , H(Lg) , X(N) , W(*) ,&
-                       DDOT , Xnorm , DNRM2 , epmach , t , one
+                        Xnorm , epmach , t , one
       DATA epmach/2.22D-16/ , one/1.0D+00/
 
 !  QR-FACTORS OF E AND APPLICATION TO F
@@ -982,11 +1222,11 @@
     IMPLICIT NONE
 
       DOUBLE PRECISION G , H , X , Xnorm , W , u , v , zero , one ,     &
-                       fac , rnorm , DNRM2 , DDOT
+                       fac , rnorm
       INTEGER Index , i , if , iw , iwdual , iy , iz , j , M , Mg ,     &
               Mode , N , n1
       DIMENSION G(Mg,N) , H(M) , X(N) , W(*) , Index(M)
-      double precision,external :: diff
+
       DATA zero , one/0.0D0 , 1.0D0/
 
       Mode = 2
@@ -1054,7 +1294,8 @@
 !*******************************************************************************
 
 !*******************************************************************************
-    function DIFF(u,v) result(d)  !! replaced statement function in original code
+    pure elemental function DIFF(u,v) result(d)
+        !! replaced statement function in original code
         implicit none
         double precision,intent(in) :: u
         double precision,intent(in) :: v
@@ -1064,17 +1305,17 @@
 !*******************************************************************************
 
 !*******************************************************************************
-
+!
 !     C.L.LAWSON AND R.J.HANSON, JET PROPULSION LABORATORY:
 !     'SOLVING LEAST SQUARES PROBLEMS'. PRENTICE-HALL.1974
-
+!
 !      **********   NONNEGATIVE LEAST SQUARES   **********
-
+!
 !     GIVEN AN M BY N MATRIX, A, AND AN M-VECTOR, B, COMPUTE AN
 !     N-VECTOR, X, WHICH SOLVES THE LEAST SQUARES PROBLEM
-
+!
 !                  A*X = B  SUBJECT TO  X >= 0
-
+!
 !     A(),MDA,M,N
 !            MDA IS THE FIRST DIMENSIONING PARAMETER FOR THE ARRAY,A().
 !            ON ENTRY A()  CONTAINS THE M BY N MATRIX,A.
@@ -1105,6 +1346,8 @@
 !            2    THE DIMENSIONS OF THE PROBLEM ARE WRONG,
 !                 EITHER M <= 0 OR N <= 0.
 !            3    ITERATION COUNT EXCEEDED, MORE THAN 3*N ITERATIONS.
+!
+!     revised          Dieter Kraft, March 1983
 
     SUBROUTINE NNLS(A,Mda,M,N,B,X,Rnorm,W,Z,Index,Mode)
     IMPLICIT NONE
@@ -1114,13 +1357,10 @@
               Index(N)
 
       DOUBLE PRECISION A(Mda,N) , B(M) , X(N) , W(N) , Z(M) , asave ,   &
-                       factor , DDOT , zero , one , wmax ,    &
-                       alpha , c , s , t , u , v , up , Rnorm , unorm , &
-                       DNRM2
-      double precision,external :: diff
-      DATA zero , one , factor/0.0D0 , 1.0D0 , 1.0D-2/
+                       factor , zero , one , wmax ,    &
+                       alpha , c , s , t , u , v , up , Rnorm , unorm
 
-!     revised          Dieter Kraft, March 1983
+      DATA zero , one , factor/0.0D0 , 1.0D0 , 1.0D-2/
 
       Mode = 2
       IF ( M>0 .AND. N>0 ) THEN
@@ -1317,7 +1557,7 @@
 			Mda , Mdb , N , Nb , Ip(N)
 	DOUBLE PRECISION A(Mda,N) , B(Mdb,Nb) , H(N) , G(N) , Rnorm(Nb) , &
 					 factor , Tau , zero , hmax , DIFF , tmp ,        &
-					 DDOT_SL , DNRM2_ , u , v
+					 u , v
 	DIFF(u,v) = u - v
 	DATA zero/0.0D0/ , factor/1.0D-3/
 
@@ -1392,7 +1632,7 @@
 !   NORM OF RESIDUALS
 
 	DO jb = 1 , Nb
-	   Rnorm(jb) = DNRM2_(M-k,B(kp1,jb),1)
+	   Rnorm(jb) = DNRM2(M-k,B(kp1,jb),1)
 	ENDDO
 	IF ( k>0 ) THEN
 	   IF ( k/=N ) THEN
@@ -1409,7 +1649,7 @@
 
 		  DO i = k , 1 , -1
 			 j = MIN(i+1,N)
-			 B(i,jb) = (B(i,jb)-DDOT_SL(k-i,A(i,j),Mda,B(j,jb),1))    &
+			 B(i,jb) = (B(i,jb)-DDOT(k-i,A(i,j),Mda,B(j,jb),1))    &
 					   /A(i,i)
 		  ENDDO
 
