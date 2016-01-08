@@ -1,4 +1,8 @@
 !*******************************************************************************
+!>
+!  Support routines for SLSQP. For example, a selection from BLAS level 1.
+!  These have also been refactored into modern Fortran.
+
     module support_module
 
     implicit none
@@ -6,512 +10,381 @@
     contains
 !*******************************************************************************
 
-!## Following a selection from BLAS Level 1
+      subroutine daxpy(n,da,dx,incx,dy,incy)
+      implicit none
 
-      SUBROUTINE DAXPY(N,Da,Dx,Incx,Dy,Incy)
-      IMPLICIT NONE
+      !! constant times a vector plus a vector.
+      !! uses unrolled loops for increments equal to one.
+      !! jack dongarra, linpack, 3/11/78.
 
-!     CONSTANT TIMES A VECTOR PLUS A VECTOR.
-!     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.
-!     JACK DONGARRA, LINPACK, 3/11/78.
+      double precision dx(*) , dy(*) , da
+      integer i , incx , incy , ix , iy , m , mp1 , n
 
-      DOUBLE PRECISION Dx(*) , Dy(*) , Da
-      INTEGER i , Incx , Incy , ix , iy , m , mp1 , N
+      if ( n<=0 ) return
+      if ( da==0.0d0 ) return
+      if ( incx==1 .and. incy==1 ) then
 
-      IF ( N<=0 ) RETURN
-      IF ( Da==0.0D0 ) RETURN
-      IF ( Incx==1 .AND. Incy==1 ) THEN
+!        code for both increments equal to 1
 
-!        CODE FOR BOTH INCREMENTS EQUAL TO 1
+!        clean-up loop
 
-!        CLEAN-UP LOOP
-
-         m = MOD(N,4)
-         IF ( m/=0 ) THEN
-            DO i = 1 , m
-               Dy(i) = Dy(i) + Da*Dx(i)
-            ENDDO
-            IF ( N<4 ) RETURN
-         ENDIF
+         m = mod(n,4)
+         if ( m/=0 ) then
+            do i = 1 , m
+               dy(i) = dy(i) + da*dx(i)
+            enddo
+            if ( n<4 ) return
+         endif
          mp1 = m + 1
-         DO i = mp1 , N , 4
-            Dy(i) = Dy(i) + Da*Dx(i)
-            Dy(i+1) = Dy(i+1) + Da*Dx(i+1)
-            Dy(i+2) = Dy(i+2) + Da*Dx(i+2)
-            Dy(i+3) = Dy(i+3) + Da*Dx(i+3)
-         ENDDO
-      ELSE
+         do i = mp1 , n , 4
+            dy(i) = dy(i) + da*dx(i)
+            dy(i+1) = dy(i+1) + da*dx(i+1)
+            dy(i+2) = dy(i+2) + da*dx(i+2)
+            dy(i+3) = dy(i+3) + da*dx(i+3)
+         enddo
+      else
 
-!        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS
-!        NOT EQUAL TO 1
+!        code for unequal increments or equal increments
+!        not equal to 1
 
          ix = 1
          iy = 1
-         IF ( Incx<0 ) ix = (-N+1)*Incx + 1
-         IF ( Incy<0 ) iy = (-N+1)*Incy + 1
-         DO i = 1 , N
-            Dy(iy) = Dy(iy) + Da*Dx(ix)
-            ix = ix + Incx
-            iy = iy + Incy
-         ENDDO
-         RETURN
-      ENDIF
-      END SUBROUTINE DAXPY
+         if ( incx<0 ) ix = (-n+1)*incx + 1
+         if ( incy<0 ) iy = (-n+1)*incy + 1
+         do i = 1 , n
+            dy(iy) = dy(iy) + da*dx(ix)
+            ix = ix + incx
+            iy = iy + incy
+         enddo
+         return
+      endif
+      end subroutine daxpy
 
-      SUBROUTINE DCOPY(N,Dx,Incx,Dy,Incy)
-      IMPLICIT NONE
+      subroutine dcopy(n,dx,incx,dy,incy)
+      implicit none
 
-!     COPIES A VECTOR, X, TO A VECTOR, Y.
-!     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.
-!     JACK DONGARRA, LINPACK, 3/11/78.
+!! copies a vector, x, to a vector, y.
+!! uses unrolled loops for increments equal to one.
+!! jack dongarra, linpack, 3/11/78.
 
-      DOUBLE PRECISION Dx(*) , Dy(*)
-      INTEGER i , Incx , Incy , ix , iy , m , mp1 , N
+      double precision dx(*) , dy(*)
+      integer i , incx , incy , ix , iy , m , mp1 , n
 
-      IF ( N<=0 ) RETURN
-      IF ( Incx==1 .AND. Incy==1 ) THEN
+      if ( n<=0 ) return
+      if ( incx==1 .and. incy==1 ) then
 
-!        CODE FOR BOTH INCREMENTS EQUAL TO 1
+!        code for both increments equal to 1
 
-!        CLEAN-UP LOOP
+!        clean-up loop
 
-         m = MOD(N,7)
-         IF ( m/=0 ) THEN
-            DO i = 1 , m
-               Dy(i) = Dx(i)
-            ENDDO
-            IF ( N<7 ) RETURN
-         ENDIF
+         m = mod(n,7)
+         if ( m/=0 ) then
+            do i = 1 , m
+               dy(i) = dx(i)
+            enddo
+            if ( n<7 ) return
+         endif
          mp1 = m + 1
-         DO i = mp1 , N , 7
-            Dy(i) = Dx(i)
-            Dy(i+1) = Dx(i+1)
-            Dy(i+2) = Dx(i+2)
-            Dy(i+3) = Dx(i+3)
-            Dy(i+4) = Dx(i+4)
-            Dy(i+5) = Dx(i+5)
-            Dy(i+6) = Dx(i+6)
-         ENDDO
-      ELSE
+         do i = mp1 , n , 7
+            dy(i) = dx(i)
+            dy(i+1) = dx(i+1)
+            dy(i+2) = dx(i+2)
+            dy(i+3) = dx(i+3)
+            dy(i+4) = dx(i+4)
+            dy(i+5) = dx(i+5)
+            dy(i+6) = dx(i+6)
+         enddo
+      else
 
-!        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS
-!        NOT EQUAL TO 1
+!        code for unequal increments or equal increments
+!        not equal to 1
 
          ix = 1
          iy = 1
-         IF ( Incx<0 ) ix = (-N+1)*Incx + 1
-         IF ( Incy<0 ) iy = (-N+1)*Incy + 1
-         DO i = 1 , N
-            Dy(iy) = Dx(ix)
-            ix = ix + Incx
-            iy = iy + Incy
-         ENDDO
-         RETURN
-      ENDIF
-      END SUBROUTINE DCOPY
+         if ( incx<0 ) ix = (-n+1)*incx + 1
+         if ( incy<0 ) iy = (-n+1)*incy + 1
+         do i = 1 , n
+            dy(iy) = dx(ix)
+            ix = ix + incx
+            iy = iy + incy
+         enddo
+         return
+      endif
+      end subroutine dcopy
 
-      DOUBLE PRECISION FUNCTION DDOT(N,Dx,Incx,Dy,Incy)
-      IMPLICIT NONE
+      double precision function ddot(n,dx,incx,dy,incy)
+      implicit none
 
-!     FORMS THE DOT PRODUCT OF TWO VECTORS.
-!     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.
-!     JACK DONGARRA, LINPACK, 3/11/78.
+!!  forms the dot product of two vectors.
+!!  uses unrolled loops for increments equal to one.
+!!  jack dongarra, linpack, 3/11/78.
 
-      DOUBLE PRECISION Dx(*) , Dy(*) , dtemp
-      INTEGER i , Incx , Incy , ix , iy , m , mp1 , N
+      double precision dx(*) , dy(*) , dtemp
+      integer i , incx , incy , ix , iy , m , mp1 , n
 
-      DDOT = 0.0D0
-      dtemp = 0.0D0
-      IF ( N<=0 ) RETURN
-      IF ( Incx==1 .AND. Incy==1 ) THEN
+      ddot = 0.0d0
+      dtemp = 0.0d0
+      if ( n<=0 ) return
+      if ( incx==1 .and. incy==1 ) then
 
-!        CODE FOR BOTH INCREMENTS EQUAL TO 1
+!        code for both increments equal to 1
 
-!        CLEAN-UP LOOP
+!        clean-up loop
 
-         m = MOD(N,5)
-         IF ( m/=0 ) THEN
-            DO i = 1 , m
-               dtemp = dtemp + Dx(i)*Dy(i)
-            ENDDO
-            IF ( N<5 ) THEN
-               DDOT = dtemp
+         m = mod(n,5)
+         if ( m/=0 ) then
+            do i = 1 , m
+               dtemp = dtemp + dx(i)*dy(i)
+            enddo
+            if ( n<5 ) then
+               ddot = dtemp
                return
-            ENDIF
-         ENDIF
+            endif
+         endif
          mp1 = m + 1
-         DO i = mp1 , N , 5
-            dtemp = dtemp + Dx(i)*Dy(i) + Dx(i+1)*Dy(i+1) + Dx(i+2)     &
-                    *Dy(i+2) + Dx(i+3)*Dy(i+3) + Dx(i+4)*Dy(i+4)
-         ENDDO
-         DDOT = dtemp
-      ELSE
+         do i = mp1 , n , 5
+            dtemp = dtemp + dx(i)*dy(i) + dx(i+1)*dy(i+1) + dx(i+2)     &
+                    *dy(i+2) + dx(i+3)*dy(i+3) + dx(i+4)*dy(i+4)
+         enddo
+         ddot = dtemp
+      else
 
-!        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS
-!          NOT EQUAL TO 1
+!        code for unequal increments or equal increments
+!          not equal to 1
 
          ix = 1
          iy = 1
-         IF ( Incx<0 ) ix = (-N+1)*Incx + 1
-         IF ( Incy<0 ) iy = (-N+1)*Incy + 1
-         DO i = 1 , N
-            dtemp = dtemp + Dx(ix)*Dy(iy)
-            ix = ix + Incx
-            iy = iy + Incy
-         ENDDO
-         DDOT = dtemp
-         RETURN
-      ENDIF
-      END FUNCTION DDOT
+         if ( incx<0 ) ix = (-n+1)*incx + 1
+         if ( incy<0 ) iy = (-n+1)*incy + 1
+         do i = 1 , n
+            dtemp = dtemp + dx(ix)*dy(iy)
+            ix = ix + incx
+            iy = iy + incy
+         enddo
+         ddot = dtemp
+         return
+      endif
+      end function ddot
 
-      DOUBLE PRECISION FUNCTION DNRM1(N,X,I,J)
-      IMPLICIT NONE
-      INTEGER N , I , J , k
-      DOUBLE PRECISION snormx , sum , X(N) , zero , one , scale , temp
-      DATA zero/0.0D0/ , one/1.0D0/
+      double precision function dnrm1(n,x,i,j)
+      implicit none
+      integer n , i , j , k
+      double precision snormx , sum , x(n) , zero , one , scale , temp
+      data zero/0.0d0/ , one/1.0d0/
 
-!      DNRM1 - COMPUTES THE I-NORM OF A VECTOR
-!              BETWEEN THE ITH AND THE JTH ELEMENTS
+!!  dnrm1 - computes the i-norm of a vector
+!!  between the ith and the jth elements
 
-!      INPUT -
-!      N       LENGTH OF VECTOR
-!      X       VECTOR OF LENGTH N
-!      I       INITIAL ELEMENT OF VECTOR TO BE USED
-!      J       FINAL ELEMENT TO USE
+!      input -
+!      n       length of vector
+!      x       vector of length n
+!      i       initial element of vector to be used
+!      j       final element to use
 
-!      OUTPUT -
-!      DNRM1   NORM
+!      output -
+!      dnrm1   norm
 
       snormx = zero
-      DO k = I , J
-         snormx = MAX(snormx,ABS(X(k)))
-      ENDDO
-      DNRM1 = snormx
-      IF ( snormx==zero ) RETURN
+      do k = i , j
+         snormx = max(snormx,abs(x(k)))
+      enddo
+      dnrm1 = snormx
+      if ( snormx==zero ) return
       scale = snormx
-      IF ( snormx>=one ) scale = SQRT(snormx)
+      if ( snormx>=one ) scale = sqrt(snormx)
       sum = zero
-      DO k = I , J
+      do k = i , j
          temp = zero
-         IF ( ABS(X(k))+scale/=scale ) temp = X(k)/snormx
-         IF ( one+temp/=one ) sum = sum + temp*temp
-      ENDDO
-      sum = SQRT(sum)
-      DNRM1 = snormx*sum
-      END FUNCTION DNRM1
+         if ( abs(x(k))+scale/=scale ) temp = x(k)/snormx
+         if ( one+temp/=one ) sum = sum + temp*temp
+      enddo
+      sum = sqrt(sum)
+      dnrm1 = snormx*sum
+      end function dnrm1
 
-!replaced original routine with this one from BLAS:
+!>
+!  replaced original routine with this one from blas:
 !  http://netlib.sandia.gov/blas/dnrm2.f
 
-        DOUBLE PRECISION FUNCTION DNRM2(N,X,Incx)
-        IMPLICIT NONE
-  !     .. Scalar Arguments ..
-        INTEGER Incx , N
+        double precision function dnrm2(n,x,incx)
+        implicit none
+  !     .. scalar arguments ..
+        integer incx , n
   !     ..
-  !     .. Array Arguments ..
-        DOUBLE PRECISION X(*)
+  !     .. array arguments ..
+        double precision x(*)
   !     ..
   !
-  !  Purpose
+  !  purpose
   !  =======
   !
-  !  DNRM2 returns the euclidean norm of a vector via the function
+  !  dnrm2 returns the euclidean norm of a vector via the function
   !  name, so that
   !
-  !     DNRM2 := sqrt( x'*x )
+  !     dnrm2 := sqrt( x'*x )
   !
-  !  Further Details
+  !  further details
   !  ===============
   !
-  !  -- This version written on 25-October-1982.
-  !     Modified on 14-October-1993 to inline the call to DLASSQ.
-  !     Sven Hammarling, Nag Ltd.
+  !  -- this version written on 25-october-1982.
+  !     modified on 14-october-1993 to inline the call to dlassq.
+  !     sven hammarling, nag ltd.
   !
   !  =====================================================================
   !
-  !     .. Parameters ..
-        DOUBLE PRECISION ONE , ZERO
-        PARAMETER (ONE=1.0D+0,ZERO=0.0D+0)
+  !     .. parameters ..
+        double precision one , zero
+        parameter (one=1.0d+0,zero=0.0d+0)
   !     ..
-  !     .. Local Scalars ..
-        DOUBLE PRECISION absxi , norm , scale , ssq
-        INTEGER ix
+  !     .. local scalars ..
+        double precision absxi , norm , scale , ssq
+        integer ix
   !     ..
-  !     .. Intrinsic Functions ..
-        INTRINSIC ABS , SQRT
+  !     .. intrinsic functions ..
+        intrinsic abs , sqrt
   !     ..
-        IF ( N<1 .OR. Incx<1 ) THEN
-           norm = ZERO
-        ELSEIF ( N==1 ) THEN
-           norm = ABS(X(1))
-        ELSE
-           scale = ZERO
-           ssq = ONE
-  !        The following loop is equivalent to this call to the LAPACK
+        if ( n<1 .or. incx<1 ) then
+           norm = zero
+        elseif ( n==1 ) then
+           norm = abs(x(1))
+        else
+           scale = zero
+           ssq = one
+  !        the following loop is equivalent to this call to the lapack
   !        auxiliary routine:
-  !        CALL DLASSQ( N, X, INCX, SCALE, SSQ )
+  !        call dlassq( n, x, incx, scale, ssq )
   !
-           DO ix = 1 , 1 + (N-1)*Incx , Incx
-              IF ( X(ix)/=ZERO ) THEN
-                 absxi = ABS(X(ix))
-                 IF ( scale<absxi ) THEN
-                    ssq = ONE + ssq*(scale/absxi)**2
+           do ix = 1 , 1 + (n-1)*incx , incx
+              if ( x(ix)/=zero ) then
+                 absxi = abs(x(ix))
+                 if ( scale<absxi ) then
+                    ssq = one + ssq*(scale/absxi)**2
                     scale = absxi
-                 ELSE
+                 else
                     ssq = ssq + (absxi/scale)**2
-                 ENDIF
-              ENDIF
-           ENDDO
-           norm = scale*SQRT(ssq)
-        ENDIF
+                 endif
+              endif
+           enddo
+           norm = scale*sqrt(ssq)
+        endif
   !
-        DNRM2 = norm
-  !
-  !     End of DNRM2.
-  !
-        END FUNCTION DNRM2
+        dnrm2 = norm
 
-!      DOUBLE PRECISION FUNCTION DNRM2(N,Dx,Incx)
-!      IMPLICIT NONE
-!      INTEGER N , i , j , nn , next , Incx
-!      DOUBLE PRECISION Dx(*) , cutlo , cuthi , hitest , sum , xmax ,    &
-!                       zero , one
-!      DATA zero , one/0.0D0 , 1.0D0/
-!
-!!     EUCLIDEAN NORM OF THE N-VECTOR STORED IN DX() WITH STORAGE
-!!     INCREMENT INCX .
-!!     IF    N <= 0 RETURN WITH RESULT = 0.
-!!     IF N >= 1 THEN INCX MUST BE >= 1
-!
-!!           C.L.LAWSON, 1978 JAN 08
-!
-!!     FOUR PHASE METHOD     USING TWO BUILT-IN CONSTANTS THAT ARE
-!!     HOPEFULLY APPLICABLE TO ALL MACHINES.
-!!         CUTLO = MAXIMUM OF  SQRT(U/EPS)   OVER ALL KNOWN MACHINES.
-!!         CUTHI = MINIMUM OF  SQRT(V)       OVER ALL KNOWN MACHINES.
-!!     WHERE
-!!         EPS = SMALLEST NO. SUCH THAT EPS + 1. .GT. 1.
-!!         U   = SMALLEST POSITIVE NO.   (UNDERFLOW LIMIT)
-!!         V   = LARGEST  NO.            (OVERFLOW  LIMIT)
-!
-!!     BRIEF OUTLINE OF ALGORITHM..
-!
-!!     PHASE 1    SCANS ZERO COMPONENTS.
-!!     MOVE TO PHASE 2 WHEN A COMPONENT IS NONZERO AND <= CUTLO
-!!     MOVE TO PHASE 3 WHEN A COMPONENT IS .GT. CUTLO
-!!     MOVE TO PHASE 4 WHEN A COMPONENT IS >= CUTHI/M
-!!     WHERE M = N FOR X() REAL AND M = 2*N FOR COMPLEX.
-!
-!!     VALUES FOR CUTLO AND CUTHI..
-!!     FROM THE ENVIRONMENTAL PARAMETERS LISTED IN THE IMSL CONVERTER
-!!     DOCUMENT THE LIMITING VALUES ARE AS FOLLOWS..
-!!     CUTLO, S.P.   U/EPS = 2**(-102) FOR  HONEYWELL.  CLOSE SECONDS ARE
-!!                   UNIVAC AND DEC AT 2**(-103)
-!!                   THUS CUTLO = 2**(-51) = 4.44089E-16
-!!     CUTHI, S.P.   V = 2**127 FOR UNIVAC, HONEYWELL, AND DEC.
-!!                   THUS CUTHI = 2**(63.5) = 1.30438E19
-!!     CUTLO, D.P.   U/EPS = 2**(-67) FOR HONEYWELL AND DEC.
-!!                   THUS CUTLO = 2**(-33.5) = 8.23181D-11
-!!     CUTHI, D.P.   SAME AS S.P.  CUTHI = 1.30438D19
-!!     DATA CUTLO, CUTHI / 8.232D-11,  1.304D19 /
-!!     DATA CUTLO, CUTHI / 4.441E-16,  1.304E19 /
-!      DATA cutlo , cuthi/8.232D-11 , 1.304D19/
-!
-!      IF ( N>0 ) THEN
-!
-!         ASSIGN 200 TO next
-!         sum = zero
-!         nn = N*Incx
-!!                       BEGIN MAIN LOOP
-!         i = 1
-!      ELSE
-!         DNRM2 = zero
-!         return
-!      ENDIF
-! 100  GOTO next
-! 200  IF ( ABS(Dx(i))>cutlo ) GOTO 800
-!      ASSIGN 300 TO next
-!      xmax = zero
-!
-!!                        PHASE 1.  SUM IS ZERO
-!
-! 300  IF ( Dx(i)==zero ) GOTO 900
-!      IF ( ABS(Dx(i))>cutlo ) GOTO 800
-!
-!!                        PREPARE FOR PHASE 2.
-!
-!      ASSIGN 600 TO next
-!      GOTO 500
-!
-!!                        PREPARE FOR PHASE 4.
-!
-! 400  i = j
-!      ASSIGN 700 TO next
-!      sum = (sum/Dx(i))/Dx(i)
-! 500  xmax = ABS(Dx(i))
-!
-!      sum = sum + (Dx(i)/xmax)**2
-!      GOTO 900
-!
-!!                   PHASE 2.  SUM IS SMALL.
-!!                             SCALE TO AVOID DESTRUCTIVE UNDERFLOW.
-!
-! 600  IF ( ABS(Dx(i))>cutlo ) THEN
-!
-!!                  PREPARE FOR PHASE 3.
-!
-!         sum = (sum*xmax)*xmax
-!         GOTO 800
-!      ENDIF
-!
-!!                   COMMON CODE FOR PHASES 2 AND 4.
-!!                   IN PHASE 4 SUM IS LARGE.  SCALE TO AVOID OVERFLOW.
-!
-! 700  IF ( ABS(Dx(i))<=xmax ) THEN
-!         sum = sum + (Dx(i)/xmax)**2
-!      ELSE
-!         sum = one + sum*(xmax/Dx(i))**2
-!         xmax = ABS(Dx(i))
-!      ENDIF
-!      GOTO 900
-!
-!!     FOR REAL OR D.P. SET HITEST = CUTHI/N
-!!     FOR COMPLEX      SET HITEST = CUTHI/(2*N)
-!
-! 800  hitest = cuthi/FLOAT(N)
-!
-!!                   PHASE 3.  SUM IS MID-RANGE.  NO SCALING.
-!
-!      DO j = i , nn , Incx
-!         IF ( ABS(Dx(j))>=hitest ) GOTO 400
-!         sum = sum + Dx(j)**2
-!      ENDDO
-!      DNRM2 = SQRT(sum)
-!      return
-!
-! 900  i = i + Incx
-!      IF ( i<=nn ) GOTO 100
-!
-!!              END OF MAIN LOOP.
-!
-!!              COMPUTE SQUARE ROOT AND ADJUST FOR SCALING.
-!
-!      DNRM2 = xmax*SQRT(sum)
-!      END FUNCTION DNRM2
+    end function dnrm2
 
-      SUBROUTINE DSROT(N,Dx,Incx,Dy,Incy,C,S)
-      IMPLICIT NONE
+      subroutine dsrot(n,dx,incx,dy,incy,c,s)
+      implicit none
 
-!     APPLIES A PLANE ROTATION.
-!     JACK DONGARRA, LINPACK, 3/11/78.
+!!  applies a plane rotation.
+!!  jack dongarra, linpack, 3/11/78.
 
-      DOUBLE PRECISION Dx(*) , Dy(*) , dtemp , C , S
-      INTEGER i , Incx , Incy , ix , iy , N
+      double precision dx(*) , dy(*) , dtemp , c , s
+      integer i , incx , incy , ix , iy , n
 
-      IF ( N<=0 ) RETURN
-      IF ( Incx==1 .AND. Incy==1 ) THEN
+      if ( n<=0 ) return
+      if ( incx==1 .and. incy==1 ) then
 
-!       CODE FOR BOTH INCREMENTS EQUAL TO 1
+!       code for both increments equal to 1
 
-         DO i = 1 , N
-            dtemp = C*Dx(i) + S*Dy(i)
-            Dy(i) = C*Dy(i) - S*Dx(i)
-            Dx(i) = dtemp
-         ENDDO
+         do i = 1 , n
+            dtemp = c*dx(i) + s*dy(i)
+            dy(i) = c*dy(i) - s*dx(i)
+            dx(i) = dtemp
+         enddo
          return
-      ENDIF
+      endif
 
-!       CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS NOT EQUAL
-!         TO 1
+!       code for unequal increments or equal increments not equal
+!         to 1
 
       ix = 1
       iy = 1
-      IF ( Incx<0 ) ix = (-N+1)*Incx + 1
-      IF ( Incy<0 ) iy = (-N+1)*Incy + 1
-      DO i = 1 , N
-         dtemp = C*Dx(ix) + S*Dy(iy)
-         Dy(iy) = C*Dy(iy) - S*Dx(ix)
-         Dx(ix) = dtemp
-         ix = ix + Incx
-         iy = iy + Incy
-      ENDDO
-      RETURN
-      END SUBROUTINE DSROT
+      if ( incx<0 ) ix = (-n+1)*incx + 1
+      if ( incy<0 ) iy = (-n+1)*incy + 1
+      do i = 1 , n
+         dtemp = c*dx(ix) + s*dy(iy)
+         dy(iy) = c*dy(iy) - s*dx(ix)
+         dx(ix) = dtemp
+         ix = ix + incx
+         iy = iy + incy
+      enddo
+      return
+      end subroutine dsrot
 
-      SUBROUTINE DSROTG(Da,Db,C,S)
-      IMPLICIT NONE
+      subroutine dsrotg(da,db,c,s)
+      implicit none
 
-!     CONSTRUCT GIVENS PLANE ROTATION.
-!     JACK DONGARRA, LINPACK, 3/11/78.
-!                    MODIFIED 9/27/86.
+!!  construct givens plane rotation.
+!!  jack dongarra, linpack, 3/11/78.
+!!                 modified 9/27/86.
 
-      DOUBLE PRECISION Da , Db , C , S , roe , scale , r , z , one ,    &
+      double precision da , db , c , s , roe , scale , r , z , one ,    &
                        zero
-      DATA one , zero/1.0D+00 , 0.0D+00/
+      data one , zero/1.0d+00 , 0.0d+00/
 
-      roe = Db
-      IF ( ABS(Da)>ABS(Db) ) roe = Da
-      scale = ABS(Da) + ABS(Db)
-      IF ( scale/=zero ) THEN
-         r = scale*SQRT((Da/scale)**2+(Db/scale)**2)
-         r = SIGN(one,roe)*r
-         C = Da/r
-         S = Db/r
-      ELSE
-         C = one
-         S = zero
+      roe = db
+      if ( abs(da)>abs(db) ) roe = da
+      scale = abs(da) + abs(db)
+      if ( scale/=zero ) then
+         r = scale*sqrt((da/scale)**2+(db/scale)**2)
+         r = sign(one,roe)*r
+         c = da/r
+         s = db/r
+      else
+         c = one
+         s = zero
          r = zero
-      ENDIF
-      z = S
-      IF ( ABS(C)>zero .AND. ABS(C)<=S ) z = one/C
-      Da = r
-      Db = z
-      END SUBROUTINE DSROTG
+      endif
+      z = s
+      if ( abs(c)>zero .and. abs(c)<=s ) z = one/c
+      da = r
+      db = z
+      end subroutine dsrotg
 
-      SUBROUTINE DSCAL(N,Da,Dx,Incx)
-      IMPLICIT NONE
+      subroutine dscal(n,da,dx,incx)
+      implicit none
 
-!     SCALES A VECTOR BY A CONSTANT.
-!     USES UNROLLED LOOPS FOR INCREMENT EQUAL TO ONE.
-!     JACK DONGARRA, LINPACK, 3/11/78.
+!!  scales a vector by a constant.
+!!  uses unrolled loops for increment equal to one.
+!!  jack dongarra, linpack, 3/11/78.
 
-      DOUBLE PRECISION Da , Dx(*)
-      INTEGER i , Incx , m , mp1 , N , nincx
+      double precision da , dx(*)
+      integer i , incx , m , mp1 , n , nincx
 
-      IF ( N<=0 ) RETURN
-      IF ( Incx==1 ) THEN
+      if ( n<=0 .or. incx<=0) ) return
+      if ( incx==1 ) then
 
-!        CODE FOR INCREMENT EQUAL TO 1
+!        code for increment equal to 1
 
-!        CLEAN-UP LOOP
+!        clean-up loop
 
-         m = MOD(N,5)
-         IF ( m/=0 ) THEN
-            DO i = 1 , m
-               Dx(i) = Da*Dx(i)
-            ENDDO
-            IF ( N<5 ) RETURN
-         ENDIF
+         m = mod(n,5)
+         if ( m/=0 ) then
+            do i = 1 , m
+               dx(i) = da*dx(i)
+            enddo
+            if ( n<5 ) return
+         endif
          mp1 = m + 1
-         DO i = mp1 , N , 5
-            Dx(i) = Da*Dx(i)
-            Dx(i+1) = Da*Dx(i+1)
-            Dx(i+2) = Da*Dx(i+2)
-            Dx(i+3) = Da*Dx(i+3)
-            Dx(i+4) = Da*Dx(i+4)
-         ENDDO
-      ELSE
+         do i = mp1 , n , 5
+            dx(i) = da*dx(i)
+            dx(i+1) = da*dx(i+1)
+            dx(i+2) = da*dx(i+2)
+            dx(i+3) = da*dx(i+3)
+            dx(i+4) = da*dx(i+4)
+         enddo
+      else
 
-!        CODE FOR INCREMENT NOT EQUAL TO 1
+!        code for increment not equal to 1
 
-         nincx = N*Incx
-         DO i = 1 , nincx , Incx
-            Dx(i) = Da*Dx(i)
-         ENDDO
+         nincx = n*incx
+         do i = 1 , nincx , incx
+            dx(i) = da*dx(i)
+         enddo
 
-      ENDIF
+      endif
 
-      END SUBROUTINE DSCAL
+      end subroutine dscal
 
 !*******************************************************************************
     end module support_module
