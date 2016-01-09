@@ -196,44 +196,6 @@
 
 !*******************************************************************************
 !>
-!  computes the i-norm of a vector
-!  between the i-th and the j-th elements.
-
-    real(wp) function dnrm1(n,x,i,j)
-
-      implicit none
-
-      integer,intent(in)                :: n  !! length of vector
-      real(wp),dimension(n),intent(in)  :: x  !! vector of length n
-      integer,intent(in)                :: i  !! initial element of vector to be used
-      integer,intent(in)                :: j  !! final element to use
-
-      integer :: k
-      real(wp) :: snormx , sum , scale , temp
-
-      snormx = zero
-      do k = i , j
-         snormx = max(snormx,abs(x(k)))
-      end do
-      dnrm1 = snormx
-      if ( snormx==zero ) return
-      scale = snormx
-      if ( snormx>=one ) scale = sqrt(snormx)
-      sum = zero
-      do k = i , j
-         temp = zero
-         if ( abs(x(k))+scale/=scale ) temp = x(k)/snormx
-         if ( one+temp/=one ) sum = sum + temp*temp
-      end do
-      sum = sqrt(sum)
-      dnrm1 = snormx*sum
-
-    end function dnrm1
-!*******************************************************************************
-
-!*******************************************************************************
-!>
-!
 !  Returns the euclidean norm of a vector via the function
 !  name, so that
 !
