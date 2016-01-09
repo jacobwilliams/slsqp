@@ -1,3 +1,7 @@
+!*******************************************************************************
+!>
+!  Tests for the [[slsqp_module]].
+
     program slsqp_test
 
     use slsqp_module
@@ -73,3 +77,4 @@
     end subroutine rosenbrock_grad
 
     end program slsqp_test
+!*******************************************************************************

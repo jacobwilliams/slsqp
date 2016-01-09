@@ -851,58 +851,65 @@
 
 !*******************************************************************************
 !>
-!   minimize with respect to x
+!  Minimize \( || e x - f || \) with respect to \(x\),
+!  with upper triangular matrix \( e = + d ^{1/2} l^T \),
+!  and vector \( f = -d^{-1/2} l^{-1} g \),
+!  where the unit lower tridiangular matrix \(l\) is stored columnwise
+!  dense in the \(n*(n+1)/2\) array \(l\) with vector \(d\) stored in its
+!  'diagonal' thus substituting the one-elements of \(l\)
 !
-!             ||e*x - f||
-!                                      1/2  t
-!   with upper triangular matrix e = +d   *l ,
+!  subject to:
 !
-!                                      -1/2  -1
-!                     and vector f = -d    *l  *g,
+!  \( a(j)*x - b(j) = 0,            j=1,...,meq  \),
 !
-!  where the unit lower tridiangular matrix l is stored columnwise
-!  dense in the n*(n+1)/2 array l with vector d stored in its
-! 'diagonal' thus substituting the one-elements of l
+!  \( a(j)*x - b(j) \ge 0,          j=meq+1,...,m\),
 !
-!   subject to
+!  \( xl(i) \le x(i) \le xu(i),     i=1,...,n    \),
 !
-!             a(j)*x - b(j) = 0 ,         j=1,...,meq,
-!             a(j)*x - b(j) >=0,          j=meq+1,...,m,
-!             xl(i) <= x(i) <= xu(i),     i=1,...,n,
-!     on entry, the user has to provide the arrays l, g, a, b, xl, xu.
-!     with dimensions: l(n*(n+1)/2), g(n), a(la,n), b(m), xl(n), xu(n)
-!     the working array w must have at least the following dimension:
-!     dim(w) =        (3*n+m)*(n+1)                        for lsq
-!                    +(n-meq+1)*(mineq+2) + 2*mineq        for lsi
-!                    +(n+mineq)*(n-meq) + 2*meq + n        for lsei
-!                      with mineq = m - meq + 2*n
-!     on return, no array will be changed by the subroutine.
-!     x     stores the n-dimensional solution vector
-!     y     stores the vector of lagrange multipliers of dimension
-!           m+n+n (constraints+lower+upper bounds)
-!     mode  is a success-failure flag with the following meanings:
-!          mode=1: successful computation
-!               2: error return because of wrong dimensions (n<1)
-!               3: iteration count exceeded by nnls
-!               4: inequality constraints incompatible
-!               5: matrix e is not of full rank
-!               6: matrix c is not of full rank
-!               7: rank defect in hfti
+!  On entry, the user has to provide the arrays `l`, `g`, `a`, `b`, `xl`, `xu`.
+!  with dimensions: `l(n*(n+1)/2)`, `g(n)`, `a(la,n)`, `b(m)`, `xl(n)`, `xu(n)`.
 !
-!     coded            dieter kraft, april 1987
-!     revised                        march 1989
+!  The working array `w` must have at least the following dimension:
+!
+!       dim(w) =  (3*n+m)*(n+1)                   for lsq
+!                +(n-meq+1)*(mineq+2) + 2*mineq   for lsi
+!                +(n+mineq)*(n-meq) + 2*meq + n   for lsei
+!                  with mineq = m - meq + 2*n
+!
+!  On return, no array will be changed by the subroutine.
+!
+!### History
+!  * coded dieter kraft, april 1987
+!  * revised march 1989
 
     subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,jw,mode)
+
     implicit none
 
-      real(wp) :: l , g , a , b , w , xl , xu , x , y , diag , xnorm
+    integer,intent(in)        :: m
+    integer,intent(in)        :: n
+    integer,intent(in)        :: meq
+    integer,intent(in)        :: nl
+    integer,intent(in)        :: la
+    real(wp),dimension(n)     :: x  !! stores the n-dimensional solution vector
+    real(wp),dimension(m+n+n) :: y  !! stores the vector of lagrange multipliers of dimension
+                                    !! m+n+n (constraints+lower+upper bounds)
+    integer :: mode                 !! is a success-failure flag with the following meanings:
+                                    !! **1:** successful computation,
+                                    !! **2:** error return because of wrong dimensions (`n<1`),
+                                    !! **3:** iteration count exceeded by [[nnls]],
+                                    !! **4:** inequality constraints incompatible,
+                                    !! **5:** matrix `e` is not of full rank,
+                                    !! **6:** matrix `c` is not of full rank,
+                                    !! **7:** rank defect in [[hfti]]
+
+      real(wp) :: l , g , a , b , w , xl , xu , diag , xnorm
 
       integer :: jw(*) , i , ic , id , ie , if , ig , ih , il , im , ip , &
-                 iu , iw , i1 , i2 , i3 , i4 , la , m , meq , mineq , &
-                 mode , m1 , n , nl , n1 , n2 , n3
+                 iu , iw , i1 , i2 , i3 , i4 , mineq , &
+                 m1 , n1 , n2 , n3
 
-      dimension a(la,n) , b(la) , g(n) , l(nl) , w(*) , x(n) , xl(n) , &
-                xu(n) , y(m+n+n)
+      dimension a(la,n) , b(la) , g(n) , l(nl) , w(*) , xl(n) , xu(n)
 
       n1 = n + 1
       mineq = m - meq
@@ -1027,7 +1034,7 @@
 
 !*******************************************************************************
 !>
-!  for mode=1, the subroutine returns the solution x of
+!  for `mode=1`, the subroutine returns the solution `x` of
 !  equality & inequality constrained least squares problem lsei :
 !
 !                min ||e*x - f||
@@ -1036,38 +1043,42 @@
 !                s.t.  c*x  = d,
 !                      g*x >= h.
 !
-!     using qr decomposition & orthogonal basis of nullspace of c
-!     chapter 23.6 of lawson & hanson: solving least squares problems.
+!  using qr decomposition & orthogonal basis of nullspace of c
+!  chapter 23.6 of lawson & hanson: solving least squares problems.
 !
-!     the following dimensions of the arrays defining the problem
-!     are necessary
-!     dim(e) :   formal (le,n),    actual (me,n)
-!     dim(f) :   formal (le  ),    actual (me  )
-!     dim(c) :   formal (lc,n),    actual (mc,n)
-!     dim(d) :   formal (lc  ),    actual (mc  )
-!     dim(g) :   formal (lg,n),    actual (mg,n)
-!     dim(h) :   formal (lg  ),    actual (mg  )
-!     dim(x) :   formal (n   ),    actual (n   )
-!     dim(w) :   2*mc+me+(me+mg)*(n-mc)  for lsei
-!              +(n-mc+1)*(mg+2)+2*mg     for lsi
-!     dim(jw):   max(mg,l)
-!     on entry, the user has to provide the arrays c, d, e, f, g, and h.
-!     on return, all arrays will be changed by the subroutine.
-!     x     stores the solution vector
-!     xnorm stores the residuum of the solution in euclidian norm
-!     w     stores the vector of lagrange multipliers in its first
-!           mc+mg elements
-!     mode  is a success-failure flag with the following meanings:
-!          mode=1: successful computation
-!               2: error return because of wrong dimensions (n<1)
-!               3: iteration count exceeded by nnls
-!               4: inequality constraints incompatible
-!               5: matrix e is not of full rank
-!               6: matrix c is not of full rank
-!               7: rank defect in hfti
+!  the following dimensions of the arrays defining the problem
+!  are necessary:
 !
-!     18.5.1981, dieter kraft, dfvlr oberpfaffenhofen
-!     20.3.1987, dieter kraft, dfvlr oberpfaffenhofen
+!        dim(e) :   formal (le,n),    actual (me,n)
+!        dim(f) :   formal (le  ),    actual (me  )
+!        dim(c) :   formal (lc,n),    actual (mc,n)
+!        dim(d) :   formal (lc  ),    actual (mc  )
+!        dim(g) :   formal (lg,n),    actual (mg,n)
+!        dim(h) :   formal (lg  ),    actual (mg  )
+!        dim(x) :   formal (n   ),    actual (n   )
+!        dim(w) :   2*mc+me+(me+mg)*(n-mc)  for lsei
+!                 +(n-mc+1)*(mg+2)+2*mg     for lsi
+!        dim(jw):   max(mg,l)
+!
+!  on entry, the user has to provide the arrays c, d, e, f, g, and h.
+!  on return, all arrays will be changed by the subroutine.
+!
+!  x     stores the solution vector
+!  xnorm stores the residuum of the solution in euclidian norm
+!  w     stores the vector of lagrange multipliers in its first
+!        mc+mg elements
+!  mode  is a success-failure flag with the following meanings:
+!       mode=1: successful computation
+!            2: error return because of wrong dimensions (n<1)
+!            3: iteration count exceeded by nnls
+!            4: inequality constraints incompatible
+!            5: matrix e is not of full rank
+!            6: matrix c is not of full rank
+!            7: rank defect in hfti
+!
+!### History
+!  * 18.5.1981, dieter kraft, dfvlr oberpfaffenhofen
+!  * 20.3.1987, dieter kraft, dfvlr oberpfaffenhofen
 
     subroutine lsei(c,d,e,f,g,h,lc,mc,le,me,lg,mg,n,x,xnrm,w,jw,mode)
     implicit none
@@ -1841,44 +1852,38 @@
 
 !*******************************************************************************
 !>
-!   ldl     ldl' - rank-one - update
+!  \(LDL^T\) - rank-one - update
 !
-!   purpose:
-!           updates the ldl' factors of matrix a by rank-one matrix
-!           sigma*z*z'
+!### Purpose:
 !
-!   input arguments: (* means parameters are changed during execution)
-!     n     : order of the coefficient matrix a
-!   * a     : positive definite matrix of dimension n;
-!             only the lower triangle is used and is stored column by
-!             column as one dimensional array of dimension n*(n+1)/2.
-!   * z     : vector of dimension n of updating elements
-!     sigma : scalar factor by which the modifying dyade z*z' is
-!             multiplied
+!  Updates the \(LDL^T\) factors of matrix \(A\)
+!  by rank-one matrix \(\sigma z z^T \).
 !
-!   output arguments:
-!     a     : updated ldl' factors
+!### Reference
+!  * R. Fletcher, M.J.D. Powell,
+!    "[On the modification of LDL' factorization](http://www.ams.org/journals/mcom/1974-28-128/S0025-5718-1974-0359297-1/S0025-5718-1974-0359297-1.pdf)".
+!    Mathematics of Computation Vol. 28, No. 128, p. 1067-1087, October 1974.
 !
-!   working array:
-!     w     : vector op dimension n (used only if sigma < zero)
-!
-!   method:
-!     that of fletcher and powell as described in :
-!     fletcher,r.,(1974) on the modification of ldl' factorization.
-!     powell,m.j.d.      math.computation 28, 1067-1078.
-!
-!   implemented by:
-!     kraft,d., dfvlr - institut fuer dynamik der flugsysteme
-!               d-8031  oberpfaffenhofen
-!
-!   status: 15. january 1980
+!### History
+!  * D. Kraft, DFVLR - institut fuer dynamik der flugsysteme
+!    d-8031  oberpfaffenhofen
+!  * Status: 15. january 1980
 
     subroutine ldl(n,a,z,sigma,w)
+
     implicit none
 
-      integer :: i , ij , j , n
-      real(wp) :: a(*) , t , v , w(*) , z(*) , u , tp , &
-                       beta , alpha , delta , gamma , sigma
+    integer,intent(in)  :: n      !! order of the coefficient matrix `a`
+    real(wp),intent(in) :: sigma  !! scalar factor by which the modifying dyade \(z z^T\) is multiplied.
+    real(wp),dimension(*),intent(inout) :: a    !! ***In:*** positive definite matrix of dimension `n`;
+                                                !! only the lower triangle is used and is stored column by
+                                                !! column as one dimensional array of dimension `n*(n+1)/2`.
+                                                !! ***Out:*** updated \(LDL^T\) factors
+    real(wp),dimension(*),intent(inout) :: w  !! working array of dimension `n` (used only if \( \sigma \lt 0 \) ).
+    real(wp),dimension(*),intent(inout) :: z  !! vector of dimension `n` of updating elements.
+
+      integer :: i , ij , j
+      real(wp) :: t , v , u , tp , beta , alpha , delta , gamma
 
       if ( sigma/=zero ) then
          ij = 1
@@ -1941,45 +1946,29 @@
 
 !*******************************************************************************
 !>
-!   linmin  linesearch without derivatives
-!   (used if exact = 1)
+!  Linesearch without derivatives (used by [[slsqp]] if `linesearch_mode=2`).
+!  Returns the abscissa approximating the point where `f` attains a minimum.
 !
-!   purpose:
+!### purpose:
 !
-!  to find the argument linmin where the function f takes it's minimum
-!  on the interval ax, bx.
-!  combination of golden section and successive quadratic interpolation.
+!  to find the argument linmin where the function `f` takes it's minimum
+!  on the interval `ax`, `bx`. It uses a combination of golden section
+!  and successive quadratic interpolation.
 !
-!   input arguments: (* means parameters are changed during execution)
+!### Reference
 !
-! *mode   see output arguments
-!  ax     left endpoint of initial interval
-!  bx     right endpoint of initial interval
-!  f      function value at linmin which is to be brought in by
-!         reverse communication controlled by mode
-!  tol    desired length of interval of uncertainty of final result
+!  This function subprogram is a slightly modified version of the
+!  ALGOL 60 procedure `localmin` given in R.P. Brent:
+!  "[Algorithms for minimization without derivatives](https://maths-people.anu.edu.au/~brent/pub/pub011.html)",
+!  Prentice-Hall (1973).
 !
-!   output arguments:
+!### History
 !
-!  linmin abscissa approximating the point where f attains a minimum
-!  mode   controls reverse communication
-!         must be set to 0 initially, returns with intermediate
-!         values 1 and 2 which must not be changed by the user,
-!         ends with convergence with value 3.
-!
-!   method:
-!
-!  this function subprogram is a slightly modified version of the
-!  algol 60 procedure localmin given in
-!  r.p. brent: algorithms for minimization without derivatives,
-!              prentice-hall (1973).
-!
-!   implemented by:
-!
-!     kraft, d., dfvlr - institut fuer dynamik der flugsysteme
-!                d-8031  oberpfaffenhofen
-!
-!   status: 31. august  1984
+!  * Kraft, D., DFVLR - institut fuer dynamik der flugsysteme
+!    d-8031  oberpfaffenhofen
+!  * status: 31. august 1984
+!  * Jacob Williams, Jan 2016, Refactored into modern Fortran.
+!    Added saved variables as `inout`s to make the routine thread-safe.
 
     real(wp) function linmin(mode,ax,bx,f,tol,&
                                 a,b,d,e,p,q,r,u,v,&
@@ -1987,8 +1976,15 @@
 
     implicit none
 
-      integer :: mode
-      real(wp) :: f,tol,ax,bx
+      integer,intent(inout) :: mode   !! controls reverse communication
+                                      !! must be set to 0 initially, returns with intermediate
+                                      !! values 1 and 2 which must not be changed by the user,
+                                      !! ends with convergence with value 3.
+      real(wp) :: f     !! function value at `linmin` which is to be brought in by
+                        !! reverse communication controlled by `mode`
+      real(wp) :: tol   !! desired length of interval of uncertainty of final result
+      real(wp) :: ax    !! left endpoint of initial interval
+      real(wp) :: bx    !! right endpoint of initial interval
       real(wp),intent(inout) :: a,b,d,e,p,q,r,u,v,w,x,m,fu,fv,fw,fx,tol1,tol2
 
       real(wp),parameter :: c    = (3.0_wp-sqrt(5.0_wp))/2.0_wp  !! golden section ratio = `0.381966011`
