@@ -21,12 +21,14 @@
     contains
 !*******************************************************************************
 
+!*******************************************************************************
+!>
+!  constant times a vector plus a vector.
+!  uses unrolled loops for increments equal to one.
+!  jack dongarra, linpack, 3/11/78.
+
       subroutine daxpy(n,da,dx,incx,dy,incy)
       implicit none
-
-      !! constant times a vector plus a vector.
-      !! uses unrolled loops for increments equal to one.
-      !! jack dongarra, linpack, 3/11/78.
 
       real(wp) :: dx(*) , dy(*) , da
       integer :: i , incx , incy , ix , iy , m , mp1 , n
@@ -43,16 +45,17 @@
          if ( m/=0 ) then
             do i = 1 , m
                dy(i) = dy(i) + da*dx(i)
-            enddo
+            end do
             if ( n<4 ) return
-         endif
+         end if
          mp1 = m + 1
          do i = mp1 , n , 4
             dy(i) = dy(i) + da*dx(i)
             dy(i+1) = dy(i+1) + da*dx(i+1)
             dy(i+2) = dy(i+2) + da*dx(i+2)
             dy(i+3) = dy(i+3) + da*dx(i+3)
-         enddo
+         end do
+
       else
 
          ! code for unequal increments or equal increments
@@ -66,17 +69,22 @@
             dy(iy) = dy(iy) + da*dx(ix)
             ix = ix + incx
             iy = iy + incy
-         enddo
-         return
-      endif
+         end do
+
+      end if
+
       end subroutine daxpy
+!*******************************************************************************
 
-      subroutine dcopy(n,dx,incx,dy,incy)
+!*******************************************************************************
+!>
+!  copies a vector, x, to a vector, y.
+!  uses unrolled loops for increments equal to one.
+!  jack dongarra, linpack, 3/11/78.
+
+    subroutine dcopy(n,dx,incx,dy,incy)
+
       implicit none
-
-!! copies a vector, x, to a vector, y.
-!! uses unrolled loops for increments equal to one.
-!! jack dongarra, linpack, 3/11/78.
 
       real(wp) :: dx(*) , dy(*)
       integer :: i , incx , incy , ix , iy , m , mp1 , n
@@ -84,17 +92,17 @@
       if ( n<=0 ) return
       if ( incx==1 .and. incy==1 ) then
 
-!        code for both increments equal to 1
+         ! code for both increments equal to 1
 
-!        clean-up loop
+         ! clean-up loop
 
          m = mod(n,7)
          if ( m/=0 ) then
             do i = 1 , m
                dy(i) = dx(i)
-            enddo
+            end do
             if ( n<7 ) return
-         endif
+         end if
          mp1 = m + 1
          do i = mp1 , n , 7
             dy(i) = dx(i)
@@ -104,11 +112,12 @@
             dy(i+4) = dx(i+4)
             dy(i+5) = dx(i+5)
             dy(i+6) = dx(i+6)
-         enddo
+         end do
+
       else
 
-!        code for unequal increments or equal increments
-!        not equal to 1
+         ! code for unequal increments or equal increments
+         ! not equal to 1
 
          ix = 1
          iy = 1
@@ -118,17 +127,22 @@
             dy(iy) = dx(ix)
             ix = ix + incx
             iy = iy + incy
-         enddo
-         return
-      endif
-      end subroutine dcopy
+         end do
+
+      end if
+
+    end subroutine dcopy
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  forms the dot product of two vectors.
+!  uses unrolled loops for increments equal to one.
+!  jack dongarra, linpack, 3/11/78.
 
       real(wp) function ddot(n,dx,incx,dy,incy)
-      implicit none
 
-!!  forms the dot product of two vectors.
-!!  uses unrolled loops for increments equal to one.
-!!  jack dongarra, linpack, 3/11/78.
+      implicit none
 
       real(wp) :: dx(*) , dy(*) , dtemp
       integer :: i , incx , incy , ix , iy , m , mp1 , n
@@ -138,30 +152,31 @@
       if ( n<=0 ) return
       if ( incx==1 .and. incy==1 ) then
 
-!        code for both increments equal to 1
+         ! code for both increments equal to 1
 
-!        clean-up loop
+         ! clean-up loop
 
          m = mod(n,5)
          if ( m/=0 ) then
             do i = 1 , m
                dtemp = dtemp + dx(i)*dy(i)
-            enddo
+            end do
             if ( n<5 ) then
                ddot = dtemp
                return
-            endif
-         endif
+            end if
+         end if
          mp1 = m + 1
          do i = mp1 , n , 5
-            dtemp = dtemp + dx(i)*dy(i) + dx(i+1)*dy(i+1) + dx(i+2) &
-                    *dy(i+2) + dx(i+3)*dy(i+3) + dx(i+4)*dy(i+4)
-         enddo
+            dtemp = dtemp + dx(i)*dy(i) + dx(i+1)*dy(i+1) + &
+                    dx(i+2)*dy(i+2) + dx(i+3)*dy(i+3) + dx(i+4)*dy(i+4)
+         end do
          ddot = dtemp
+
       else
 
-!        code for unequal increments or equal increments
-!          not equal to 1
+         ! code for unequal increments or equal increments
+         ! not equal to 1
 
          ix = 1
          iy = 1
@@ -171,33 +186,35 @@
             dtemp = dtemp + dx(ix)*dy(iy)
             ix = ix + incx
             iy = iy + incy
-         enddo
+         end do
          ddot = dtemp
-         return
-      endif
+
+      end if
+
       end function ddot
+!*******************************************************************************
 
-      real(wp) function dnrm1(n,x,i,j)
+!*******************************************************************************
+!>
+!  computes the i-norm of a vector
+!  between the i-th and the j-th elements.
+
+    real(wp) function dnrm1(n,x,i,j)
+
       implicit none
-      integer :: n , i , j , k
-      real(wp) :: snormx , sum , x(n) , scale , temp
 
-!!  dnrm1 - computes the i-norm of a vector
-!!  between the ith and the jth elements
+      integer,intent(in)                :: n  !! length of vector
+      real(wp),dimension(n),intent(in)  :: x  !! vector of length n
+      integer,intent(in)                :: i  !! initial element of vector to be used
+      integer,intent(in)                :: j  !! final element to use
 
-!      input -
-!      n       length of vector
-!      x       vector of length n
-!      i       initial element of vector to be used
-!      j       final element to use
-
-!      output -
-!      dnrm1   norm
+      integer :: k
+      real(wp) :: snormx , sum , scale , temp
 
       snormx = zero
       do k = i , j
          snormx = max(snormx,abs(x(k)))
-      enddo
+      end do
       dnrm1 = snormx
       if ( snormx==zero ) return
       scale = snormx
@@ -207,38 +224,38 @@
          temp = zero
          if ( abs(x(k))+scale/=scale ) temp = x(k)/snormx
          if ( one+temp/=one ) sum = sum + temp*temp
-      enddo
+      end do
       sum = sqrt(sum)
       dnrm1 = snormx*sum
-      end function dnrm1
 
+    end function dnrm1
+!*******************************************************************************
+
+!*******************************************************************************
 !>
-!  replaced original routine with this one from blas:
-!  http://netlib.sandia.gov/blas/dnrm2.f
+!
+!  Returns the euclidean norm of a vector via the function
+!  name, so that
+!
+!     dnrm2 := sqrt( x'*x )
+!
+!### Further details
+!
+!  * this version written on 25-october-1982.
+!  * modified on 14-october-1993 to inline the call to dlassq.
+!    sven hammarling, nag ltd.
+!  * Converted to modern Fortran, Jacob Williams, Jan. 2016.
+!
+!@note Replaced original SLSQP routine with this one from
+!      [BLAS](http://netlib.sandia.gov/blas/dnrm2.f).
 
-        real(wp) function dnrm2(n,x,incx)
+    real(wp) function dnrm2(n,x,incx)
+
         implicit none
 
         integer,intent(in) :: incx
         integer,intent(in) :: n
         real(wp),intent(in) :: x(*)
-
-  !  purpose
-  !  =======
-  !
-  !  dnrm2 returns the euclidean norm of a vector via the function
-  !  name, so that
-  !
-  !     dnrm2 := sqrt( x'*x )
-  !
-  !  further details
-  !  ===============
-  !
-  !  -- this version written on 25-october-1982.
-  !     modified on 14-october-1993 to inline the call to dlassq.
-  !     sven hammarling, nag ltd.
-  !
-  !  =====================================================================
 
         real(wp) :: absxi , norm , scale , ssq
         integer :: ix
@@ -261,60 +278,69 @@
                     scale = absxi
                  else
                     ssq = ssq + (absxi/scale)**2
-                 endif
-              endif
-           enddo
+                 end if
+              end if
+           end do
            norm = scale*sqrt(ssq)
-        endif
+        end if
 
         dnrm2 = norm
 
     end function dnrm2
+!*******************************************************************************
 
-      subroutine dsrot(n,dx,incx,dy,incy,c,s)
-      implicit none
+!*******************************************************************************
+!>
+!  Applies a plane rotation.
+!  jack dongarra, linpack, 3/11/78.
 
-    !!  applies a plane rotation.
-    !!  jack dongarra, linpack, 3/11/78.
+    subroutine dsrot(n,dx,incx,dy,incy,c,s)
+    implicit none
 
-      real(wp) :: dx(*) , dy(*) , dtemp , c , s
-      integer :: i , incx , incy , ix , iy , n
+    real(wp) :: dx(*) , dy(*) , dtemp , c , s
+    integer :: i , incx , incy , ix , iy , n
 
-      if ( n<=0 ) return
-      if ( incx==1 .and. incy==1 ) then
+    if ( n<=0 ) return
+    if ( incx==1 .and. incy==1 ) then
 
-         !code for both increments equal to 1
+        !code for both increments equal to 1
 
-         do i = 1 , n
+        do i = 1 , n
             dtemp = c*dx(i) + s*dy(i)
             dy(i) = c*dy(i) - s*dx(i)
             dx(i) = dtemp
-         enddo
-         return
-      endif
+        end do
 
-      ! code for unequal increments or equal increments not equal to 1
+    else
 
-      ix = 1
-      iy = 1
-      if ( incx<0 ) ix = (-n+1)*incx + 1
-      if ( incy<0 ) iy = (-n+1)*incy + 1
-      do i = 1 , n
-         dtemp = c*dx(ix) + s*dy(iy)
-         dy(iy) = c*dy(iy) - s*dx(ix)
-         dx(ix) = dtemp
-         ix = ix + incx
-         iy = iy + incy
-      enddo
-      return
-      end subroutine dsrot
+        ! code for unequal increments or equal increments not equal to 1
+
+        ix = 1
+        iy = 1
+        if ( incx<0 ) ix = (-n+1)*incx + 1
+        if ( incy<0 ) iy = (-n+1)*incy + 1
+        do i = 1 , n
+            dtemp = c*dx(ix) + s*dy(iy)
+            dy(iy) = c*dy(iy) - s*dx(ix)
+            dx(ix) = dtemp
+            ix = ix + incx
+            iy = iy + incy
+        end do
+
+    end if
+
+    end subroutine dsrot
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  Construct givens plane rotation.
+!  jack dongarra, linpack, 3/11/78.
+!  modified 9/27/86.
 
       subroutine dsrotg(da,db,c,s)
-      implicit none
 
-    !!  construct givens plane rotation.
-    !!  jack dongarra, linpack, 3/11/78.
-    !!                 modified 9/27/86.
+      implicit none
 
       real(wp) :: da , db , c , s , roe , scale , r , z
 
@@ -330,19 +356,24 @@
          c = one
          s = zero
          r = zero
-      endif
+      end if
       z = s
       if ( abs(c)>zero .and. abs(c)<=s ) z = one/c
       da = r
       db = z
-      end subroutine dsrotg
 
-      subroutine dscal(n,da,dx,incx)
+    end subroutine dsrotg
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  scales a vector by a constant.
+!  uses unrolled loops for increment equal to one.
+!  jack dongarra, linpack, 3/11/78.
+
+    subroutine dscal(n,da,dx,incx)
+
       implicit none
-
-    !!  scales a vector by a constant.
-    !!  uses unrolled loops for increment equal to one.
-    !!  jack dongarra, linpack, 3/11/78.
 
       real(wp) :: da , dx(*)
       integer :: i , incx , m , mp1 , n , nincx
@@ -358,9 +389,9 @@
          if ( m/=0 ) then
             do i = 1 , m
                dx(i) = da*dx(i)
-            enddo
+            end do
             if ( n<5 ) return
-         endif
+         end if
          mp1 = m + 1
          do i = mp1 , n , 5
             dx(i) = da*dx(i)
@@ -368,7 +399,7 @@
             dx(i+2) = da*dx(i+2)
             dx(i+3) = da*dx(i+3)
             dx(i+4) = da*dx(i+4)
-         enddo
+         end do
       else
 
          ! code for increment not equal to 1
@@ -376,11 +407,12 @@
          nincx = n*incx
          do i = 1 , nincx , incx
             dx(i) = da*dx(i)
-         enddo
+         end do
 
-      endif
+      end if
 
       end subroutine dscal
+!*******************************************************************************
 
 !*******************************************************************************
     end module support_module

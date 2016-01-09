@@ -508,7 +508,7 @@
          mode = 1000*max(10,il)
          mode = mode + max(10,im)
          return
-      endif
+      end if
 
 !   prepare data for calling sqpbdy  -  initial addresses in w
 
@@ -587,7 +587,7 @@
 
          do i = 1 , n
             u(i) = g(i) - ddot(m,a(1,i),1,r,1) - v(i)
-         enddo
+         end do
 
          !   l'*s
 
@@ -598,9 +598,9 @@
             do j = i + 1 , n
                k = k + 1
                h1 = h1 + l(k)*s(j)
-            enddo
+            end do
             v(i) = s(i) + h1
-         enddo
+         end do
 
          !   d*l'*s
 
@@ -608,7 +608,7 @@
          do i = 1 , n
             v(i) = l(k)*v(i)
             k = k + n1 - i
-         enddo
+         end do
 
          !   l*d*l'*s
 
@@ -618,9 +618,9 @@
             do j = 1 , i - 1
                h1 = h1 + l(k)*v(j)
                k = k + n - j
-            enddo
+            end do
             v(i) = v(i) + h1
-         enddo
+         end do
 
          h1 = ddot(n,s,1,u,1)
          h2 = ddot(n,s,1,v,1)
@@ -630,7 +630,7 @@
             h1 = h3
             call dscal(n,h4,u,1)
             call daxpy(n,one-h4,v,1,u,1)
-         endif
+         end if
          call ldl(n,l,u,+one/h1,v)
          call ldl(n,l,v,-one/h2,u)
 
@@ -645,7 +645,7 @@
             iexact = 0
          else
             iexact = 1
-         endif
+         end if
          acc = abs(acc)
          tol = ten*acc
          iter = 0
@@ -668,9 +668,9 @@
                h1 = c(j)
             else
                h1 = zero
-            endif
+            end if
             t = t + mu(j)*max(-c(j),h1)
-         enddo
+         end do
          h1 = t - t0
          if ( iexact+1==1 ) then
             if ( h1<=h3/ten .or. line>10 ) goto 500
@@ -680,9 +680,9 @@
             goto 400
          else
             goto 500
-         endif
+         end if
 
-      endif
+      end if
 
 !   reset bfgs matrix
 
@@ -693,7 +693,7 @@
             mode = 0
          else
             mode = 8
-         endif
+         end if
          return
       else
          l(1) = zero
@@ -702,8 +702,8 @@
          do i = 1 , n
             l(j) = one
             j = j + n1 - i
-         enddo
-      endif
+         end do
+      end if
 
 !   main iteration : search direction, steplength, ldl'-update
 
@@ -724,15 +724,15 @@
 
       if ( mode==6 ) then
          if ( n==meq ) mode = 4
-      endif
+      end if
       if ( mode==4 ) then
          do j = 1 , m
             if ( j<=meq ) then
                a(j,n1) = -c(j)
             else
                a(j,n1) = max(-c(j),zero)
-            endif
-         enddo
+            end if
+         end do
          s(1) = zero
          call dcopy(n,s(1),0,s,1)
          h3 = zero
@@ -751,16 +751,16 @@
             return
          elseif ( mode/=1 ) then
             return
-         endif
+         end if
       elseif ( mode/=1 ) then
          return
-      endif
+      end if
 
 !   update multipliers for l1-test
 
       do i = 1 , n
          v(i) = g(i) - ddot(m,a(1,i),1,r,1)
-      enddo
+      end do
       f0 = f
       call dcopy(n,x,1,x0,1)
       gs = ddot(n,g,1,s,1)
@@ -771,12 +771,12 @@
             h3 = c(j)
          else
             h3 = zero
-         endif
+         end if
          h2 = h2 + max(-c(j),h3)
          h3 = abs(r(j))
          mu(j) = max(h3,(mu(j)+h3)/two)
          h1 = h1 + h3*abs(c(j))
-      enddo
+      end do
 
 !   check convergence
 
@@ -788,9 +788,9 @@
             h3 = c(j)
          else
             h3 = zero
-         endif
+         end if
          h1 = h1 + mu(j)*max(-c(j),h3)
-      enddo
+      end do
       t0 = f + h1
       h3 = gs - h1*h4
       mode = 8
@@ -826,7 +826,7 @@
          call daxpy(n,alpha,s,1,x,1)
          mode = 1
          return
-      endif
+      end if
       call dscal(n,alpha,s,1)
 
 !   check convergence
@@ -837,14 +837,14 @@
             h1 = c(j)
          else
             h1 = zero
-         endif
+         end if
          h3 = h3 + max(-c(j),h1)
-      enddo
+      end do
       if ( (abs(f-f0)<acc .or. dnrm2(n,s,1)<acc) .and. h3<acc ) then
          mode = 0
       else
          mode = -1
-      endif
+      end if
 
       end subroutine slsqpb
 !*******************************************************************************
@@ -917,7 +917,7 @@
          n2 = 0
       else
          n2 = 1
-      endif
+      end if
       n3 = n - n2
 
       !  recover matrix e and vector f from l and g
@@ -939,13 +939,13 @@
          i2 = i2 + i1 - n2
          i3 = i3 + n1
          i4 = i4 + n
-      enddo
+      end do
       if ( n2==1 ) then
          w(i3) = l(nl)
          w(i4) = zero
          call dcopy(n3,w(i4),0,w(i4),1)
          w(if-1+n) = zero
-      endif
+      end if
       call dscal(n,-one,w(if),1)
 
       ic = if + n
@@ -957,14 +957,14 @@
 
          do i = 1 , meq
             call dcopy(n,a(i,1),la,w(ic-1+i),meq)
-         enddo
+         end do
 
          !  recover vector d from upper part of b
 
          call dcopy(meq,b(1),1,w(id),1)
          call dscal(meq,-one,w(id),1)
 
-      endif
+      end if
 
       ig = id + meq
 
@@ -972,8 +972,8 @@
          !  recover matrix g from lower part of a
          do i = 1 , mineq
             call dcopy(n,a(meq+i,1),la,w(ig-1+i),m1)
-         enddo
-      endif
+         end do
+      end if
 
       !  augment matrix g by +i and -i
 
@@ -981,7 +981,7 @@
       do i = 1 , n
          w(ip-1+i) = zero
          call dcopy(n,w(ip-1+i),0,w(ip-1+i),m1)
-      enddo
+      end do
       w(ip) = one
       call dcopy(n,w(ip),0,w(ip),m1+1)
 
@@ -989,7 +989,7 @@
       do i = 1 , n
          w(im-1+i) = zero
          call dcopy(n,w(im-1+i),0,w(im-1+i),m1)
-      enddo
+      end do
       w(im) = -one
       call dcopy(n,w(im),0,w(im),m1+1)
 
@@ -999,7 +999,7 @@
          ! recover h from lower part of b
          call dcopy(mineq,b(meq+1),1,w(ih),1)
          call dscal(mineq,-one,w(ih),1)
-      endif
+      end if
 
       !  augment vector h by xl and xu
 
@@ -1020,7 +1020,7 @@
          call dcopy(n3,w(iw+m),1,y(m+1),1)
          call dcopy(n3,w(iw+m+n),1,y(m+n3+1),1)
          call enforce_bounds(x,xl,xu)  ! to ensure that bounds are not violated
-      endif
+      end if
 
       end subroutine lsq
 !*******************************************************************************
@@ -1093,7 +1093,7 @@
             call h12(1,i,i+1,n,c(i,1),lc,w(iw+i),c(j,1),lc,1,mc-i)
             call h12(2,i,i+1,n,c(i,1),lc,w(iw+i),e,le,1,me)
             call h12(2,i,i+1,n,c(i,1),lc,w(iw+i),g,lg,1,mg)
-         enddo
+         end do
 
 !  solve c*x=d and modify f
 
@@ -1101,7 +1101,7 @@
          do i = 1 , mc
             if ( abs(c(i,i))<epmach ) return
             x(i) = (d(i)-ddot(i-1,c(i,1),lc,x,1))/c(i,i)
-         enddo
+         end do
          mode = 1
          w(mc1) = zero
          !call dcopy(mg-mc,w(mc1),0,w(mc1),1)  ! original code
@@ -1111,23 +1111,23 @@
 
             do i = 1 , me
                w(if-1+i) = f(i) - ddot(mc,e(i,1),le,x,1)
-            enddo
+            end do
 
 !  store transformed e & g
 
             do i = 1 , me
                call dcopy(l,e(i,mc1),le,w(ie-1+i),me)
-            enddo
+            end do
             do i = 1 , mg
                call dcopy(l,g(i,mc1),lg,w(ig-1+i),mg)
-            enddo
+            end do
 
             if ( mg>0 ) then
 !  modify h and solve inequality constrained ls problem
 
                do i = 1 , mg
                   h(i) = h(i) - ddot(mc,g(i,1),lg,x,1)
-               enddo
+               end do
                call lsi(w(ie),w(if),w(ig),h,me,me,mg,mg,l,x(mc1),xnrm,  &
                         w(mc1),jw,mode)
                if ( mc==0 ) return
@@ -1146,28 +1146,28 @@
                call dcopy(l,w(if),1,x(mc1),1)
                if ( krank/=l ) return
                mode = 1
-            endif
-         endif
+            end if
+         end if
 
 !  solution of original problem and lagrange multipliers
 
          do i = 1 , me
             f(i) = ddot(n,e(i,1),le,x,1) - f(i)
-         enddo
+         end do
          do i = 1 , mc
             d(i) = ddot(me,e(1,i),1,f,1) &
                    - ddot(mg,g(1,i),1,w(mc1),1)
-         enddo
+         end do
 
          do i = mc , 1 , -1
             call h12(2,i,i+1,n,c(i,1),lc,w(iw+i),x,1,1,1)
-         enddo
+         end do
 
          do i = mc , 1 , -1
             j = min(i+1,lc)
             w(i) = (d(i)-ddot(mc-i,c(j,i),1,w(j),1))/c(i,i)
-         enddo
-      endif
+         end do
+      end if
 
       end subroutine lsei
 !*******************************************************************************
@@ -1223,7 +1223,7 @@
          j = min(i+1,n)
          call h12(1,i,i+1,me,e(1,i),1,t,e(1,j),1,le,n-i)
          call h12(2,i,i+1,me,e(1,i),1,t,f,1,1,1)
-      enddo
+      end do
 
 !  transform g and h to get least distance problem
 
@@ -1232,9 +1232,9 @@
          do j = 1 , n
             if ( abs(e(j,j))<epmach ) return
             g(i,j) = (g(i,j)-ddot(j-1,g(i,1),lg,e(1,j),1))/e(j,j)
-         enddo
+         end do
          h(i) = h(i) - ddot(n,g(i,1),lg,f,1)
-      enddo
+      end do
 
 !  solve least distance problem
 
@@ -1247,11 +1247,11 @@
          do i = n , 1 , -1
             j = min(i+1,n)
             x(i) = (x(i)-ddot(n-i,e(i,j),le,x(j),1))/e(i,i)
-         enddo
+         end do
          j = min(n+1,me)
          t = dnrm2(me-n,f(j),1)
          xnorm = sqrt(xnorm*xnorm+t*t)
-      endif
+      end if
 
       end subroutine lsi
 !*******************************************************************************
@@ -1317,15 +1317,15 @@
                do i = 1 , n
                   iw = iw + 1
                   w(iw) = g(j,i)
-               enddo
+               end do
                iw = iw + 1
                w(iw) = h(j)
-            enddo
+            end do
             if = iw + 1
             do i = 1 , n
                iw = iw + 1
                w(iw) = zero
-            enddo
+            end do
             w(iw+1) = one
             n1 = n + 1
             iz = iw + 2
@@ -1348,7 +1348,7 @@
                      fac = one/fac
                      do j = 1 , n
                         x(j) = fac*ddot(m,g(1,j),1,w(iy),1)
-                     enddo
+                     end do
                      xnorm = dnrm2(n,x,1)
 
                      ! compute lagrange multipliers for primal problem
@@ -1356,11 +1356,11 @@
                      w(1) = zero
                      call dcopy(m,w(1),0,w,1)
                      call daxpy(m,fac,w(iy),1,w,1)
-                  endif
-               endif
-            endif
-         endif
-      endif
+                  end if
+               end if
+            end if
+         end if
+      end if
 
       end subroutine ldp
 !*******************************************************************************
@@ -1443,7 +1443,7 @@
 
          do i = 1 , n
             index(i) = i
-         enddo
+         end do
          iz1 = 1
          iz2 = n
          nsetp = 0
@@ -1458,7 +1458,7 @@
             do iz = iz1 , iz2
                j = index(iz)
                w(j) = ddot(m-nsetp,a(npp1,j),1,b(npp1),1)
-            enddo
+            end do
 
 ! step three (test dual variables)
 
@@ -1468,8 +1468,8 @@
                if ( w(j)>wmax ) then
                   wmax = w(j)
                   izmax = iz
-               endif
-            enddo
+               end if
+            end do
 
 ! .....exit loop a
 
@@ -1498,7 +1498,7 @@
                      do jz = iz1 , iz2
                         jj = index(jz)
                         call h12(2,nsetp,npp1,m,a(1,j),1,up,a(1,jj),1,mda,1)
-                     enddo
+                     end do
                      k = min(npp1,mda)
                      w(j) = zero
                      call dcopy(m-nsetp,w(j),0,a(k,j),1)
@@ -1510,7 +1510,7 @@
                         if ( ip/=nsetp ) call daxpy(ip,-z(ip+1),a(1,jj),1,z,1)
                         jj = index(ip)
                         z(ip) = z(ip)/a(ip,jj)
-                     enddo
+                     end do
                      iter = iter + 1
                      if ( iter<=itmax ) then
 ! step seven to ten (step length algorithm)
@@ -1524,13 +1524,13 @@
                               if ( alpha>=t ) then
                                  alpha = t
                                  jj = ip
-                              endif
-                           endif
-                        enddo
+                              end if
+                           end if
+                        end do
                         do ip = 1 , nsetp
                            l = index(ip)
                            x(l) = (one-alpha)*x(l) + alpha*z(ip)
-                        enddo
+                        end do
 
 ! .....exit loop b
 
@@ -1550,7 +1550,7 @@
                            a(j-1,ii) = t
                            a(j,ii) = zero
                            call dsrot(1,b(j-1),1,b(j),1,c,s)
-                        enddo
+                        end do
                         npp1 = nsetp
                         nsetp = nsetp - 1
                         iz1 = iz1 - 1
@@ -1562,21 +1562,21 @@
                            do jj = 1 , nsetp
                               i = index(jj)
                               if ( x(i)<=zero ) goto 64
-                           enddo
+                           end do
                            call dcopy(m,b,1,z,1)
                            goto 62
-                        endif
+                        end if
                      else
                         mode = 3
                         goto 100
-                     endif
-                  endif
-               endif
+                     end if
+                  end if
+               end if
                a(npp1,j) = asave
                w(j) = zero
                goto 60
-            endif
-         endif
+            end if
+         end if
 ! step twelve (solution)
 
  100     k = min(npp1,m)
@@ -1584,8 +1584,8 @@
          if ( npp1>m ) then
             w(1) = zero
             call dcopy(n,w(1),0,w,1)
-         endif
-      endif
+         end if
+      end if
 
       end subroutine nnls
 !*******************************************************************************
@@ -1647,17 +1647,17 @@
              do l = j , n
                 h(l) = h(l) - a(j-1,l)**2
                 if ( h(l)>h(lmax) ) lmax = l
-             enddo
+             end do
              if ( diff(hmax+factor*h(lmax),hmax)>zero ) goto 20
-          endif
+          end if
           lmax = j
           do l = j , n
              h(l) = zero
              do i = j , m
                 h(l) = h(l) + a(i,l)**2
-             enddo
+             end do
              if ( h(l)>h(lmax) ) lmax = l
-          enddo
+          end do
           hmax = h(lmax)
 
           ! column interchanges if needed
@@ -1668,16 +1668,16 @@
                 tmp = a(i,j)
                 a(i,j) = a(i,lmax)
                 a(i,lmax) = tmp
-             enddo
+             end do
              h(lmax) = h(j)
-          endif
+          end if
 
           ! j-th transformation and application to a and b
 
           i = min(j+1,n)
           call h12(1,j,j+1,m,a(1,j),1,h(j),a(1,i),1,mda,n-j)
           call h12(2,j,j+1,m,a(1,j),1,h(j),b,1,mdb,nb)
-       enddo
+       end do
 
        !determine pseudorank:
 
@@ -1693,14 +1693,14 @@
 
     do jb = 1 , nb
        rnorm(jb) = dnrm2(m-k,b(kp1,jb),1)
-    enddo
+    end do
     if ( k>0 ) then
        if ( k/=n ) then
           ! householder decomposition of first k rows
           do i = k , 1 , -1
              call h12(1,i,kp1,n,a(i,1),mda,g(i),a,mda,1,i-1)
-          enddo
-       endif
+          end do
+       end if
        do jb = 1 , nb
 
           ! solve k*k triangular system
@@ -1708,18 +1708,18 @@
           do i = k , 1 , -1
              j = min(i+1,n)
              b(i,jb) = (b(i,jb)-ddot(k-i,a(i,j),mda,b(j,jb),1))/a(i,i)
-          enddo
+          end do
 
           ! complete solution vector
 
           if ( k/=n ) then
              do j = kp1 , n
                 b(j,jb) = zero
-             enddo
+             end do
              do i = 1 , k
                 call h12(2,i,kp1,n,a(i,1),mda,g(i),b(1,jb),1,mdb,1)
-             enddo
-          endif
+             end do
+          end if
 
           ! reorder solution according to previous column interchanges
 
@@ -1729,16 +1729,16 @@
                 tmp = b(l,jb)
                 b(l,jb) = b(j,jb)
                 b(j,jb) = tmp
-             endif
-          enddo
-       enddo
+             end if
+          end do
+       end do
     else
        do jb = 1 , nb
           do i = 1 , n
              b(i,jb) = zero
-          enddo
-       enddo
-    endif
+          end do
+       end do
+    end if
     krank = k
     end subroutine hfti
 !*******************************************************************************
@@ -1791,13 +1791,13 @@
             do j = l1 , m
                sm = abs(u(1,j))
                cl = max(sm,cl)
-            enddo
+            end do
             if ( cl<=zero ) return
             clinv = one/cl
             sm = (u(1,lpivot)*clinv)**2
             do j = l1 , m
                sm = sm + (u(1,j)*clinv)**2
-            enddo
+            end do
             cl = cl*sqrt(sm)
             if ( u(1,lpivot)>zero ) cl = -cl
             up = u(1,lpivot) - cl
@@ -1807,7 +1807,7 @@
 
          elseif ( cl<=zero ) then
             return
-         endif
+         end if
          if ( ncv>0 ) then
             b = up*u(1,lpivot)
             if ( b<zero ) then
@@ -1822,19 +1822,19 @@
                   do i = l1 , m
                      sm = sm + c(i3)*u(1,i)
                      i3 = i3 + ice
-                  enddo
+                  end do
                   if ( sm/=zero ) then
                      sm = sm*b
                      c(i2) = c(i2) + sm*up
                      do i = l1 , m
                         c(i4) = c(i4) + sm*u(1,i)
                         i4 = i4 + ice
-                     enddo
-                  endif
-               enddo
-            endif
-         endif
-      endif
+                     end do
+                  end if
+               end do
+            end if
+         end if
+      end if
 
       end subroutine h12
 !*******************************************************************************
@@ -1887,16 +1887,16 @@
             ! prepare negative update
             do i = 1 , n
                w(i) = z(i)
-            enddo
+            end do
             do i = 1 , n
                v = w(i)
                t = t + v*v/a(ij)
                do j = i + 1 , n
                   ij = ij + 1
                   w(j) = w(j) - v*a(ij)
-               enddo
+               end do
                ij = ij + 1
-            enddo
+            end do
             if ( t>=zero ) t = epmach/sigma
             do i = 1 , n
                j = n + 1 - i
@@ -1904,8 +1904,8 @@
                u = w(j)
                w(j) = t
                t = t - u*u/a(ij)
-            enddo
-         endif
+            end do
+         end if
          ! here updating begins
          do i = 1 , n
             v = z(i)
@@ -1923,18 +1923,18 @@
                   u = a(ij)
                   a(ij) = gamma*u + beta*z(j)
                   z(j) = z(j) - v*u
-               enddo
+               end do
             else
                do j = i + 1 , n
                   ij = ij + 1
                   z(j) = z(j) - v*a(ij)
                   a(ij) = a(ij) + beta*z(j)
-               enddo
-            endif
+               end do
+            end if
             ij = ij + 1
             t = tp
-         enddo
-      endif
+         end do
+      end if
 
       end subroutine ldl
 !*******************************************************************************
@@ -2017,7 +2017,7 @@
             elseif ( fu<=fv .or. v==x .or. v==w ) then
                v = u
                fv = fu
-            endif
+            end if
          else
             if ( u>=x ) a = x
             if ( u<x ) b = x
@@ -2027,7 +2027,7 @@
             fw = fx
             x = u
             fx = fu
-         endif
+         end if
       else
          !  initialization
          a = ax
@@ -2039,7 +2039,7 @@
          linmin = x
          mode = 1
          return
-      endif
+      end if
       m = 0.5_wp*(a+b)
       tol1 = eps*abs(x) + tol
       tol2 = tol1 + tol1
@@ -2065,7 +2065,7 @@
             if ( q<zero ) q = -q
             r = e
             e = d
-         endif
+         end if
 
          !  is parabola acceptable
          if ( abs(p)>=0.5_wp*abs(q*r) .or. p<=q*(a-x) .or. p>=q*(b-x) ) then
@@ -2079,7 +2079,7 @@
             !  f must not be evaluated too close to a or b
             if ( u-a<tol2 ) d = sign(tol1,m-x)
             if ( b-u<tol2 ) d = sign(tol1,m-x)
-         endif
+         end if
 
          !  f must not be evaluated too close to x
          if ( abs(d)<tol1 ) d = sign(tol1,d)
@@ -2087,7 +2087,7 @@
          linmin = u
          mode = 2
 
-      endif
+      end if
 
       end function linmin
 !*******************************************************************************
