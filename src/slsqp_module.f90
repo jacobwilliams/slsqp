@@ -4,10 +4,53 @@
 
     module slsqp_module
 
-    use iso_fortran_env, only: wp => real64
     use support_module
 
     implicit none
+
+    type :: linmin_data
+        !! data formerly saved in [[linmin]] routine.
+        real(wp) :: a    = zero
+        real(wp) :: b    = zero
+        real(wp) :: d    = zero
+        real(wp) :: e    = zero
+        real(wp) :: p    = zero
+        real(wp) :: q    = zero
+        real(wp) :: r    = zero
+        real(wp) :: u    = zero
+        real(wp) :: v    = zero
+        real(wp) :: w    = zero
+        real(wp) :: x    = zero
+        real(wp) :: m    = zero
+        real(wp) :: fu   = zero
+        real(wp) :: fv   = zero
+        real(wp) :: fw   = zero
+        real(wp) :: fx   = zero
+        real(wp) :: tol1 = zero
+        real(wp) :: tol2 = zero
+    end type linmin_data
+
+    type :: slsqpb_data
+        !! data formerly saved in [[slsqpb]].
+        real(wp) :: t       = zero
+        real(wp) :: f0      = zero
+        real(wp) :: h1      = zero
+        real(wp) :: h2      = zero
+        real(wp) :: h3      = zero
+        real(wp) :: h4      = zero
+        real(wp) :: t0      = zero
+        real(wp) :: gs      = zero
+        real(wp) :: tol     = zero
+        real(wp) :: alpha   = zero
+        integer  :: line    = 0
+        integer  :: iexact  = 0
+        integer  :: incons  = 0
+        integer  :: ireset  = 0
+        integer  :: itermx  = 0
+        integer  :: n1      = 0
+        integer  :: n2      = 0
+        integer  :: n3      = 0
+    end type slsqpb_data
 
     type,public :: slsqp_solver
 
@@ -32,25 +75,12 @@
         procedure(func),pointer :: f => null()  !! problem function subroutine
         procedure(grad),pointer :: g => null()  !! gradient subroutine
 
-        !formerly saved variables in slsqpb:
-        real(wp) :: t       = 0.0_wp
-        real(wp) :: f0      = 0.0_wp
-        real(wp) :: h1      = 0.0_wp
-        real(wp) :: h2      = 0.0_wp
-        real(wp) :: h3      = 0.0_wp
-        real(wp) :: h4      = 0.0_wp
-        real(wp) :: t0      = 0.0_wp
-        real(wp) :: gs      = 0.0_wp
-        real(wp) :: tol     = 0.0_wp
-        real(wp) :: alpha   = 0.0_wp
-        integer  :: line    = 0
-        integer  :: iexact  = 0
-        integer  :: incons  = 0
-        integer  :: ireset  = 0
-        integer  :: itermx  = 0
-        integer  :: n1      = 0
-        integer  :: n2      = 0
-        integer  :: n3      = 0
+        integer :: linesearch_mode = 1  !! linesearch mode.
+                                        !! `1` = inexact (Armijo) linesearch,
+                                        !! `2` = exact linesearch.
+        type(linmin_data),allocatable :: linmin !! data formerly within [[linmin]].
+                                                !! Only used when `linesearch_mode=2`
+        type(slsqpb_data) :: slsqpb  !! data formerly within [[slsqpb]].
 
     contains
 
@@ -89,21 +119,22 @@
 !>
 !  initialize the [[slsqp_solver]] class.  see [[slsqp]] for more details.
 
-    subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok)
+    subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,linesearch_mode,status_ok)
 
     implicit none
 
     class(slsqp_solver),intent(inout) :: me
-    integer,intent(in)                :: n         !! the number of varibles, n >= 1
-    integer,intent(in)                :: m         !! total number of constraints, m >= 0
-    integer,intent(in)                :: meq       !! number of equality constraints, meq >= 0
-    integer,intent(in)                :: max_iter  !! maximum number of iterations
-    procedure(func)                   :: f         !! problem function
-    procedure(grad)                   :: g         !! function to compute gradients
-    real(wp),dimension(n),intent(in)  :: xl        !! lower bound on `x`
-    real(wp),dimension(n),intent(in)  :: xu        !! upper bound on `x`
-    real(wp),intent(in)               :: acc       !! accuracy
-    logical,intent(out)               :: status_ok !! will be false if there were errors
+    integer,intent(in)                :: n               !! the number of varibles, n >= 1
+    integer,intent(in)                :: m               !! total number of constraints, m >= 0
+    integer,intent(in)                :: meq             !! number of equality constraints, meq >= 0
+    integer,intent(in)                :: max_iter        !! maximum number of iterations
+    procedure(func)                   :: f               !! problem function
+    procedure(grad)                   :: g               !! function to compute gradients
+    real(wp),dimension(n),intent(in)  :: xl              !! lower bound on `x`
+    real(wp),dimension(n),intent(in)  :: xu              !! upper bound on `x`
+    real(wp),intent(in)               :: acc             !! accuracy
+    integer,intent(in)                :: linesearch_mode !! 1 = inexact, 2 = exact
+    logical,intent(out)               :: status_ok       !! will be false if there were errors
 
     integer :: n1,mineq
 
@@ -121,6 +152,19 @@
     else if (any(xl>xu)) then
         write(*,*) 'error: lower bounds must be <= upper bounds.'
     else
+
+        !two linesearch modes:
+        select case (linesearch_mode)
+        case(1)     !inexact
+            me%linesearch_mode = linesearch_mode
+        case(2)     !exact
+            me%linesearch_mode = linesearch_mode
+            allocate(me%linmin)
+        case default
+            write(*,*) 'error: invalid linesearch_mode (must be 1 or 2): ',linesearch_mode
+            call me%destroy()
+            return
+        end select
 
         status_ok = .true.
         me%n = n
@@ -189,8 +233,6 @@
     integer :: i,mode,la,iter
     real(wp) :: acc
 
-    logical :: exact_linesearch = .false.   !! for now, not allowing exact linesearch (not threadsafe)
-
     !check setup:
     if (size(x)/=me%n) error stop 'invalid size(x) in slsqp_wrapper'
 
@@ -203,11 +245,15 @@
     g    = 0.0_wp
     c    = 0.0_wp
 
-    if (exact_linesearch) then
-        acc = -abs(me%acc)  !exact linesearch
-    else
-        acc = abs(me%acc)   !armijo-type linesearch
-    end if
+    !linesearch:
+    select case(me%linesearch_mode)
+    case(1)     !inexact (armijo-type linesearch)
+        acc = abs(me%acc)
+    case(2)     !exact
+        acc = -abs(me%acc)
+    case default
+        error stop 'invalid linesearch_mode in slsqp_wrapper'
+    end select
 
     !main solver loop:
     do
@@ -225,6 +271,8 @@
             write(*,*) i,x,f,norm2(c)
             i = i + 1
 
+            !note: not really an iteration (can also be during exact linesearch)
+
         end if
 
         if (mode==0 .or. mode==-1) then  !gradient evaluation (g&a)
@@ -238,15 +286,16 @@
             !write(*,*) 'g=',g
             !write(*,*) 'a=',a
 
+            !write(*,*) i,x,f,norm2(c)
+            !i = i + 1
+
         end if
 
         !main routine:
         call slsqp(me%m,me%meq,la,me%n,x,me%xl,me%xu,&
                     f,c,g,a,acc,iter,mode,&
                     me%w,me%l_w,me%jw,me%l_jw,&
-                    me%t,me%f0,me%h1,me%h2,me%h3,me%h4,&
-                    me%n1,me%n2,me%n3,me%t0,me%gs,me%tol,me%line,&
-                    me%alpha,me%iexact,me%incons,me%ireset,me%itermx)
+                    me%slsqpb,me%linmin)
 
         select case (mode)
         case(0) !required accuracy for solution obtained
@@ -294,7 +343,6 @@
 
 !*******************************************************************************
 !>
-!
 !  **slsqp**: **s**equential **l**east **sq**uares **p**rogramming
 !  to solve general nonlinear optimization problems
 !
@@ -337,11 +385,11 @@
 !
 !  Copyright 1991: Dieter Kraft, FHM
 !  BSD license
+!
+!@note: f,c,g,a must all be set by the user before each call.
 
     subroutine slsqp(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w,l_w, &
-                     jw,l_jw,&
-                     t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
-                     alpha,iexact,incons,ireset,itermx)
+                     jw,l_jw,sdat,ldat)
 
     implicit none
 
@@ -418,29 +466,10 @@
                                                 !! all constraints of the quadratic program finding
                                                 !! the search direction to the solution x*
     integer,dimension(l_jw),intent(inout) :: jw !! jw() is a one dimensional integer working space
+    type(slsqpb_data),intent(inout) :: sdat  !! data for [[slsqpb]].
+    type(linmin_data),intent(inout) :: ldat  !! data for [[linmin]].
 
-    ! note: f,c,g,a must all be set by the user before each call.
-
-     real(wp),intent(inout) :: t
-     real(wp),intent(inout) :: f0
-     real(wp),intent(inout) :: h1
-     real(wp),intent(inout) :: h2
-     real(wp),intent(inout) :: h3
-     real(wp),intent(inout) :: h4
-     integer ,intent(inout) :: n1
-     integer ,intent(inout) :: n2
-     integer ,intent(inout) :: n3
-     real(wp),intent(inout) :: t0
-     real(wp),intent(inout) :: gs
-     real(wp),intent(inout) :: tol
-     integer ,intent(inout) :: line
-     real(wp),intent(inout) :: alpha
-     integer ,intent(inout) :: iexact
-     integer ,intent(inout) :: incons
-     integer ,intent(inout) :: ireset
-     integer ,intent(inout) :: itermx
-
-     integer :: il , im , ir , is , iu , iv , iw , ix , mineq
+    integer :: il , im , ir , is , iu , iv , iw , ix , mineq, n1
 
 !.... note: there seems to be two slightly different specifications
 !     of the appropriate length of w. are they equivalent???
@@ -494,10 +523,14 @@
       iv = iu + n1
       iw = iv + n1
 
+      sdat%n1 = n1
+
       call slsqpb(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w(ir),w(il), &
                   w(ix),w(im),w(is),w(iu),w(iv),w(iw),jw,&
-                  t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
-                  alpha,iexact,incons,ireset,itermx)
+                  sdat%t,sdat%f0,sdat%h1,sdat%h2,sdat%h3,sdat%h4,&
+                  sdat%n1,sdat%n2,sdat%n3,sdat%t0,sdat%gs,sdat%tol,sdat%line,&
+                  sdat%alpha,sdat%iexact,sdat%incons,sdat%ireset,sdat%itermx,&
+                  ldat)
 
       end subroutine slsqp
 !*******************************************************************************
@@ -511,7 +544,7 @@
     subroutine slsqpb(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,r,l,x0,&
                       mu,s,u,v,w,iw,&
                       t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
-                      alpha,iexact,incons,ireset,itermx)
+                      alpha,iexact,incons,ireset,itermx,ldat)
     implicit none
 
     real(wp) ,intent(inout) :: t
@@ -532,6 +565,7 @@
     integer  ,intent(inout) :: incons
     integer  ,intent(inout) :: ireset
     integer  ,intent(inout) :: itermx
+    type(linmin_data),intent(inout) :: ldat !! data for [[linmin]].
 
     integer :: iw(*), i, iter, k, j, la, m, meq, mode, n
 
@@ -545,27 +579,17 @@
 !                     +(n1+mineq)*(n1-meq) + 2*meq + n1       for lsei
 !                      with mineq = m - meq + 2*n1  &  n1 = n+1
 
-!      save alpha , f0 , gs , h1 , h2 , h3 , h4 , t , t0 , tol , iexact ,&
-!         incons , ireset , itermx , line , n1 , n2 , n3
-
-      real(wp),parameter :: zero   = 0.0_wp
-      real(wp),parameter :: one    = 1.0_wp
-      real(wp),parameter :: two    = 2.0_wp
-      real(wp),parameter :: ten    = 10.0_wp
-      real(wp),parameter :: hun    = 100.0_wp
-      real(wp),parameter :: alfmin = 0.1_wp
-
       if ( mode<0 ) then
 
-!   call jacobian at current x
+          !   call jacobian at current x
 
-!   update cholesky-factors of hessian matrix by modified bfgs formula
+          !   update cholesky-factors of hessian matrix by modified bfgs formula
 
          do i = 1 , n
             u(i) = g(i) - ddot(m,a(1,i),1,r,1) - v(i)
          enddo
 
-!   l'*s
+         !   l'*s
 
          k = 0
          do i = 1 , n
@@ -578,7 +602,7 @@
             v(i) = s(i) + h1
          enddo
 
-!   d*l'*s
+         !   d*l'*s
 
          k = 1
          do i = 1 , n
@@ -586,7 +610,7 @@
             k = k + n1 - i
          enddo
 
-!   l*d*l'*s
+         !   l*d*l'*s
 
          do i = n , 1 , -1
             h1 = zero
@@ -610,9 +634,10 @@
          call ldl(n,l,u,+one/h1,v)
          call ldl(n,l,v,-one/h2,u)
 
-!   end of main iteration
+         !   end of main iteration
 
          goto 200
+
       elseif ( mode==0 ) then
 
          itermx = iter
@@ -632,9 +657,10 @@
          mu(1) = zero
          call dcopy(n,s(1),0,s,1)
          call dcopy(m,mu(1),0,mu,1)
+
       else
 
-!   call functions at current x
+         !   call functions at current x
 
          t = f
          do j = 1 , m
@@ -655,15 +681,14 @@
          else
             goto 500
          endif
+
       endif
 
 !   reset bfgs matrix
 
  100  ireset = ireset + 1
       if ( ireset>5 ) then
-
-!   check relaxed convergence in case of positive directional derivative
-
+         ! check relaxed convergence in case of positive directional derivative
          if ( (abs(f-f0)<tol .or. dnrm2(n,s,1)<tol) .and. h3<tol ) then
             mode = 0
          else
@@ -793,7 +818,10 @@
 !   exact linesearch
 
  400  if ( line/=3 ) then
-         alpha = linmin(line,alfmin,one,t,tol)
+         alpha = linmin(line,alfmin,one,t,tol, &
+                         ldat%a, ldat%b, ldat%d, ldat%e, ldat%p,   ldat%q,   &
+                         ldat%r, ldat%u, ldat%v, ldat%w, ldat%x,   ldat%m,   &
+                         ldat%fu,ldat%fv,ldat%fw,ldat%fx,ldat%tol1,ldat%tol2 )
          call dcopy(n,x0,1,x,1)
          call daxpy(n,alpha,s,1,x,1)
          mode = 1
@@ -875,9 +903,6 @@
 
       dimension a(la,n) , b(la) , g(n) , l(nl) , w(*) , x(n) , xl(n) , &
                 xu(n) , y(m+n+n)
-
-      real(wp),parameter :: zero = 0.0_wp
-      real(wp),parameter :: one  = 1.0_wp
 
       n1 = n + 1
       mineq = m - meq
@@ -1002,7 +1027,6 @@
 
 !*******************************************************************************
 !>
-!
 !  for mode=1, the subroutine returns the solution x of
 !  equality & inequality constrained least squares problem lsei :
 !
@@ -1052,9 +1076,6 @@
                  le , lg , mc , mc1 , me , mg , mode , n
       real(wp) :: c(lc,n) , e(le,n) , g(lg,n) , d(lc) , f(le) , &
                   h(lg) , x(n) , w(*) , t , xnrm , dum(1)
-
-      real(wp),parameter :: epmach = epsilon(1.0_wp)
-      real(wp),parameter :: zero   = 0.0_wp
 
       mode = 2
       if ( mc<=n ) then
@@ -1153,7 +1174,6 @@
 
 !*******************************************************************************
 !>
-!
 !  for mode=1, the subroutine returns the solution x of
 !  inequality constrained linear least squares problem:
 !
@@ -1196,9 +1216,6 @@
       integer :: i , j , le , lg , me , mg , mode , n , jw(lg)
       real(wp) :: e(le,n) , f(le) , g(lg,n) , h(lg) , x(n) , w(*) , &
                   xnorm , t
-
-      real(wp),parameter :: epmach = epsilon(1.0_wp)
-      real(wp),parameter :: one    = 1.0_wp
 
 !  qr-factors of e and application to f
 
@@ -1285,13 +1302,10 @@
 
       dimension g(mg,n) , h(m) , x(n) , w(*) , index(m)
 
-      real(wp),parameter :: zero = 0.0_wp
-      real(wp),parameter :: one  = 1.0_wp
-
       mode = 2
       if ( n>0 ) then
 
-!  state dual problem
+         ! state dual problem
 
          mode = 1
          x(1) = zero
@@ -1318,7 +1332,7 @@
             iy = iz + n1
             iwdual = iy + m
 
-!  solve dual problem
+            ! solve dual problem
 
             call nnls(w,n1,n1,m,w(if),w(iy),rnorm,w(iwdual),w(iz),index,mode)
 
@@ -1326,7 +1340,7 @@
                mode = 4
                if ( rnorm>zero ) then
 
-!  compute solution of primal problem
+                  ! compute solution of primal problem
 
                   fac = one - ddot(m,h,1,w(iy),1)
                   if ( diff(one+fac,one)>zero ) then
@@ -1337,7 +1351,7 @@
                      enddo
                      xnorm = dnrm2(n,x,1)
 
-!  compute lagrange multipliers for primal problem
+                     ! compute lagrange multipliers for primal problem
 
                      w(1) = zero
                      call dcopy(m,w(1),0,w,1)
@@ -1417,8 +1431,6 @@
       real(wp) :: a(mda,n) , b(m) , x(n) , w(n) , z(m) , asave , &
                   wmax , alpha , c , s , t , u , v , up , rnorm , unorm
 
-      real(wp),parameter :: zero   = 0.0_wp
-      real(wp),parameter :: one    = 1.0_wp
       real(wp),parameter :: factor = 1.0e-2_wp
 
       mode = 2
@@ -1618,7 +1630,6 @@
                 tau , hmax , tmp , &
                 u , v
 
-    real(wp),parameter :: zero   = 0.0_wp
     real(wp),parameter :: factor = 1.0e-3_wp
 
     k = 0
@@ -1771,9 +1782,6 @@
 
       dimension u(iue,*) , c(*)
 
-      real(wp),parameter :: one  = 1.0_wp
-      real(wp),parameter :: zero = 0.0_wp
-
       if ( 0<lpivot .and. lpivot<l1 .and. l1<=m ) then
          cl = abs(u(1,lpivot))
          if ( mode/=2 ) then
@@ -1871,11 +1879,6 @@
       integer :: i , ij , j , n
       real(wp) :: a(*) , t , v , w(*) , z(*) , u , tp , &
                        beta , alpha , delta , gamma , sigma
-
-      real(wp),parameter :: zero   = 0.0_wp
-      real(wp),parameter :: one    = 1.0_wp
-      real(wp),parameter :: four   = 4.0_wp
-      real(wp),parameter :: epmach = epsilon(1.0_wp)
 
       if ( sigma/=zero ) then
          ij = 1
@@ -1978,17 +1981,18 @@
 !
 !   status: 31. august  1984
 
-    real(wp) function linmin(mode,ax,bx,f,tol)
+    real(wp) function linmin(mode,ax,bx,f,tol,&
+                                a,b,d,e,p,q,r,u,v,&
+                                w,x,m,fu,fv,fw,fx,tol1,tol2)
+
     implicit none
 
       integer :: mode
-      real(wp) :: f , tol , a , b , d , e , p , q , r , u , v ,&
-                  w , x , m , fu , fv , fw , fx , tol1 , &
-                  tol2 , ax , bx
+      real(wp) :: f,tol,ax,bx
+      real(wp),intent(inout) :: a,b,d,e,p,q,r,u,v,w,x,m,fu,fv,fw,fx,tol1,tol2
 
       real(wp),parameter :: c    = (3.0_wp-sqrt(5.0_wp))/2.0_wp  !! golden section ratio = `0.381966011`
       real(wp),parameter :: eps  = sqrt(epsilon(1.0_wp))         !! square - root of machine precision
-      real(wp),parameter :: zero = 0.0_wp
 
       if ( mode==1 ) then
 

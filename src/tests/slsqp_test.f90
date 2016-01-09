@@ -13,6 +13,7 @@
     real(wp),dimension(n),parameter :: xl = [-1.0_wp, -1.0_wp]
     real(wp),dimension(n),parameter :: xu = [ 1.0_wp,  1.0_wp]
     real(wp),parameter              :: acc = 1.0e-8_wp
+    integer,parameter               :: linesearch_mode = 1  !! use inexact linesearch.
 
     real(wp),dimension(n) :: x
     integer :: istat
@@ -20,7 +21,8 @@
 
     x = [0.1_wp, 0.1_wp] !initial guess
 
-    call solver%initialize(n,m,meq,max_iter,acc,rosenbrock_func,rosenbrock_grad,xl,xu,status_ok)
+    call solver%initialize(n,m,meq,max_iter,acc,rosenbrock_func,rosenbrock_grad,&
+                            xl,xu,linesearch_mode,status_ok)
     if (status_ok) then
         call solver%optimize(x,istat)
         write(*,*) 'istat=',istat

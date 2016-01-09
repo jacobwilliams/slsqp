@@ -5,7 +5,18 @@
 
     module support_module
 
+    use iso_fortran_env, only: wp => real64
+
     implicit none
+
+    real(wp),parameter :: epmach = epsilon(1.0_wp)
+    real(wp),parameter :: zero   = 0.0_wp
+    real(wp),parameter :: one    = 1.0_wp
+    real(wp),parameter :: two    = 2.0_wp
+    real(wp),parameter :: four   = 4.0_wp
+    real(wp),parameter :: ten    = 10.0_wp
+    real(wp),parameter :: hun    = 100.0_wp
+    real(wp),parameter :: alfmin = 0.1_wp
 
     contains
 !*******************************************************************************
@@ -17,16 +28,16 @@
       !! uses unrolled loops for increments equal to one.
       !! jack dongarra, linpack, 3/11/78.
 
-      double precision dx(*) , dy(*) , da
-      integer i , incx , incy , ix , iy , m , mp1 , n
+      real(wp) :: dx(*) , dy(*) , da
+      integer :: i , incx , incy , ix , iy , m , mp1 , n
 
       if ( n<=0 ) return
-      if ( da==0.0d0 ) return
+      if ( da==zero ) return
       if ( incx==1 .and. incy==1 ) then
 
-!        code for both increments equal to 1
+        ! code for both increments equal to 1
 
-!        clean-up loop
+        ! clean-up loop
 
          m = mod(n,4)
          if ( m/=0 ) then
@@ -44,8 +55,8 @@
          enddo
       else
 
-!        code for unequal increments or equal increments
-!        not equal to 1
+         ! code for unequal increments or equal increments
+         ! not equal to 1
 
          ix = 1
          iy = 1
@@ -67,8 +78,8 @@
 !! uses unrolled loops for increments equal to one.
 !! jack dongarra, linpack, 3/11/78.
 
-      double precision dx(*) , dy(*)
-      integer i , incx , incy , ix , iy , m , mp1 , n
+      real(wp) :: dx(*) , dy(*)
+      integer :: i , incx , incy , ix , iy , m , mp1 , n
 
       if ( n<=0 ) return
       if ( incx==1 .and. incy==1 ) then
@@ -112,18 +123,18 @@
       endif
       end subroutine dcopy
 
-      double precision function ddot(n,dx,incx,dy,incy)
+      real(wp) function ddot(n,dx,incx,dy,incy)
       implicit none
 
 !!  forms the dot product of two vectors.
 !!  uses unrolled loops for increments equal to one.
 !!  jack dongarra, linpack, 3/11/78.
 
-      double precision dx(*) , dy(*) , dtemp
-      integer i , incx , incy , ix , iy , m , mp1 , n
+      real(wp) :: dx(*) , dy(*) , dtemp
+      integer :: i , incx , incy , ix , iy , m , mp1 , n
 
-      ddot = 0.0d0
-      dtemp = 0.0d0
+      ddot = zero
+      dtemp = zero
       if ( n<=0 ) return
       if ( incx==1 .and. incy==1 ) then
 
@@ -143,7 +154,7 @@
          endif
          mp1 = m + 1
          do i = mp1 , n , 5
-            dtemp = dtemp + dx(i)*dy(i) + dx(i+1)*dy(i+1) + dx(i+2)     &
+            dtemp = dtemp + dx(i)*dy(i) + dx(i+1)*dy(i+1) + dx(i+2) &
                     *dy(i+2) + dx(i+3)*dy(i+3) + dx(i+4)*dy(i+4)
          enddo
          ddot = dtemp
@@ -166,11 +177,10 @@
       endif
       end function ddot
 
-      double precision function dnrm1(n,x,i,j)
+      real(wp) function dnrm1(n,x,i,j)
       implicit none
-      integer n , i , j , k
-      double precision snormx , sum , x(n) , zero , one , scale , temp
-      data zero/0.0d0/ , one/1.0d0/
+      integer :: n , i , j , k
+      real(wp) :: snormx , sum , x(n) , scale , temp
 
 !!  dnrm1 - computes the i-norm of a vector
 !!  between the ith and the jth elements
@@ -206,15 +216,13 @@
 !  replaced original routine with this one from blas:
 !  http://netlib.sandia.gov/blas/dnrm2.f
 
-        double precision function dnrm2(n,x,incx)
+        real(wp) function dnrm2(n,x,incx)
         implicit none
-  !     .. scalar arguments ..
-        integer incx , n
-  !     ..
-  !     .. array arguments ..
-        double precision x(*)
-  !     ..
-  !
+
+        integer,intent(in) :: incx
+        integer,intent(in) :: n
+        real(wp),intent(in) :: x(*)
+
   !  purpose
   !  =======
   !
@@ -231,18 +239,10 @@
   !     sven hammarling, nag ltd.
   !
   !  =====================================================================
-  !
-  !     .. parameters ..
-        double precision one , zero
-        parameter (one=1.0d+0,zero=0.0d+0)
-  !     ..
-  !     .. local scalars ..
-        double precision absxi , norm , scale , ssq
-        integer ix
-  !     ..
-  !     .. intrinsic functions ..
-        intrinsic abs , sqrt
-  !     ..
+
+        real(wp) :: absxi , norm , scale , ssq
+        integer :: ix
+
         if ( n<1 .or. incx<1 ) then
            norm = zero
         elseif ( n==1 ) then
@@ -253,7 +253,6 @@
   !        the following loop is equivalent to this call to the lapack
   !        auxiliary routine:
   !        call dlassq( n, x, incx, scale, ssq )
-  !
            do ix = 1 , 1 + (n-1)*incx , incx
               if ( x(ix)/=zero ) then
                  absxi = abs(x(ix))
@@ -267,7 +266,7 @@
            enddo
            norm = scale*sqrt(ssq)
         endif
-  !
+
         dnrm2 = norm
 
     end function dnrm2
@@ -275,16 +274,16 @@
       subroutine dsrot(n,dx,incx,dy,incy,c,s)
       implicit none
 
-!!  applies a plane rotation.
-!!  jack dongarra, linpack, 3/11/78.
+    !!  applies a plane rotation.
+    !!  jack dongarra, linpack, 3/11/78.
 
-      double precision dx(*) , dy(*) , dtemp , c , s
-      integer i , incx , incy , ix , iy , n
+      real(wp) :: dx(*) , dy(*) , dtemp , c , s
+      integer :: i , incx , incy , ix , iy , n
 
       if ( n<=0 ) return
       if ( incx==1 .and. incy==1 ) then
 
-!       code for both increments equal to 1
+         !code for both increments equal to 1
 
          do i = 1 , n
             dtemp = c*dx(i) + s*dy(i)
@@ -294,8 +293,7 @@
          return
       endif
 
-!       code for unequal increments or equal increments not equal
-!         to 1
+      ! code for unequal increments or equal increments not equal to 1
 
       ix = 1
       iy = 1
@@ -314,13 +312,11 @@
       subroutine dsrotg(da,db,c,s)
       implicit none
 
-!!  construct givens plane rotation.
-!!  jack dongarra, linpack, 3/11/78.
-!!                 modified 9/27/86.
+    !!  construct givens plane rotation.
+    !!  jack dongarra, linpack, 3/11/78.
+    !!                 modified 9/27/86.
 
-      double precision da , db , c , s , roe , scale , r , z , one ,    &
-                       zero
-      data one , zero/1.0d+00 , 0.0d+00/
+      real(wp) :: da , db , c , s , roe , scale , r , z
 
       roe = db
       if ( abs(da)>abs(db) ) roe = da
@@ -344,19 +340,19 @@
       subroutine dscal(n,da,dx,incx)
       implicit none
 
-!!  scales a vector by a constant.
-!!  uses unrolled loops for increment equal to one.
-!!  jack dongarra, linpack, 3/11/78.
+    !!  scales a vector by a constant.
+    !!  uses unrolled loops for increment equal to one.
+    !!  jack dongarra, linpack, 3/11/78.
 
-      double precision da , dx(*)
-      integer i , incx , m , mp1 , n , nincx
+      real(wp) :: da , dx(*)
+      integer :: i , incx , m , mp1 , n , nincx
 
-      if ( n<=0 .or. incx<=0) ) return
+      if ( n<=0 .or. incx<=0 ) return
       if ( incx==1 ) then
 
-!        code for increment equal to 1
+         ! code for increment equal to 1
 
-!        clean-up loop
+         ! clean-up loop
 
          m = mod(n,5)
          if ( m/=0 ) then
@@ -375,7 +371,7 @@
          enddo
       else
 
-!        code for increment not equal to 1
+         ! code for increment not equal to 1
 
          nincx = n*incx
          do i = 1 , nincx , incx
