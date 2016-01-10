@@ -761,22 +761,19 @@
 !  for `mode=1`, the subroutine returns the solution `x` of
 !  equality & inequality constrained least squares problem lsei :
 !
-!                min ||e*x - f||
-!                 x
+!  \( \underset{x}{\min} ||E x - f|| \)
 !
-!                s.t.  c*x  = d,
-!                      g*x >= h.
+!  s.t.  \( C x  = d  \) and \( G x \ge h \).
 !
-!  using qr decomposition & orthogonal basis of nullspace of c
-!  chapter 23.6 of lawson & hanson: solving least squares problems.
+!  using QR decomposition & orthogonal basis of nullspace of \( C \).
 !
-!  the following dimensions of the arrays defining the problem
+!  The following dimensions of the arrays defining the problem
 !  are necessary:
 !
-!        dim(e) :   formal (le,n),    actual (me,n)
-!        dim(f) :   formal (le  ),    actual (me  )
 !        dim(c) :   formal (lc,n),    actual (mc,n)
 !        dim(d) :   formal (lc  ),    actual (mc  )
+!        dim(e) :   formal (le,n),    actual (me,n)
+!        dim(f) :   formal (le  ),    actual (me  )
 !        dim(g) :   formal (lg,n),    actual (mg,n)
 !        dim(h) :   formal (lg  ),    actual (mg  )
 !        dim(x) :   formal (n   ),    actual (n   )
@@ -784,33 +781,49 @@
 !                 +(n-mc+1)*(mg+2)+2*mg     for lsi
 !        dim(jw):   max(mg,l)
 !
-!  on entry, the user has to provide the arrays c, d, e, f, g, and h.
-!  on return, all arrays will be changed by the subroutine.
+!  On entry, the user has to provide the arrays C, d, E, f, G, and h.
+!  On return, all arrays will be changed by the subroutine.
 !
-!  x     stores the solution vector
-!  xnorm stores the residuum of the solution in euclidian norm
-!  w     stores the vector of lagrange multipliers in its first
-!        mc+mg elements
-!  mode  is a success-failure flag with the following meanings:
-!       mode=1: successful computation
-!            2: error return because of wrong dimensions (n<1)
-!            3: iteration count exceeded by nnls
-!            4: inequality constraints incompatible
-!            5: matrix e is not of full rank
-!            6: matrix c is not of full rank
-!            7: rank defect in hfti
+!### Reference
+!  Chapter 23.6 of Lawson & Hanson: Solving least squares problems.
 !
 !### History
 !  * 18.5.1981, dieter kraft, dfvlr oberpfaffenhofen
 !  * 20.3.1987, dieter kraft, dfvlr oberpfaffenhofen
 
     subroutine lsei(c,d,e,f,g,h,lc,mc,le,me,lg,mg,n,x,xnrm,w,jw,mode)
+
     implicit none
 
-      integer :: jw(*) , i , ie , if , ig , iw , j , k , krank , l , lc , &
-                 le , lg , mc , mc1 , me , mg , mode , n
-      real(wp) :: c(lc,n) , e(le,n) , g(lg,n) , d(lc) , f(le) , &
-                  h(lg) , x(n) , w(*) , t , xnrm , dum(1)
+    integer,intent(in)                      :: lc
+    integer,intent(in)                      :: mc
+    integer,intent(in)                      :: le
+    integer,intent(in)                      :: me
+    integer,intent(in)                      :: lg
+    integer,intent(in)                      :: mg
+    integer,intent(in)                      :: n
+    real(wp),dimension(lc,n),intent(inout)  :: c
+    real(wp),dimension(lc)  ,intent(inout)  :: d
+    real(wp),dimension(le,n),intent(inout)  :: e
+    real(wp),dimension(le)  ,intent(inout)  :: f
+    real(wp),dimension(lg,n),intent(inout)  :: g
+    real(wp),dimension(lg)  ,intent(inout)  :: h
+    real(wp),dimension(n)   ,intent(out)    :: x    !! stores the solution vector
+    real(wp),intent(out)                    :: xnrm !! stores the residuum of the solution in euclidian norm
+    real(wp),dimension(*)   ,intent(inout)  :: w    !! on return, stores the vector of lagrange multipliers
+                                                    !! in its first `mc+mg` elements
+    integer,dimension(*)    ,intent(inout)  :: jw
+    integer,intent(out)                     :: mode !! is a success-failure flag with the following meanings:
+                                                    !! ***1:*** successful computation,
+                                                    !! ***2:*** error return because of wrong dimensions (`n<1`),
+                                                    !! ***3:*** iteration count exceeded by [[nnls]],
+                                                    !! ***4:*** inequality constraints incompatible,
+                                                    !! ***5:*** matrix `e` is not of full rank,
+                                                    !! ***6:*** matrix `c` is not of full rank,
+                                                    !! ***7:*** rank defect in [[hfti]]
+
+      integer :: i , ie, if , ig , iw , j , k , krank , l , mc1
+      real(wp) :: t , dum(1)
 
       mode = 2
       if ( mc<=n ) then
@@ -821,7 +834,7 @@
          if = ie + me*l
          ig = if + me
 
-!  triangularize c and apply factors to e and g
+         !  triangularize c and apply factors to e and g
 
          do i = 1 , mc
             j = min(i+1,lc)
@@ -830,7 +843,7 @@
             call h12(2,i,i+1,n,c(i,1),lc,w(iw+i),g,lg,1,mg)
          end do
 
-!  solve c*x=d and modify f
+         !  solve c*x=d and modify f
 
          mode = 6
          do i = 1 , mc
@@ -848,7 +861,7 @@
                w(if-1+i) = f(i) - ddot(mc,e(i,1),le,x,1)
             end do
 
-!  store transformed e & g
+            !  store transformed e & g
 
             do i = 1 , me
                call dcopy(l,e(i,mc1),le,w(ie-1+i),me)
@@ -858,7 +871,7 @@
             end do
 
             if ( mg>0 ) then
-!  modify h and solve inequality constrained ls problem
+                !  modify h and solve inequality constrained ls problem
 
                do i = 1 , mg
                   h(i) = h(i) - ddot(mc,g(i,1),lg,x,1)
@@ -871,7 +884,7 @@
                if ( mode/=1 ) return
             else
 
-!  solve ls without inequality constraints
+               ! solve ls without inequality constraints
 
                mode = 7
                k = max(le,n)
@@ -884,7 +897,7 @@
             end if
          end if
 
-!  solution of original problem and lagrange multipliers
+         !  solution of original problem and lagrange multipliers
 
          do i = 1 , me
             f(i) = ddot(n,e(i,1),le,x,1) - f(i)
@@ -909,19 +922,16 @@
 
 !*******************************************************************************
 !>
-!  for mode=1, the subroutine returns the solution x of
+!  for `mode=1`, the subroutine returns the solution `x` of
 !  inequality constrained linear least squares problem:
 !
-!                    min ||e*x-f||
-!                     x
+!  \( \underset{x}{\min} ||E x - f|| \)
 !
-!                    s.t.  g*x >= h
+!  s.t. \( G x \ge h \).
 !
-!     the algorithm is based on qr decomposition as described in
-!     chapter 23.5 of lawson & hanson: solving least squares problems
+!  the following dimensions of the arrays defining the problem
+!  are necessary:
 !
-!     the following dimensions of the arrays defining the problem
-!     are necessary
 !     dim(e) :   formal (le,n),    actual (me,n)
 !     dim(f) :   formal (le  ),    actual (me  )
 !     dim(g) :   formal (lg,n),    actual (mg,n)
@@ -929,30 +939,37 @@
 !     dim(x) :   n
 !     dim(w) :   (n+1)*(mg+2) + 2*mg
 !     dim(jw):   lg
-!     on entry, the user has to provide the arrays e, f, g, and h.
-!     on return, all arrays will be changed by the subroutine.
-!     x     stores the solution vector
-!     xnorm stores the residuum of the solution in euclidian norm
-!     w     stores the vector of lagrange multipliers in its first
-!           mg elements
-!     mode  is a success-failure flag with the following meanings:
-!          mode=1: successful computation
-!               2: error return because of wrong dimensions (n<1)
-!               3: iteration count exceeded by nnls
-!               4: inequality constraints incompatible
-!               5: matrix e is not of full rank
 !
-!     03.01.1980, dieter kraft: coded
-!     20.03.1987, dieter kraft: revised to fortran 77
+!  on entry, the user has to provide the arrays e, f, g, and h.
+!  on return, all arrays will be changed by the subroutine.
+!
+!  x     stores the solution vector
+!  xnorm stores the residuum of the solution in euclidian norm
+!  w     stores the vector of lagrange multipliers in its first
+!        mg elements
+!  mode  is a success-failure flag with the following meanings:
+!       mode=1: successful computation
+!            2: error return because of wrong dimensions (n<1)
+!            3: iteration count exceeded by nnls
+!            4: inequality constraints incompatible
+!            5: matrix e is not of full rank
+!
+!### Reference
+!  Chapter 23.6 of Lawson & Hanson: Solving least squares problems.
+!
+!### History
+!  * 03.01.1980, dieter kraft: coded
+!  * 20.03.1987, dieter kraft: revised to fortran 77
 
     subroutine lsi(e,f,g,h,le,me,lg,mg,n,x,xnorm,w,jw,mode)
+
     implicit none
 
       integer :: i , j , le , lg , me , mg , mode , n , jw(lg)
       real(wp) :: e(le,n) , f(le) , g(lg,n) , h(lg) , x(n) , w(*) , &
                   xnorm , t
 
-!  qr-factors of e and application to f
+      !  qr-factors of e and application to f
 
       do i = 1 , n
          j = min(i+1,n)
@@ -960,7 +977,7 @@
          call h12(2,i,i+1,me,e(1,i),1,t,f,1,1,1)
       end do
 
-!  transform g and h to get least distance problem
+      !  transform g and h to get least distance problem
 
       mode = 5
       do i = 1 , mg
@@ -971,12 +988,12 @@
          h(i) = h(i) - ddot(n,g(i,1),lg,f,1)
       end do
 
-!  solve least distance problem
+      !  solve least distance problem
 
       call ldp(g,lg,mg,n,h,x,xnorm,w,jw,mode)
       if ( mode==1 ) then
 
-!  solution of original problem
+         !  solution of original problem
 
          call daxpy(n,one,f,1,x,1)
          do i = n , 1 , -1
