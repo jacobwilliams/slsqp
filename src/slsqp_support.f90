@@ -1,22 +1,27 @@
 !*******************************************************************************
-!>
-!  Support routines for SLSQP. For example, a selection from BLAS level 1.
+!> license: BSD
+!
+!  Support routines for SLSQP. For example, routines from
+!  [BLAS](http://www.netlib.org/blas/) and [LINPACK](http://www.netlib.org/linpack/).
 !  These have also been refactored into modern Fortran.
 
-    module support_module
+    module slsqp_support
 
-    use iso_fortran_env, only: wp => real64
+    use slsqp_kinds
 
     implicit none
 
-    real(wp),parameter :: epmach = epsilon(1.0_wp)
-    real(wp),parameter :: zero   = 0.0_wp
-    real(wp),parameter :: one    = 1.0_wp
-    real(wp),parameter :: two    = 2.0_wp
-    real(wp),parameter :: four   = 4.0_wp
-    real(wp),parameter :: ten    = 10.0_wp
-    real(wp),parameter :: hun    = 100.0_wp
-    real(wp),parameter :: alfmin = 0.1_wp
+    private
+
+    real(wp),parameter,public :: epmach = epsilon(1.0_wp)
+    real(wp),parameter,public :: zero   = 0.0_wp
+    real(wp),parameter,public :: one    = 1.0_wp
+    real(wp),parameter,public :: two    = 2.0_wp
+    real(wp),parameter,public :: four   = 4.0_wp
+    real(wp),parameter,public :: ten    = 10.0_wp
+    real(wp),parameter,public :: hun    = 100.0_wp
+
+    public :: daxpy,dcopy,ddot,dnrm2,dsrot,dsrotg,dscal
 
     contains
 !*******************************************************************************
@@ -25,6 +30,8 @@
 !>
 !  constant times a vector plus a vector.
 !  uses unrolled loops for increments equal to one.
+!
+!### Author
 !  jack dongarra, linpack, 3/11/78.
 
       subroutine daxpy(n,da,dx,incx,dy,incy)
@@ -80,6 +87,8 @@
 !>
 !  copies a vector, x, to a vector, y.
 !  uses unrolled loops for increments equal to one.
+!
+!### Author
 !  jack dongarra, linpack, 3/11/78.
 
     subroutine dcopy(n,dx,incx,dy,incy)
@@ -138,6 +147,8 @@
 !>
 !  forms the dot product of two vectors.
 !  uses unrolled loops for increments equal to one.
+!
+!### Author
 !  jack dongarra, linpack, 3/11/78.
 
       real(wp) function ddot(n,dx,incx,dy,incy)
@@ -196,10 +207,8 @@
 
 !*******************************************************************************
 !>
-!  Returns the euclidean norm of a vector via the function
-!  name, so that
-!
-!     dnrm2 := sqrt( x'*x )
+!  Function that returns the Euclidean norm
+!  \( \sqrt{ \mathbf{x}^T \mathbf{x} } \) of a vector \( \mathbf{x} \).
 !
 !### Further details
 !
@@ -215,9 +224,9 @@
 
         implicit none
 
-        integer,intent(in) :: incx
-        integer,intent(in) :: n
-        real(wp),intent(in) :: x(*)
+        integer,intent(in)               :: incx
+        integer,intent(in)               :: n
+        real(wp),dimension(*),intent(in) :: x
 
         real(wp) :: absxi , norm , scale , ssq
         integer :: ix
@@ -229,9 +238,9 @@
         else
            scale = zero
            ssq = one
-  !        the following loop is equivalent to this call to the lapack
-  !        auxiliary routine:
-  !        call dlassq( n, x, incx, scale, ssq )
+           ! the following loop is equivalent to this call to the lapack
+           ! auxiliary routine:
+           ! call dlassq( n, x, incx, scale, ssq )
            do ix = 1 , 1 + (n-1)*incx , incx
               if ( x(ix)/=zero ) then
                  absxi = abs(x(ix))
@@ -254,6 +263,8 @@
 !*******************************************************************************
 !>
 !  Applies a plane rotation.
+!
+!### Author
 !  jack dongarra, linpack, 3/11/78.
 
     subroutine dsrot(n,dx,incx,dy,incy,c,s)
@@ -297,6 +308,8 @@
 !*******************************************************************************
 !>
 !  Construct givens plane rotation.
+!
+!### Author
 !  jack dongarra, linpack, 3/11/78.
 !  modified 9/27/86.
 
@@ -331,6 +344,8 @@
 !>
 !  scales a vector by a constant.
 !  uses unrolled loops for increment equal to one.
+!
+!### Author
 !  jack dongarra, linpack, 3/11/78.
 
     subroutine dscal(n,da,dx,incx)
@@ -377,5 +392,5 @@
 !*******************************************************************************
 
 !*******************************************************************************
-    end module support_module
+    end module slsqp_support
 !*******************************************************************************

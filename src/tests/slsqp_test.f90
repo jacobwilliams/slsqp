@@ -5,7 +5,7 @@
     program slsqp_test
 
     use slsqp_module
-    use iso_fortran_env,    only: wp => real64
+    use slsqp_kinds
 
     implicit none
 
@@ -18,6 +18,7 @@
     real(wp),dimension(n),parameter :: xu = [ 1.0_wp,  1.0_wp]
     real(wp),parameter              :: acc = 1.0e-8_wp
     integer,parameter               :: linesearch_mode = 1  !! use inexact linesearch.
+    !integer,parameter               :: linesearch_mode = 2  !! use exact linesearch.
 
     real(wp),dimension(n) :: x
     integer :: istat
