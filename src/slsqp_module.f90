@@ -11,7 +11,7 @@
     use slsqp_kinds
     use slsqp_support
     use slsqp_core
-    use iso_fortran_env, only: error_unit
+    use iso_fortran_env, only: error_unit,output_unit
 
     implicit none
 
@@ -21,12 +21,13 @@
 
         private
 
-        integer :: n        = 0
-        integer :: m        = 0
-        integer :: meq      = 0
-        integer :: max_iter = 0    !! maximum number of iterations
+        integer :: n        = 0        !! number of optimization variables (\( n > 0 \))
+        integer :: m        = 0        !! number of constraints (\( m \ge 0 \))
+        integer :: meq      = 0        !! number of equality constraints (\( m \ge m_{eq} \ge 0 \))
+        integer :: max_iter = 0        !! maximum number of iterations
+        real(wp) :: acc     = zero     !! accuracy tolerance
 
-        real(wp) :: acc = 0.0_wp   !! accuracy tolerance
+        integer :: iprint = output_unit !! unit number of status printing (0 for no printing)
 
         real(wp),dimension(:),allocatable :: xl  !! lower bound on x
         real(wp),dimension(:),allocatable :: xu  !! upper bound on x
@@ -54,6 +55,8 @@
         procedure,public :: initialize => initialize_slsqp
         procedure,public :: destroy    => destroy_slsqp
         procedure,public :: optimize   => slsqp_wrapper
+
+        procedure :: report_message
 
     end type slsqp_solver
 
@@ -84,7 +87,8 @@
 !>
 !  initialize the [[slsqp_solver]] class.  see [[slsqp]] for more details.
 
-    subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,linesearch_mode,status_ok)
+    subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok,&
+                                linesearch_mode,iprint)
 
     implicit none
 
@@ -98,38 +102,43 @@
     real(wp),dimension(n),intent(in)  :: xl              !! lower bound on `x`
     real(wp),dimension(n),intent(in)  :: xu              !! upper bound on `x`
     real(wp),intent(in)               :: acc             !! accuracy
-    integer,intent(in)                :: linesearch_mode !! 1 = inexact, 2 = exact
     logical,intent(out)               :: status_ok       !! will be false if there were errors
+    integer,intent(in),optional       :: linesearch_mode !! 1 = inexact (default), 2 = exact
+    integer,intent(in),optional       :: iprint          !! unit number of status messages (default=output_unit)
 
     integer :: n1,mineq
 
     status_ok = .false.
     call me%destroy()
 
+    if (present(iprint)) me%iprint = iprint
+
     if (size(xl)/=size(xu) .or. size(xl)/=n) then
-        write(error_unit,*) 'error: invalid upper or lower bound vector size'
+        call me%report_message('error: invalid upper or lower bound vector size')
     else if (meq<0 .or. meq>m) then
-        write(error_unit,*) 'error: invalid meq value:', meq
+        call me%report_message('error: invalid meq value:', ival=meq)
     else if (m<0) then
-        write(error_unit,*) 'error: invalid m value:', m
+        call me%report_message('error: invalid m value:', ival=m)
     else if (n<1) then
-        write(error_unit,*) 'error: invalid n value:', n
+        call me%report_message('error: invalid n value:', ival=n)
     else if (any(xl>xu)) then
-        write(error_unit,*) 'error: lower bounds must be <= upper bounds.'
+        call me%report_message('error: lower bounds must be <= upper bounds.')
     else
 
-        !two linesearch modes:
-        select case (linesearch_mode)
-        case(1)     !inexact
-            me%linesearch_mode = linesearch_mode
-        case(2)     !exact
-            me%linesearch_mode = linesearch_mode
-            allocate(me%linmin)
-        case default
-            write(error_unit,*) 'error: invalid linesearch_mode (must be 1 or 2): ',linesearch_mode
-            call me%destroy()
-            return
-        end select
+        if (present(linesearch_mode)) then
+            !two linesearch modes:
+            select case (linesearch_mode)
+            case(1)     !inexact
+                me%linesearch_mode = linesearch_mode
+            case(2)     !exact
+                me%linesearch_mode = linesearch_mode
+                allocate(me%linmin)
+            case default
+                call me%report_message('error: invalid linesearch_mode (must be 1 or 2): ',ival=linesearch_mode)
+                call me%destroy()
+                return
+            end select
+        end if
 
         status_ok = .true.
         me%n = n
@@ -151,7 +160,7 @@
                  (n1+mineq)*(n1-meq) + 2*meq + n1      + &   !for lsei
                   n1*n/2 + 2*m + 3*n +3*n1 + 1               !for slsqpb
         allocate(me%w(me%l_w))
-        me%w = 0.0_wp
+        me%w = zero
 
         me%l_jw = mineq
         allocate(me%jw(me%l_jw))
@@ -179,14 +188,15 @@
 !>
 !  main routine for calling [[slsqp]].
 
-    subroutine slsqp_wrapper(me,x,istat)
+    subroutine slsqp_wrapper(me,x,istat,iterations)
 
     implicit none
 
     class(slsqp_solver),intent(inout)   :: me
-    real(wp),dimension(:),intent(inout) :: x        !! in: initialize optimization variables,
-                                                    !! out: solution.
-    integer,intent(out)                 :: istat    !! status code
+    real(wp),dimension(:),intent(inout) :: x          !! in: initialize optimization variables,
+                                                      !! out: solution.
+    integer,intent(out)                 :: istat      !! status code
+    integer,intent(out),optional        :: iterations !! number of iterations
 
     real(wp)                               :: f        !! objective function
     real(wp),dimension(max(1,me%m))        :: c        !! constraint vector
@@ -200,7 +210,7 @@
 
     !check setup:
     if (size(x)/=me%n) then
-        write(error_unit,*) 'invalid size(x) in slsqp_wrapper'
+        call me%report_message('invalid size(x) in slsqp_wrapper')
         istat = -100
         return
     end if
@@ -210,9 +220,10 @@
     iter = me%max_iter
     la   = max(1,me%m)
     mode = 0
-    a    = 0.0_wp
-    g    = 0.0_wp
-    c    = 0.0_wp
+    a    = zero
+    g    = zero
+    c    = zero
+    if (present(iterations)) iterations = 0
 
     !linesearch:
     select case(me%linesearch_mode)
@@ -221,7 +232,7 @@
     case(2)     !exact
         acc = -abs(me%acc)
     case default
-        write(error_unit,*) 'invalid linesearch_mode in slsqp_wrapper'
+        call me%report_message('invalid linesearch_mode in slsqp_wrapper')
         istat = -101
         return
     end select
@@ -270,46 +281,100 @@
 
         select case (mode)
         case(0) !required accuracy for solution obtained
-            write(*,*) ''
-            write(*,*) 'solution: ',x
-            write(*,*) ''
+            call me%report_message('required accuracy for solution obtained')
             exit
         case(1,-1)
             !continue to next call
         case(2);
-            write(*,*) 'number of equality contraints larger than n'
+            call me%report_message('number of equality contraints larger than n')
             exit
         case(3);
-            write(*,*) 'more than 3*n iterations in lsq subproblem'
+            call me%report_message('more than 3*n iterations in lsq subproblem')
             exit
         case(4);
-            write(*,*) 'inequality constraints incompatible'
+            call me%report_message('inequality constraints incompatible')
             exit
         case(5);
-            write(*,*) 'singular matrix e in lsq subproblem'
+            call me%report_message('singular matrix e in lsq subproblem')
             exit
         case(6);
-            write(*,*) 'singular matrix c in lsq subproblem'
+            call me%report_message('singular matrix c in lsq subproblem')
             exit
         case(7);
-            write(*,*) 'rank-deficient equality constraint subproblem hfti'
+            call me%report_message('rank-deficient equality constraint subproblem hfti')
             exit
         case(8);
-            write(*,*) 'positive directional derivative for linesearch'
+            call me%report_message('positive directional derivative for linesearch')
             exit
         case(9);
-            write(*,*) 'more than max_iter iterations in slsqp'
+            call me%report_message('more than max_iter iterations in slsqp')
             exit
         case default
-            write(*,*) 'unknown slsqp error'
+            call me%report_message('unknown slsqp error')
             exit
         end select
 
     end do
 
     istat = mode
+    if (present(iterations)) iterations = iter
 
     end subroutine slsqp_wrapper
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  Report a message from an [[slsqp_solver]] class. This uses the `iprint`
+!  variable in the class as the unit number for printing. Note: for fatal errors,
+!  if no unit is specified, the `error_unit` is used.
+
+    subroutine report_message(me,str,ival,fatal)
+
+    implicit none
+
+    class(slsqp_solver),intent(in) :: me
+    character(len=*),intent(in)    :: str    !! the message to report.
+    integer,intent(in),optional    :: ival   !! optional integer to print after the message.
+    logical,intent(in),optional    :: fatal  !! if True, then the program is stopped (default=False).
+
+    logical :: stop_program  !! true if the program is to be stopped
+    logical :: write_message  !! true if the message is to be printed
+    character(len=10) :: istr  !! string version of `ival`
+    character(len=:),allocatable :: str_to_write  !! the actual message to the printed
+    integer :: istat  !! iostat for integer to string conversion
+
+    !fatal error check:
+    if (present(fatal)) then
+        stop_program = fatal
+    else
+        stop_program = .false.
+    end if
+
+    !note: if stopping program, then the message is always printed:
+    write_message = me%iprint/=0 .or. stop_program
+
+    if (write_message) then
+
+        if (present(ival)) then
+            write(istr,fmt='(I10)',iostat=istat) ival
+            if (istat/=0) istr = '*****'
+            str_to_write = str//' '//trim(adjustl(istr))
+        else
+            str_to_write = str
+        end if
+
+        if (me%iprint==0) then
+            write(error_unit,'(A)') str_to_write  !in this case, use the error unit
+        else
+            write(me%iprint,'(A)') str_to_write   !user specified unit number
+        end if
+        deallocate(str_to_write)
+
+        if (stop_program) error stop 'Fatal Error'
+
+    end if
+
+    end subroutine report_message
 !*******************************************************************************
 
 !*******************************************************************************

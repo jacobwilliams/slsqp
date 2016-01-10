@@ -1,5 +1,6 @@
 !*******************************************************************************
-!>
+!> author: Jacob Williams
+!
 !  Tests for the [[slsqp_module]].
 
     program slsqp_test
@@ -9,28 +10,32 @@
 
     implicit none
 
-    type(slsqp_solver)              :: solver
-    integer,parameter               :: n = 2
-    integer,parameter               :: m = 1
-    integer,parameter               :: meq = 0
-    integer,parameter               :: max_iter = 100
-    real(wp),dimension(n),parameter :: xl = [-1.0_wp, -1.0_wp]
-    real(wp),dimension(n),parameter :: xu = [ 1.0_wp,  1.0_wp]
-    real(wp),parameter              :: acc = 1.0e-8_wp
-    integer,parameter               :: linesearch_mode = 1  !! use inexact linesearch.
-    !integer,parameter               :: linesearch_mode = 2  !! use exact linesearch.
+    integer,parameter               :: n = 2                    !! number of optimization variables
+    integer,parameter               :: m = 1                    !! total number of constraints
+    integer,parameter               :: meq = 0                  !! number of equality constraints
+    integer,parameter               :: max_iter = 100           !! maximum number of allowed iterations
+    real(wp),dimension(n),parameter :: xl = [-1.0_wp, -1.0_wp]  !! lower bounds
+    real(wp),dimension(n),parameter :: xu = [ 1.0_wp,  1.0_wp]  !! upper bounds
+    real(wp),parameter              :: acc = 1.0e-8_wp          !! tolerance
+    integer,parameter               :: linesearch_mode = 1      !! use inexact linesearch.
 
-    real(wp),dimension(n) :: x
-    integer :: istat
-    logical :: status_ok
+    type(slsqp_solver)    :: solver      !! instantiate an slsqp solver
+    real(wp),dimension(n) :: x           !! optimization variable vector
+    integer               :: istat       !! for solver status check
+    logical               :: status_ok   !! for initialization status check
+    integer               :: iterations  !! number of iterations by the solver
 
     x = [0.1_wp, 0.1_wp] !initial guess
 
     call solver%initialize(n,m,meq,max_iter,acc,rosenbrock_func,rosenbrock_grad,&
-                            xl,xu,linesearch_mode,status_ok)
+                            xl,xu,linesearch_mode=linesearch_mode,status_ok=status_ok)
     if (status_ok) then
-        call solver%optimize(x,istat)
-        write(*,*) 'istat=',istat
+        call solver%optimize(x,istat,iterations)
+        write(*,*) ''
+        write(*,*) 'solution   :', x
+        write(*,*) 'istat      :', istat
+        write(*,*) 'iterations :', iterations
+        write(*,*) ''
     else
         error stop 'error calling slsqp.'
     end if
