@@ -206,7 +206,7 @@
      !    $          +(n1+mineq)*(n1-meq) + 2*meq + n1
      !    $          +(n+1)*n/2 + 2*m + 3*n + 3*n1 + 1,
      !    $           len_jw=mineq)
-     !     double precision w(len_w)
+     !     real(wp) w(len_w)
      !     integer          jw(len_jw)
      !#######################################################################
 
@@ -943,19 +943,8 @@
 !  on entry, the user has to provide the arrays e, f, g, and h.
 !  on return, all arrays will be changed by the subroutine.
 !
-!  x     stores the solution vector
-!  xnorm stores the residuum of the solution in euclidian norm
-!  w     stores the vector of lagrange multipliers in its first
-!        mg elements
-!  mode  is a success-failure flag with the following meanings:
-!       mode=1: successful computation
-!            2: error return because of wrong dimensions (n<1)
-!            3: iteration count exceeded by nnls
-!            4: inequality constraints incompatible
-!            5: matrix e is not of full rank
-!
 !### Reference
-!  Chapter 23.6 of Lawson & Hanson: Solving least squares problems.
+!  * Chapter 23.6 of Lawson & Hanson: Solving least squares problems.
 !
 !### History
 !  * 03.01.1980, dieter kraft: coded
@@ -965,9 +954,29 @@
 
     implicit none
 
-      integer :: i , j , le , lg , me , mg , mode , n , jw(lg)
-      real(wp) :: e(le,n) , f(le) , g(lg,n) , h(lg) , x(n) , w(*) , &
-                  xnorm , t
+    integer,intent(in)                      :: le
+    integer,intent(in)                      :: me
+    integer,intent(in)                      :: lg
+    integer,intent(in)                      :: mg
+    integer,intent(in)                      :: n
+    real(wp),dimension(le,n),intent(inout)  :: e
+    real(wp),dimension(le)  ,intent(inout)  :: f
+    real(wp),dimension(lg,n),intent(inout)  :: g
+    real(wp),dimension(lg)  ,intent(inout)  :: h
+    real(wp),dimension(n)   ,intent(out)    :: x     !! stores the solution vector
+    real(wp),intent(out)                    :: xnorm !! stores the residuum of the solution in euclidian norm
+    real(wp),dimension(*)   ,intent(inout)  :: w     !! stores the vector of lagrange multipliers in its first
+                                                     !!        mg elements
+    integer,dimension(lg)   ,intent(inout)  :: jw
+    integer,intent(out)                     :: mode  !! is a success-failure flag with the following meanings:
+                                                     !! ***1:*** successful computation,
+                                                     !! ***2:*** error return because of wrong dimensions (`n<1`),
+                                                     !! ***3:*** iteration count exceeded by [[nnls]],
+                                                     !! ***4:*** inequality constraints incompatible,
+                                                     !! ***5:*** matrix `e` is not of full rank.
+
+      integer :: i, j
+      real(wp) :: t
 
       !  qr-factors of e and application to f
 
@@ -1010,60 +1019,67 @@
 
 !*******************************************************************************
 !>
+!  Least distance programming routine.
+!  Minimize \( \frac{1}{2} \mathbf{x}^T \mathbf{x}  \) subject to
+!  \( \mathbf{G} \mathbf{x} \ge \mathbf{h} \).
 !
-!                     t
-!     minimize   1/2 x x    subject to   g * x >= h.
+!  The declared dimension of w() must be at least (n+1)*(m+2)+2*m:
 !
-!       c.l. lawson, r.j. hanson: 'solving least squares problems'
-!       prentice hall, englewood cliffs, new jersey, 1974.
+!       first (n+1)*m locs of w()  =  matrix e for problem nnls.
+!       next     n+1 locs of w()   =  vector f for problem nnls.
+!       next     n+1 locs of w()   =  vector z for problem nnls.
+!       next       m locs of w()   =  vector y for problem nnls.
+!       next       m locs of w()   =  vector wdual for problem nnls.
 !
-!     parameter description:
+!### References
+!  * C.L. Lawson, R.J. Hanson, 'Solving least squares problems'
+!    Prentice Hall, 1974. (revised 1995 edition)
+!  * [lawson-hanson](http://www.netlib.org/lawson-hanson/all) from Netlib.
 !
-!     g(),mg,m,n   on entry g() stores the m by n matrix of
-!                  linear inequality constraints. g() has first
-!                  dimensioning parameter mg
-!     h()          on entry h() stores the m vector h representing
-!                  the right side of the inequality system
-!
-!     remark: g(),h() will not be changed during calculations by ldp
-!
-!     x()          on entry x() need not be initialized.
-!                  on exit x() stores the solution vector x if mode=1.
-!     xnorm        on exit xnorm stores the euclidian norm of the
-!                  solution vector if computation is successful
-!     w()          w is a one dimensional working space, the length
-!                  of which should be at least (m+2)*(n+1) + 2*m
-!                  on exit w() stores the lagrange multipliers
-!                  associated with the constraints
-!                  at the solution of problem ldp
-!     index()      index() is a one dimensional integer working space
-!                  of length at least m
-!     mode         mode is a success-failure flag with the following
-!                  meanings:
-!          mode=1: successful computation
-!               2: error return because of wrong dimensions (n<=0)
-!               3: iteration count exceeded by nnls
-!               4: inequality constraints incompatible
+!### History
+!  * Jacob Williams, refactored into modern Fortran, Jan. 2016.
 
-    subroutine ldp(g,mg,m,n,h,x,xnorm,w,index,mode)
+    subroutine ldp(g,mdg,m,n,h,x,xnorm,w,index,mode)
+
     implicit none
 
-      real(wp) :: g , h , x , xnorm , w , u , v , fac , rnorm
-      integer :: index , i , if , iw , iwdual , iy , iz , j , m , mg , &
-                 mode , n , n1
+    integer,intent(in)                   :: mdg
+    integer,intent(in)                   :: m
+    integer,intent(in)                   :: n
+    real(wp),dimension(mdg,n),intent(in) :: g     !! on entry `g` stores the `m` by `n` matrix of
+                                                  !! linear inequality constraints. `g` has first
+                                                  !! dimensioning parameter `mg`
+    real(wp),dimension(m),intent(in)     :: h     !! the right side of the inequality system.
+    real(wp),dimension(n),intent(out)    :: x     !! solution vector `x` if `mode=1`.
+    real(wp),dimension(*),intent(inout)  :: w     !! `w` is a one dimensional working space, the length
+                                                  !! of which should be at least `(m+2)*(n+1) + 2*m`.
+                                                  !! on exit `w` stores the lagrange multipliers
+                                                  !! associated with the constraints.
+                                                  !! at the solution of problem `ldp`.
+    integer,dimension(m),intent(inout)   :: index !! integer working space
+    real(wp),intent(out)                 :: xnorm !! euclidian norm of the solution vector
+                                                  !! if computation is successful
+    integer,intent(out)                  :: mode  !! success-failure flag with the following meanings:
+                                                  !! ***1:*** successful computation,
+                                                  !! ***2:*** error return because of wrong dimensions (`n<=0`),
+                                                  !! ***3:*** iteration count exceeded by [[nnls]],
+                                                  !! ***4:*** inequality constraints incompatible.
 
-      dimension g(mg,n) , h(m) , x(n) , w(*) , index(m)
+      integer :: i , iw , iwdual , iy , iz , j , jf , np1
+      real(wp) :: fac , rnorm
 
-      mode = 2
-      if ( n>0 ) then
-
-         ! state dual problem
-
-         mode = 1
-         x(1) = zero
-         call dcopy(n,x(1),0,x,1)
+      if ( n<=0 ) then
+         ! error return.
+         mode = 2
+         return
+      else
+         do j = 1 , n
+            x(j) = zero
+         end do
          xnorm = zero
-         if ( m/=0 ) then
+         if ( m>0 ) then
+            ! copy g**t into first n rows and m columns of e.
+            ! copy h**t into row n+1 of e.
             iw = 0
             do j = 1 , m
                do i = 1 , n
@@ -1073,522 +1089,759 @@
                iw = iw + 1
                w(iw) = h(j)
             end do
-            if = iw + 1
+            jf = iw + 1
+            ! store n zeros followed by a one into f.
             do i = 1 , n
                iw = iw + 1
                w(iw) = zero
             end do
             w(iw+1) = one
-            n1 = n + 1
+
+            np1 = n + 1
             iz = iw + 2
-            iy = iz + n1
+            iy = iz + np1
             iwdual = iy + m
 
-            ! solve dual problem
-
-            call nnls(w,n1,n1,m,w(if),w(iy),rnorm,w(iwdual),w(iz),index,mode)
-
-            if ( mode==1 ) then
+            call nnls(w,np1,np1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),index,mode)
+            if ( mode/=1 ) return ! if unsuccessful in nnls.
+            if ( rnorm<=zero ) then
+               ! returning with constraints not compatible.
                mode = 4
-               if ( rnorm>zero ) then
+               return
+            else
+               fac = one
+               iw = iy - 1
+               do i = 1 , m
+                  iw = iw + 1
+                  ! here we are using the solution vector y.
+                  fac = fac - h(i)*w(iw)
+               end do
 
-                  ! compute solution of primal problem
-
-                  fac = one - ddot(m,h,1,w(iy),1)
-                  if ( diff(one+fac,one)>zero ) then
-                     mode = 1
-                     fac = one/fac
-                     do j = 1 , n
-                        x(j) = fac*ddot(m,g(1,j),1,w(iy),1)
+               if ( diff(one+fac,one)<=zero ) then
+                  mode = 4
+                  return
+               else
+                  fac = one/fac
+                  do j = 1 , n
+                     iw = iy - 1
+                     do i = 1 , m
+                        iw = iw + 1
+                        ! here we are using the solution vector y.
+                        x(j) = x(j) + g(i,j)*w(iw)
                      end do
-                     xnorm = dnrm2(n,x,1)
-
-                     ! compute lagrange multipliers for primal problem
-
-                     w(1) = zero
-                     call dcopy(m,w(1),0,w,1)
-                     call daxpy(m,fac,w(iy),1,w,1)
-                  end if
+                     x(j) = x(j)*fac
+                  end do
+                  do j = 1 , n
+                     xnorm = xnorm + x(j)**2
+                  end do
+                  xnorm = sqrt(xnorm)
                end if
             end if
          end if
+         ! successful return.
+         mode = 1
       end if
 
-      end subroutine ldp
+    end subroutine ldp
 !*******************************************************************************
 
 !*******************************************************************************
+!>
+!  Replaced statement function in the original code.
+!  Returns \( d = u - v \).
+
     pure elemental function diff(u,v) result(d)
-        !! replaced statement function in original code
         implicit none
         real(wp),intent(in) :: u
         real(wp),intent(in) :: v
-        real(wp) :: d
+        real(wp)            :: d
         d = u - v
     end function diff
 !*******************************************************************************
 
 !*******************************************************************************
 !>
-!  c.l.lawson and r.j.hanson, jet propulsion laboratory:
-!  'solving least squares problems'. prentice-hall.1974
+!  Nonnegative least squares algorithm.
 !
-!      **********   nonnegative least squares   **********
+!  Given an m by n matrix, \(\mathbf{A}\), and an m-vector, \(\mathbf{b}\),
+!  compute an n-vector, \(\mathbf{x}\), that solves the least squares problem:
 !
-!     given an m by n matrix, a, and an m-vector, b, compute an
-!     n-vector, x, which solves the least squares problem
+!  \( \mathbf{A} \mathbf{x} = \mathbf{b}\) subject to \( \mathbf{x} \ge 0 \)
 !
-!                  a*x = b  subject to  x >= 0
+!### References
+!  * C.L. Lawson, R.J. Hanson, 'Solving least squares problems'
+!    Prentice Hall, 1974. (revised 1995 edition)
+!  * [lawson-hanson](http://www.netlib.org/lawson-hanson/all) from Netlib.
 !
-!     a(),mda,m,n
-!            mda is the first dimensioning parameter for the array,a().
-!            on entry a()  contains the m by n matrix,a.
-!            on exit a() contains the product q*a,
-!            where q is an m by m orthogonal matrix generated
-!            implicitly by this subroutine.
-!            either m>=n or m<n is permissible.
-!            there is no restriction on the rank of a.
-!     b()    on entry b() contains the m-vector, b.
-!            on exit b() contains q*b.
-!     x()    on entry x() need not be initialized.
-!            on exit x() will contain the solution vector.
-!     rnorm  on exit rnorm contains the euclidean norm of the
-!            residual vector.
-!     w()    an n-array of working space.
-!            on exit w() will contain the dual solution vector.
-!            w will satisfy w(i)=0 for all i in set p
-!            and w(i)<=0 for all i in set z
-!     z()    an m-array of working space.
-!     index()an integer working array of length at least n.
-!            on exit the contents of this array define the sets
-!            p and z as follows:
-!            index(1)    thru index(nsetp) = set p.
-!            index(iz1)  thru index (iz2)  = set z.
-!            iz1=nsetp + 1 = npp1, iz2=n.
-!     mode   this is a success-failure flag with the following meaning:
-!            1    the solution has been computed successfully.
-!            2    the dimensions of the problem are wrong,
-!                 either m <= 0 or n <= 0.
-!            3    iteration count exceeded, more than 3*n iterations.
-!
-!     revised          dieter kraft, march 1983
+!### History
+!  * Jacob Williams, refactored into modern Fortran, Jan. 2016.
 
-    subroutine nnls(a,mda,m,n,b,x,rnorm,w,z,index,mode)
-    implicit none
+      subroutine nnls(a,mda,m,n,b,x,rnorm,w,zz,index,mode)
 
-      integer :: i , ii , ip , iter , itmax , iz , izmax , iz1 , iz2 , j , &
-                 jj , jz , k , l , m , mda , mode , n , npp1 , nsetp , &
-                 index(n)
+      implicit none
 
-      real(wp) :: a(mda,n) , b(m) , x(n) , w(n) , z(m) , asave , &
-                  wmax , alpha , c , s , t , u , v , up , rnorm , unorm
+      integer,intent(in)                      :: mda     !! first dimensioning parameter for the array `a`.
+      integer,intent(in)                      :: m
+      integer,intent(in)                      :: n
+      real(wp),dimension(mda,n),intent(inout) :: a       !! on entry, contains the `m` by `n`
+                                                         !! matrix, `a`. on exit, contains
+                                                         !! the product matrix, `q*a`, where `q` is an
+                                                         !! `m` by `m` orthogonal matrix generated implicitly by
+                                                         !! this subroutine.
+      real(wp),dimension(m),intent(inout)     :: b       !! on entry, contains the m-vector `b`. on exit, contains `q*b`.
+      real(wp),dimension(n),intent(out)       :: x       !! the solution vector.
+      real(wp),intent(out)                    :: rnorm   !! euclidean norm of the residual vector.
+      real(wp),dimension(n),intent(inout)     :: w       !! array of working space.  on exit `w` will contain
+                                                         !! the dual solution vector. `w` will satisfy `w(i) = 0`
+                                                         !! for all `i` in set `p` and `w(i) <= 0` for all `i` in set `z`.
+      real(wp),dimension(m),intent(inout)     :: zz      !! an m-array of working space.
+      integer,dimension(n),intent(out)        :: index   !! an integer working array.
+                                                         !! on exit the contents of this array define the sets
+                                                         !! `p` and `z` as follows:
+                                                         !! `index(1:nsetp) = set p`.
+                                                         !! `index(iz1:iz2) = set z`.
+                                                         !! where: `iz1 = nsetp + 1 = npp1`, `iz2 = n`
+      integer,intent(out)                     :: mode    !! this is a success-failure flag with the following meanings:
+                                                         !! ***1*** the solution has been computed successfully.
+                                                         !! ***2*** the dimensions of the problem are bad. either `m<=0` or `n<=0`.
+                                                         !! ***3*** iteration count exceeded. more than `3*n` iterations.
 
-      real(wp),parameter :: factor = 1.0e-2_wp
+      integer :: i,ii,ip,iter,itmax,iz,iz1,iz2,izmax,j,jj,jz,l,npp1,nsetp,rtnkey
+      real(wp) :: alpha,asave,cc,sm,ss,t,temp,unorm,up,wmax,ztest
+      real(wp),dimension(1) :: dummy
 
-      mode = 2
-      if ( m>0 .and. n>0 ) then
-         mode = 1
-         iter = 0
-         itmax = 3*n
+      real(wp),parameter :: factor = 0.01_wp
 
-! step one (initialize)
+      mode = 1
+      if ( m<=0 .or. n<=0 ) then
+         mode = 2
+         return
+      end if
+      iter = 0
+      itmax = 3*n
 
-         do i = 1 , n
-            index(i) = i
+      ! initialize the arrays index() and x().
+
+      do i = 1 , n
+         x(i) = zero
+         index(i) = i
+      end do
+
+      iz2 = n
+      iz1 = 1
+      nsetp = 0
+      npp1 = 1
+
+      ! ******  main loop begins here  ******
+      ! quit if all coefficients are already in the solution.
+      ! or if m cols of a have been triangularized.
+
+ 100  if ( iz1<=iz2 .and. nsetp<m ) then
+
+         ! compute components of the dual (negative gradient) vector w().
+
+         do iz = iz1 , iz2
+            j = index(iz)
+            sm = zero
+            do l = npp1 , m
+               sm = sm + a(l,j)*b(l)
+            end do
+            w(j) = sm
          end do
-         iz1 = 1
-         iz2 = n
-         nsetp = 0
-         npp1 = 1
-         x(1) = zero
-         call dcopy(n,x(1),0,x,1)
+         ! find largest positive w(j).
+ 150     wmax = zero
+         do iz = iz1 , iz2
+            j = index(iz)
+            if ( w(j)>wmax ) then
+               wmax = w(j)
+               izmax = iz
+            end if
+         end do
 
-! step two (compute dual variables)
-! .....entry loop a
+         ! if wmax <= 0. go to termination.
+         ! this indicates satisfaction of the kuhn-tucker conditions.
 
- 50      if ( iz1<=iz2 .and. nsetp<m ) then
-            do iz = iz1 , iz2
-               j = index(iz)
-               w(j) = ddot(m-nsetp,a(npp1,j),1,b(npp1),1)
-            end do
+         if ( wmax>zero ) then
+            iz = izmax
+            j = index(iz)
 
-! step three (test dual variables)
+            ! the sign of w(j) is ok for j to be moved to set p.
+            ! begin the transformation and check new diagonal element to avoid
+            ! near linear dependence.
 
- 60         wmax = zero
-            do iz = iz1 , iz2
-               j = index(iz)
-               if ( w(j)>wmax ) then
-                  wmax = w(j)
-                  izmax = iz
-               end if
-            end do
+            asave = a(npp1,j)
+            call h12(1,npp1,npp1+1,m,a(1,j),1,up,dummy,1,1,0)
+            unorm = zero
+            if ( nsetp/=0 ) then
+               do l = 1 , nsetp
+                  unorm = unorm + a(l,j)**2
+               end do
+            end if
+            unorm = sqrt(unorm)
+            if ( diff(unorm+abs(a(npp1,j))*factor,unorm)>zero ) then
 
-! .....exit loop a
+               ! col j is sufficiently independent.  copy b into zz, update zz
+               ! and solve for ztest ( = proposed new value for x(j) ).
 
-            if ( wmax>zero ) then
-               iz = izmax
-               j = index(iz)
+               do l = 1 , m
+                  zz(l) = b(l)
+               end do
+               call h12(2,npp1,npp1+1,m,a(1,j),1,up,zz,1,1,1)
+               ztest = zz(npp1)/a(npp1,j)
 
-! step four (test index j for linear dependency)
+               ! see if ztest is positive
+               if ( ztest>zero ) then
 
-               asave = a(npp1,j)
-               call h12(1,npp1,npp1+1,m,a(1,j),1,up,z,1,1,0)
-               unorm = dnrm2(nsetp,a(1,j),1)
-               t = factor*abs(a(npp1,j))
-               if ( diff(unorm+t,unorm)>zero ) then
-                  call dcopy(m,b,1,z,1)
-                  call h12(2,npp1,npp1+1,m,a(1,j),1,up,z,1,1,1)
-                  if ( z(npp1)/a(npp1,j)>zero ) then
-! step five (add column)
+                  ! the index j=index(iz) has been selected to be moved from
+                  ! set z to set p. update b, update indices, apply householder
+                  ! transformations to cols in new set z, zero subdiagonal elts in
+                  ! col j, set w(j)=0.
 
-                     call dcopy(m,z,1,b,1)
-                     index(iz) = index(iz1)
-                     index(iz1) = j
-                     iz1 = iz1 + 1
-                     nsetp = npp1
-                     npp1 = npp1 + 1
+                  do l = 1 , m
+                     b(l) = zz(l)
+                  end do
+
+                  index(iz) = index(iz1)
+                  index(iz1) = j
+                  iz1 = iz1 + 1
+                  nsetp = npp1
+                  npp1 = npp1 + 1
+
+                  if ( iz1<=iz2 ) then
                      do jz = iz1 , iz2
                         jj = index(jz)
                         call h12(2,nsetp,npp1,m,a(1,j),1,up,a(1,jj),1,mda,1)
                      end do
-                     k = min(npp1,mda)
-                     w(j) = zero
-                     call dcopy(m-nsetp,w(j),0,a(k,j),1)
-
-! step six (solve least squares sub-problem)
-! .....entry loop b
-
- 62                  do ip = nsetp , 1 , -1
-                        if ( ip/=nsetp ) call daxpy(ip,-z(ip+1),a(1,jj),1,z,1)
-                        jj = index(ip)
-                        z(ip) = z(ip)/a(ip,jj)
-                     end do
-                     iter = iter + 1
-                     if ( iter<=itmax ) then
-! step seven to ten (step length algorithm)
-
-                        alpha = one
-                        jj = 0
-                        do ip = 1 , nsetp
-                           if ( z(ip)<=zero ) then
-                              l = index(ip)
-                              t = -x(l)/(z(ip)-x(l))
-                              if ( alpha>=t ) then
-                                 alpha = t
-                                 jj = ip
-                              end if
-                           end if
-                        end do
-                        do ip = 1 , nsetp
-                           l = index(ip)
-                           x(l) = (one-alpha)*x(l) + alpha*z(ip)
-                        end do
-
-! .....exit loop b
-
-                        if ( jj==0 ) goto 50
-
-! step eleven (delete column)
-
-                        i = index(jj)
- 64                     x(i) = zero
-                        jj = jj + 1
-                        do j = jj , nsetp
-                           ii = index(j)
-                           index(j-1) = ii
-                           call dsrotg(a(j-1,ii),a(j,ii),c,s)
-                           t = a(j-1,ii)
-                           call dsrot(n,a(j-1,1),mda,a(j,1),mda,c,s)
-                           a(j-1,ii) = t
-                           a(j,ii) = zero
-                           call dsrot(1,b(j-1),1,b(j),1,c,s)
-                        end do
-                        npp1 = nsetp
-                        nsetp = nsetp - 1
-                        iz1 = iz1 - 1
-                        index(iz1) = i
-                        if ( nsetp<=0 ) then
-                           mode = 3
-                           goto 100
-                        else
-                           do jj = 1 , nsetp
-                              i = index(jj)
-                              if ( x(i)<=zero ) goto 64
-                           end do
-                           call dcopy(m,b,1,z,1)
-                           goto 62
-                        end if
-                     else
-                        mode = 3
-                        goto 100
-                     end if
                   end if
-               end if
-               a(npp1,j) = asave
-               w(j) = zero
-               goto 60
-            end if
-         end if
-! step twelve (solution)
 
- 100     k = min(npp1,m)
-         rnorm = dnrm2(m-nsetp,b(k),1)
-         if ( npp1>m ) then
-            w(1) = zero
-            call dcopy(n,w(1),0,w,1)
+                  if ( nsetp/=m ) then
+                     do l = npp1 , m
+                        a(l,j) = zero
+                     end do
+                  end if
+
+                  w(j) = zero
+                  ! solve the triangular system.
+                  ! store the solution temporarily in zz().
+                  rtnkey = 1
+                  goto 300
+               end if
+            end if
+
+            ! reject j as a candidate to be moved from set z to set p.
+            ! restore a(npp1,j), set w(j)=0., and loop back to test dual
+            ! coeffs again.
+
+            a(npp1,j) = asave
+            w(j) = zero
+            goto 150
          end if
       end if
 
-      end subroutine nnls
-!*******************************************************************************
+      ! ******  end of main loop  ******
 
-!*******************************************************************************
-!>
-!     rank-deficient least squares algorithm as described in:
-!     c.l.lawson and r.j.hanson, jet propulsion laboratory, 1973 jun 12
-!     to appear in 'solving least squares problems', prentice-hall, 1974
-!
-!     a(*,*),mda,m,n   the array a initially contains the m x n matrix a
-!                      of the least squares problem ax = b.
-!                      the first dimensioning parameter mda must satisfy
-!                      mda >= m. either m >= n or m < n is permitted.
-!                      there is no restriction on the rank of a.
-!                      the matrix a will be modified by the subroutine.
-!     b(*,*),mdb,nb    if nb = 0 the subroutine will make no reference
-!                      to the array b. if nb > 0 the array b() must
-!                      initially contain the m x nb matrix b  of the
-!                      the least squares problem ax = b and on return
-!                      the array b() will contain the n x nb solution x.
-!                      if nb>1 the array b() must be double subscripted
-!                      with first dimensioning parameter mdb>=max(m,n),
-!                      if nb=1 the array b() may be either single or
-!                      double subscripted.
-!     tau              absolute tolerance parameter for pseudorank
-!                      determination, provided by the user.
-!     krank            pseudorank of a, set by the subroutine.
-!     rnorm            on exit, rnorm(j) will contain the euclidian
-!                      norm of the residual vector for the problem
-!                      defined by the j-th column vector of the array b.
-!     h(), g()         arrays of working space of length >= n.
-!     ip()             integer array of working space of length >= n
-!                      recording permutation indices of column vectors
+      ! come to here for termination.
+      ! compute the norm of the final residual vector.
 
-    subroutine hfti(a,mda,m,n,b,mdb,nb,tau,krank,rnorm,h,g,ip)
-    implicit none
+ 200  sm = zero
+      if ( npp1<=m ) then
+         do i = npp1 , m
+            sm = sm + b(i)**2
+         end do
+      else
+         do j = 1 , n
+            w(j) = zero
+         end do
+      end if
+      rnorm = sqrt(sm)
+      return
 
-    integer :: i , j , jb , k , kp1 , krank , l , ldiag , lmax , m , &
-               mda , mdb , n , nb , ip(n)
-    real(wp) :: a(mda,n) , b(mdb,nb) , h(n) , g(n) , rnorm(nb) , &
-                tau , hmax , tmp , &
-                u , v
+      ! the following block of code is used as an internal subroutine
+      ! to solve the triangular system, putting the solution in zz().
 
-    real(wp),parameter :: factor = 1.0e-3_wp
-
-    k = 0
-    ldiag = min(m,n)
-    if ( ldiag<=0 ) then
-       krank = k
-       return
-    else
-
-       ! compute lmax
-
-       do j = 1 , ldiag
-          if ( j/=1 ) then
-             lmax = j
-             do l = j , n
-                h(l) = h(l) - a(j-1,l)**2
-                if ( h(l)>h(lmax) ) lmax = l
-             end do
-             if ( diff(hmax+factor*h(lmax),hmax)>zero ) goto 20
-          end if
-          lmax = j
-          do l = j , n
-             h(l) = zero
-             do i = j , m
-                h(l) = h(l) + a(i,l)**2
-             end do
-             if ( h(l)>h(lmax) ) lmax = l
-          end do
-          hmax = h(lmax)
-
-          ! column interchanges if needed
-
-20        ip(j) = lmax
-          if ( ip(j)/=j ) then
-             do i = 1 , m
-                tmp = a(i,j)
-                a(i,j) = a(i,lmax)
-                a(i,lmax) = tmp
-             end do
-             h(lmax) = h(j)
-          end if
-
-          ! j-th transformation and application to a and b
-
-          i = min(j+1,n)
-          call h12(1,j,j+1,m,a(1,j),1,h(j),a(1,i),1,mda,n-j)
-          call h12(2,j,j+1,m,a(1,j),1,h(j),b,1,mdb,nb)
-       end do
-
-       !determine pseudorank:
-
-       do j=1,ldiag
-          if (abs(a(j,j))<=tau) exit
-       end do
-       k=j-1
-       kp1=j
-
-    end if
-
-    ! norm of residuals
-
-    do jb = 1 , nb
-       rnorm(jb) = dnrm2(m-k,b(kp1,jb),1)
-    end do
-    if ( k>0 ) then
-       if ( k/=n ) then
-          ! householder decomposition of first k rows
-          do i = k , 1 , -1
-             call h12(1,i,kp1,n,a(i,1),mda,g(i),a,mda,1,i-1)
-          end do
-       end if
-       do jb = 1 , nb
-
-          ! solve k*k triangular system
-
-          do i = k , 1 , -1
-             j = min(i+1,n)
-             b(i,jb) = (b(i,jb)-ddot(k-i,a(i,j),mda,b(j,jb),1))/a(i,i)
-          end do
-
-          ! complete solution vector
-
-          if ( k/=n ) then
-             do j = kp1 , n
-                b(j,jb) = zero
-             end do
-             do i = 1 , k
-                call h12(2,i,kp1,n,a(i,1),mda,g(i),b(1,jb),1,mdb,1)
-             end do
-          end if
-
-          ! reorder solution according to previous column interchanges
-
-          do j = ldiag , 1 , -1
-             if ( ip(j)/=j ) then
-                l = ip(j)
-                tmp = b(l,jb)
-                b(l,jb) = b(j,jb)
-                b(j,jb) = tmp
-             end if
-          end do
-       end do
-    else
-       do jb = 1 , nb
-          do i = 1 , n
-             b(i,jb) = zero
-          end do
-       end do
-    end if
-    krank = k
-    end subroutine hfti
-!*******************************************************************************
-
-!*******************************************************************************
-!>
-!     c.l.lawson and r.j.hanson, jet propulsion laboratory, 1973 jun 12
-!     to appear in 'solving least squares problems', prentice-hall, 1974
-!
-!     construction and/or application of a single
-!     householder transformation  q = i + u*(u**t)/b
-!
-!     mode    = 1 or 2   to select algorithm  h1  or  h2 .
-!     lpivot is the index of the pivot element.
-!     l1,m   if l1 <= m   the transformation will be constructed to
-!            zero elements indexed from l1 through m.
-!            if l1 > m the subroutine does an identity transformation.
-!     u(),iue,up
-!            on entry to h1 u() stores the pivot vector.
-!            iue is the storage increment between elements.
-!            on exit from h1 u() and up store quantities defining
-!            the vector u of the householder transformation.
-!            on entry to h2 u() and up
-!            should store quantities previously computed by h1.
-!            these will not be modified by h2.
-!     c()    on entry to h1 or h2 c() stores a matrix which will be
-!            regarded as a set of vectors to which the householder
-!            transformation is to be applied.
-!            on exit c() stores the set of transformed vectors.
-!     ice    storage increment between elements of vectors in c().
-!     icv    storage increment between vectors in c().
-!     ncv    number of vectors in c() to be transformed.
-!            if ncv <= 0 no operations will be done on c().
-
-    subroutine h12(mode,lpivot,l1,m,u,iue,up,c,ice,icv,ncv)
-    implicit none
-
-      integer :: incr , ice , icv , iue , lpivot , l1 , mode , ncv
-      integer :: i , i2 , i3 , i4 , j , m
-      real(wp) :: u , up , c , cl , clinv , b , sm
-
-      dimension u(iue,*) , c(*)
-
-      if ( 0<lpivot .and. lpivot<l1 .and. l1<=m ) then
-         cl = abs(u(1,lpivot))
-         if ( mode/=2 ) then
-
-             ! ****** construct the transformation ******
-
-            do j = l1 , m
-               sm = abs(u(1,j))
-               cl = max(sm,cl)
+ 300  do l = 1 , nsetp
+         ip = nsetp + 1 - l
+         if ( l/=1 ) then
+            do ii = 1 , ip
+               zz(ii) = zz(ii) - a(ii,jj)*zz(ip+1)
             end do
-            if ( cl<=zero ) return
-            clinv = one/cl
-            sm = (u(1,lpivot)*clinv)**2
-            do j = l1 , m
-               sm = sm + (u(1,j)*clinv)**2
-            end do
-            cl = cl*sqrt(sm)
-            if ( u(1,lpivot)>zero ) cl = -cl
-            up = u(1,lpivot) - cl
-            u(1,lpivot) = cl
-
-            ! ****** apply the transformation  i+u*(u**t)/b  to c ******
-
-         elseif ( cl<=zero ) then
-            return
          end if
-         if ( ncv>0 ) then
-            b = up*u(1,lpivot)
-            if ( b<zero ) then
-               b = one/b
-               i2 = 1 - icv + ice*(lpivot-1)
-               incr = ice*(l1-lpivot)
-               do j = 1 , ncv
-                  i2 = i2 + icv
-                  i3 = i2 + incr
-                  i4 = i3
-                  sm = c(i2)*up
-                  do i = l1 , m
-                     sm = sm + c(i3)*u(1,i)
-                     i3 = i3 + ice
-                  end do
-                  if ( sm/=zero ) then
-                     sm = sm*b
-                     c(i2) = c(i2) + sm*up
-                     do i = l1 , m
-                        c(i4) = c(i4) + sm*u(1,i)
-                        i4 = i4 + ice
-                     end do
+         jj = index(ip)
+         zz(ip) = zz(ip)/a(ip,jj)
+      end do
+    !   if ( rtnkey==1 ) then    !.....original
+    !       !continue
+    !   elseif ( rtnkey/=2 ) then
+    !       return
+    !   end if
+    if (rtnkey/=1 .and. rtnkey/=2) return  !......replaced with
+
+      ! ******  secondary loop begins here ******
+
+      ! iteration counter.
+
+      iter = iter + 1
+      if ( iter>itmax ) then
+         mode = 3
+         !write (*,'(/a)') ' nnls quitting on iteration count.'
+         goto 200
+      end if
+
+      ! see if all new constrained coeffs are feasible.
+      ! if not compute alpha.
+
+      alpha = two
+      do ip = 1 , nsetp
+         l = index(ip)
+         if ( zz(ip)<=zero ) then
+            t = -x(l)/(zz(ip)-x(l))
+            if ( alpha>t ) then
+               alpha = t
+               jj = ip
+            end if
+         end if
+      end do
+
+      ! if all new constrained coeffs are feasible then alpha will
+      ! still = 2.    if so exit from secondary loop to main loop.
+
+      if ( alpha==two ) then
+         ! ******  end of secondary loop  ******
+
+         do ip = 1 , nsetp
+            i = index(ip)
+            x(i) = zz(ip)
+         end do
+         ! all new coeffs are positive.  loop back to beginning.
+         goto 100
+      else
+
+         ! otherwise use alpha which will be between 0. and 1. to
+         ! interpolate between the old x and the new zz.
+
+         do ip = 1 , nsetp
+            l = index(ip)
+            x(l) = x(l) + alpha*(zz(ip)-x(l))
+         end do
+
+         ! modify a and b and the index arrays to move coefficient i
+         ! from set p to set z.
+
+         i = index(jj)
+ 350     x(i) = zero
+
+         if ( jj/=nsetp ) then
+            jj = jj + 1
+            do j = jj , nsetp
+               ii = index(j)
+               index(j-1) = ii
+               call g1(a(j-1,ii),a(j,ii),cc,ss,a(j-1,ii))
+               a(j,ii) = zero
+               do l = 1 , n
+                  if ( l/=ii ) then
+                     ! apply procedure g2 (cc,ss,a(j-1,l),a(j,l))
+                     temp = a(j-1,l)
+                     a(j-1,l) = cc*temp + ss*a(j,l)
+                     a(j,l) = -ss*temp + cc*a(j,l)
                   end if
                end do
-            end if
+               ! apply procedure g2 (cc,ss,b(j-1),b(j))
+               temp = b(j-1)
+               b(j-1) = cc*temp + ss*b(j)
+               b(j) = -ss*temp + cc*b(j)
+            end do
          end if
+
+         npp1 = nsetp
+         nsetp = nsetp - 1
+         iz1 = iz1 - 1
+         index(iz1) = i
+
+         ! see if the remaining coeffs in set p are feasible.  they should
+         ! be because of the way alpha was determined.
+         ! if any are infeasible it is due to round-off error.  any
+         ! that are nonpositive will be set to zero
+         ! and moved from set p to set z.
+
+         do jj = 1 , nsetp
+            i = index(jj)
+            if ( x(i)<=zero ) goto 350
+         end do
+
+         ! copy b( ) into zz( ).  then solve again and loop back.
+
+         do i = 1 , m
+            zz(i) = b(i)
+         end do
+         rtnkey = 2
+         goto 300
+
       end if
 
-      end subroutine h12
+ end subroutine nnls
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  Rank-deficient least squares algorithm using
+!  householder forward triangulation with column interchanges.
+!
+!### References
+!  * C.L. Lawson, R.J. Hanson, 'Solving least squares problems'
+!    Prentice Hall, 1974. (revised 1995 edition)
+!  * [lawson-hanson](http://www.netlib.org/lawson-hanson/all) from Netlib.
+!
+!### History
+!  * Jacob Williams, refactored into modern Fortran, Jan. 2016.
+
+      subroutine hfti(a,mda,m,n,b,mdb,nb,tau,krank,rnorm,h,g,ip)
+
+      implicit none
+
+      integer,intent(in)                       :: mda   !! the first dimensioning parameter of matrix `a` (mda >= m).
+      integer,intent(in)                       :: m
+      integer,intent(in)                       :: n
+      integer,intent(in)                       :: mdb   !! first dimensioning parameter of matrix `b` (mdb>=max(m,n))
+      integer,intent(in)                       :: nb
+      real(wp),dimension(mda,n),intent(inout)  :: a     !! the array `a` initially contains the \( m \times n \) matrix \(\mathbf{A}\)
+                                                        !! of the least squares problem \( \mathbf{A} \mathbf{x} = \mathbf{b} \).
+                                                        !! either `m >= n` or `m < n` is permitted.
+                                                        !! there is no restriction on the rank of `a`.
+                                                        !! the matrix `a` will be modified by the subroutine.
+      real(wp),intent(in)                      :: tau   !! absolute tolerance parameter for pseudorank
+                                                        !! determination, provided by the user.
+      integer,intent(out)                      :: krank !! pseudorank of `a`, set by the subroutine.
+      real(wp),dimension(nb),intent(out)       :: rnorm !! on exit, `rnorm(j)` will contain the euclidian
+                                                        !! norm of the residual vector for the problem
+                                                        !! defined by the `j-th` column vector of the array `b`.
+      real(wp),dimension(n),intent(inout)      :: h     !! array of working space
+      real(wp),dimension(n),intent(inout)      :: g     !! array of working space
+      integer,dimension(n),intent(inout)       :: ip    !! integer array of working space
+                                                        !! recording permutation indices of column vectors
+      real(wp),dimension(mdb,nb),intent(inout) :: b     !! if `nb = 0` the subroutine will make no reference
+                                                        !! to the array `b`. if `nb > 0` the array `b` must
+                                                        !! initially contain the `m x nb` matrix `b` of the
+                                                        !! the least squares problem `ax = b` and on return
+                                                        !! the array `b` will contain the `n x nb` solution `x`.
+
+        integer  :: i, ii, ip1, j, jb, jj, k, kp1, l, ldiag, lmax
+        real(wp) :: hmax, sm, tmp
+        logical  :: need_lmax
+
+        real(wp),parameter :: factor = 0.001_wp
+
+        k = 0
+        ldiag = min(m,n)
+        if ( ldiag<=0 ) then
+
+           ! the solution vectors, x, are now
+           ! in the first  n  rows of the array b(,).
+           krank = k
+           return
+
+        else
+
+           do j = 1 , ldiag
+
+              need_lmax = .true.
+              if ( j/=1 ) then
+                 ! update squared column lengths and find lmax
+                 lmax = j
+                 do l = j , n
+                    h(l) = h(l) - a(j-1,l)**2
+                    if ( h(l)>h(lmax) ) lmax = l
+                 end do
+                 if ( diff(hmax+factor*h(lmax),hmax)>0 ) need_lmax = .false.
+              end if
+
+              if (need_lmax) then
+                  ! compute squared column lengths and find lmax
+                  lmax = j
+                  do l = j , n
+                     h(l) = 0.
+                     do i = j , m
+                        h(l) = h(l) + a(i,l)**2
+                     end do
+                     if ( h(l)>h(lmax) ) lmax = l
+                  end do
+                  hmax = h(lmax)
+              end if
+
+              ! lmax has been determined
+
+              ! do column interchanges if needed.
+
+              ip(j) = lmax
+              if ( ip(j)/=j ) then
+                 do i = 1 , m
+                    tmp = a(i,j)
+                    a(i,j) = a(i,lmax)
+                    a(i,lmax) = tmp
+                 end do
+                 h(lmax) = h(j)
+              end if
+
+              ! compute the j-th transformation and apply it to a and b.
+
+              call h12(1,j,j+1,m,a(1,j),1,h(j),a(1,j+1),1,mda,n-j)
+              call h12(2,j,j+1,m,a(1,j),1,h(j),b,1,mdb,nb)
+
+           end do
+
+           ! determine the pseudorank, k, using the tolerance, tau.
+
+   !         do j = 1 , ldiag
+   !            if ( abs(a(j,j))<=tau ) goto 100
+   !         end do
+   !         k = ldiag
+   !         goto 200
+   !      end if
+   ! 100  k = j - 1
+   ! 200  kp1 = k + 1
+           do j=1,ldiag
+               if (abs(a(j,j))<=tau) exit
+           end do
+           k=j-1
+           kp1=j
+
+        end if
+
+        ! compute the norms of the residual vectors.
+
+        if ( nb>0 ) then
+           do jb = 1 , nb
+              tmp = zero
+              if ( kp1<=m ) then
+                 do i = kp1 , m
+                    tmp = tmp + b(i,jb)**2
+                 end do
+              end if
+              rnorm(jb) = sqrt(tmp)
+           end do
+        end if
+        ! special for pseudorank = 0
+        if ( k>0 ) then
+
+           ! if the pseudorank is less than n compute householder
+           ! decomposition of first k rows.
+
+           if ( k/=n ) then
+              do ii = 1 , k
+                 i = kp1 - ii
+                 call h12(1,i,kp1,n,a(i,1),mda,g(i),a,mda,1,i-1)
+              end do
+           end if
+
+           if ( nb>0 ) then
+              do jb = 1 , nb
+
+                 ! solve the k by k triangular system.
+
+                 do l = 1 , k
+                    sm = zero
+                    i = kp1 - l
+                    if ( i/=k ) then
+                       ip1 = i + 1
+                       do j = ip1 , k
+                          sm = sm + a(i,j)*b(j,jb)
+                       end do
+                    end if
+                    b(i,jb) = (b(i,jb)-sm)/a(i,i)
+                 end do
+
+                 ! complete computation of solution vector.
+
+                 if ( k/=n ) then
+                    do j = kp1 , n
+                       b(j,jb) = zero
+                    end do
+                    do i = 1 , k
+                       call h12(2,i,kp1,n,a(i,1),mda,g(i),b(1,jb),1,mdb,1)
+                    end do
+                 end if
+
+                 ! re-order the solution vector to compensate for the
+                 ! column interchanges.
+
+                 do jj = 1 , ldiag
+                    j = ldiag + 1 - jj
+                    if ( ip(j)/=j ) then
+                       l = ip(j)
+                       tmp = b(l,jb)
+                       b(l,jb) = b(j,jb)
+                       b(j,jb) = tmp
+                    end if
+                 end do
+              end do
+           end if
+        elseif ( nb>0 ) then
+           do jb = 1 , nb
+              do i = 1 , n
+                 b(i,jb) = zero
+              end do
+           end do
+        end if
+        krank = k
+     end subroutine hfti
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  Construction and/or application of a single
+!  householder transformation \( Q = I + u(u^t)/b \).
+!
+!### References
+!  * C.L. Lawson, R.J. Hanson, 'Solving least squares problems'
+!    Prentice Hall, 1974. (revised 1995 edition)
+!  * [lawson-hanson](http://www.netlib.org/lawson-hanson/all) from Netlib.
+!
+!### History
+!  * Jacob Williams, refactored into modern Fortran, Jan. 2016.
+
+    subroutine h12(mode,lpivot,l1,m,u,iue,up,c,ice,icv,ncv)
+
+      implicit none
+
+      integer,intent(in)                      :: mode   !! `1` or `2` -- selects algorithm ***h1*** to construct and apply a
+                                                        !! householder transformation, or algorithm ***h2*** to apply a
+                                                        !! previously constructed transformation.
+      integer,intent(in)                      :: lpivot !! the index of the pivot element
+      integer,intent(in)                      :: l1     !! if `l1 <= m` the transformation will be constructed to
+                                                        !! zero elements indexed from `l1` through `m`.
+                                                        !! if `l1 > m` the subroutine does an identity transformation.
+      integer,intent(in)                      :: m      !! see `li`.
+      integer,intent(in)                      :: iue    !! see `u`.
+      real(wp),dimension(iue,*),intent(inout) :: u      !! on entry with `mode = 1`, `u` contains the pivot
+                                                        !! vector.  `iue` is the storage increment between elements.
+                                                        !! on exit when `mode = 1`, `u` and `up` contain quantities
+                                                        !! defining the vector `u` of the householder transformation.
+                                                        !! on entry with `mode = 2`, `u` and `up` should contain
+                                                        !! quantities previously computed with `mode = 1`.  these will
+                                                        !! not be modified during the entry with `mode = 2`.
+                                                        !! `dimension[u(iue,m)]`
+      real(wp),intent(inout)                  :: up     !! see `u`.
+      real(wp),dimension(*),intent(inout)     :: c      !! on entry with `mode = 1 or 2`, `c` contains a matrix which
+                                                        !! will be regarded as a set of vectors to which the
+                                                        !! householder transformation is to be applied.
+                                                        !! on exit `c` contains the set of transformed vectors.
+      integer,intent(in)                      :: ice    !! storage increment between elements of vectors in `c`.
+      integer,intent(in)                      :: icv    !! storage increment between vectors in `c`.
+      integer,intent(in)                      :: ncv    !! number of vectors in `c` to be transformed. if `ncv <= 0`
+                                                        !! no operations will be done on `c`.
+
+      integer  :: i, i2, i3, i4, incr, j
+      real(wp) :: b, cl, clinv, sm
+
+      if ( 0>=lpivot .or. lpivot>=l1 .or. l1>m ) return
+      cl = abs(u(1,lpivot))
+      if ( mode/=2 ) then
+         ! construct the transformation.
+         do j = l1 , m
+            cl = max(abs(u(1,j)),cl)
+         end do
+         if ( cl<=0 ) return
+         clinv = one/cl
+         sm = (u(1,lpivot)*clinv)**2
+         do j = l1 , m
+            sm = sm + (u(1,j)*clinv)**2
+         end do
+         cl = cl*sqrt(sm)
+         if ( u(1,lpivot)>0 ) cl = -cl
+         up = u(1,lpivot) - cl
+         u(1,lpivot) = cl
+      elseif ( cl<=0 ) then
+         return
+      end if
+
+      if ( ncv>0 ) then
+          ! apply the transformation  i+u*(u**t)/b to c.
+          b = up*u(1,lpivot)
+          ! b  must be nonpositive here.
+          if ( b<0 ) then
+             b = one/b
+             i2 = 1 - icv + ice*(lpivot-1)
+             incr = ice*(l1-lpivot)
+             do j = 1 , ncv
+                i2 = i2 + icv
+                i3 = i2 + incr
+                i4 = i3
+                sm = c(i2)*up
+                do i = l1 , m
+                   sm = sm + c(i3)*u(1,i)
+                   i3 = i3 + ice
+                end do
+                if ( sm/=0 ) then
+                   sm = sm*b
+                   c(i2) = c(i2) + sm*up
+                   do i = l1 , m
+                      c(i4) = c(i4) + sm*u(1,i)
+                      i4 = i4 + ice
+                   end do
+                end if
+             end do
+          end if
+      end if
+
+    end subroutine h12
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  Compute orthogonal rotation matrix.
+!
+!  Compute matrix \( \left[ \begin{array}{cc} c & s \\ -s & c \end{array} \right] \)
+!  so that \(
+!  \left[ \begin{array}{cc} c & s \\ -s & c \end{array} \right]
+!  \left[ \begin{array}{c} a \\ b \end{array} \right]  =
+!  \left[ \begin{array}{c} \sqrt{a^2+b^2} \\ 0 \end{array} \right]
+!  \)
+!
+!  Compute \( \sigma = \sqrt{a^2+b^2} \)
+!
+!  \( \sigma \) is computed last to allow for the possibility that
+!  `sig` may be in the same location as `a` or `b`.
+!
+!### References
+!  * C.L. Lawson, R.J. Hanson, 'Solving least squares problems'
+!    Prentice Hall, 1974. (revised 1995 edition)
+!  * [lawson-hanson](http://www.netlib.org/lawson-hanson/all) from Netlib.
+!
+!### History
+!  * Jacob Williams, refactored into modern Fortran, Jan. 2016.
+
+    subroutine g1(a,b,c,s,sig)
+
+    implicit none
+
+    real(wp)             :: a
+    real(wp)             :: b
+    real(wp)             :: sig
+    real(wp),intent(out) :: c
+    real(wp),intent(out) :: s
+
+    real(wp) :: xr, yr
+
+    if ( abs(a)>abs(b) ) then
+        xr = b/a
+        yr = sqrt(one+xr**2)
+        c = sign(one/yr,a)
+        s = c*xr
+        sig = abs(a)*yr
+    else
+        if ( b/=zero ) then
+            xr = a/b
+            yr = sqrt(one+xr**2)
+            s = sign(one/yr,b)
+            c = s*xr
+            sig = abs(b)*yr
+        else
+            sig = zero
+            c = zero
+            s = one
+        end if
+    end if
+
+    end subroutine g1
 !*******************************************************************************
 
 !*******************************************************************************
@@ -1614,14 +1867,14 @@
 
     implicit none
 
-    integer,intent(in)  :: n      !! order of the coefficient matrix `a`
-    real(wp),intent(in) :: sigma  !! scalar factor by which the modifying dyade \(z z^T\) is multiplied.
-    real(wp),dimension(*),intent(inout) :: a    !! ***In:*** positive definite matrix of dimension `n`;
-                                                !! only the lower triangle is used and is stored column by
-                                                !! column as one dimensional array of dimension `n*(n+1)/2`.
-                                                !! ***Out:*** updated \(LDL^T\) factors
-    real(wp),dimension(*),intent(inout) :: w  !! working array of dimension `n` (used only if \( \sigma \lt 0 \) ).
-    real(wp),dimension(*),intent(inout) :: z  !! vector of dimension `n` of updating elements.
+    integer,intent(in)                  :: n     !! order of the coefficient matrix `a`
+    real(wp),intent(in)                 :: sigma !! scalar factor by which the modifying dyade \(z z^T\) is multiplied.
+    real(wp),dimension(*),intent(inout) :: a     !! ***In:*** positive definite matrix of dimension `n`;
+                                                 !! only the lower triangle is used and is stored column by
+                                                 !! column as one dimensional array of dimension `n*(n+1)/2`.
+                                                 !! ***Out:*** updated \(LDL^T\) factors
+    real(wp),dimension(*),intent(inout) :: w     !! working array of dimension `n` (used only if \( \sigma \lt 0 \) ).
+    real(wp),dimension(*),intent(inout) :: z     !! vector of dimension `n` of updating elements.
 
       integer :: i , ij , j
       real(wp) :: t , v , u , tp , beta , alpha , delta , gamma
