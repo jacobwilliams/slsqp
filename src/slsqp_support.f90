@@ -21,7 +21,7 @@
     real(wp),parameter,public :: ten    = 10.0_wp
     real(wp),parameter,public :: hun    = 100.0_wp
 
-    public :: daxpy,dcopy,ddot,dnrm2,dsrot,dsrotg,dscal
+    public :: daxpy,dcopy,ddot,dnrm2,dscal !dsrot,dsrotg
 
     contains
 !*******************************************************************************
@@ -260,85 +260,85 @@
     end function dnrm2
 !*******************************************************************************
 
-!*******************************************************************************
-!>
-!  Applies a plane rotation.
+! !*******************************************************************************
+! !>
+! !  Applies a plane rotation.
+! !
+! !### Author
+! !  jack dongarra, linpack, 3/11/78.
 !
-!### Author
-!  jack dongarra, linpack, 3/11/78.
-
-    subroutine dsrot(n,dx,incx,dy,incy,c,s)
-    implicit none
-
-    real(wp) :: dx(*) , dy(*) , dtemp , c , s
-    integer :: i , incx , incy , ix , iy , n
-
-    if ( n<=0 ) return
-    if ( incx==1 .and. incy==1 ) then
-
-        !code for both increments equal to 1
-
-        do i = 1 , n
-            dtemp = c*dx(i) + s*dy(i)
-            dy(i) = c*dy(i) - s*dx(i)
-            dx(i) = dtemp
-        end do
-
-    else
-
-        ! code for unequal increments or equal increments not equal to 1
-
-        ix = 1
-        iy = 1
-        if ( incx<0 ) ix = (-n+1)*incx + 1
-        if ( incy<0 ) iy = (-n+1)*incy + 1
-        do i = 1 , n
-            dtemp = c*dx(ix) + s*dy(iy)
-            dy(iy) = c*dy(iy) - s*dx(ix)
-            dx(ix) = dtemp
-            ix = ix + incx
-            iy = iy + incy
-        end do
-
-    end if
-
-    end subroutine dsrot
-!*******************************************************************************
-
-!*******************************************************************************
-!>
-!  Construct givens plane rotation.
+!     subroutine dsrot(n,dx,incx,dy,incy,c,s)
+!     implicit none
 !
-!### Author
-!  jack dongarra, linpack, 3/11/78.
-!  modified 9/27/86.
-
-      subroutine dsrotg(da,db,c,s)
-
-      implicit none
-
-      real(wp) :: da , db , c , s , roe , scale , r , z
-
-      roe = db
-      if ( abs(da)>abs(db) ) roe = da
-      scale = abs(da) + abs(db)
-      if ( scale/=zero ) then
-         r = scale*sqrt((da/scale)**2+(db/scale)**2)
-         r = sign(one,roe)*r
-         c = da/r
-         s = db/r
-      else
-         c = one
-         s = zero
-         r = zero
-      end if
-      z = s
-      if ( abs(c)>zero .and. abs(c)<=s ) z = one/c
-      da = r
-      db = z
-
-    end subroutine dsrotg
-!*******************************************************************************
+!     real(wp) :: dx(*) , dy(*) , dtemp , c , s
+!     integer :: i , incx , incy , ix , iy , n
+!
+!     if ( n<=0 ) return
+!     if ( incx==1 .and. incy==1 ) then
+!
+!         !code for both increments equal to 1
+!
+!         do i = 1 , n
+!             dtemp = c*dx(i) + s*dy(i)
+!             dy(i) = c*dy(i) - s*dx(i)
+!             dx(i) = dtemp
+!         end do
+!
+!     else
+!
+!         ! code for unequal increments or equal increments not equal to 1
+!
+!         ix = 1
+!         iy = 1
+!         if ( incx<0 ) ix = (-n+1)*incx + 1
+!         if ( incy<0 ) iy = (-n+1)*incy + 1
+!         do i = 1 , n
+!             dtemp = c*dx(ix) + s*dy(iy)
+!             dy(iy) = c*dy(iy) - s*dx(ix)
+!             dx(ix) = dtemp
+!             ix = ix + incx
+!             iy = iy + incy
+!         end do
+!
+!     end if
+!
+!     end subroutine dsrot
+! !*******************************************************************************
+!
+! !*******************************************************************************
+! !>
+! !  Construct givens plane rotation.
+! !
+! !### Author
+! !  jack dongarra, linpack, 3/11/78.
+! !  modified 9/27/86.
+!
+!       subroutine dsrotg(da,db,c,s)
+!
+!       implicit none
+!
+!       real(wp) :: da , db , c , s , roe , scale , r , z
+!
+!       roe = db
+!       if ( abs(da)>abs(db) ) roe = da
+!       scale = abs(da) + abs(db)
+!       if ( scale/=zero ) then
+!          r = scale*sqrt((da/scale)**2+(db/scale)**2)
+!          r = sign(one,roe)*r
+!          c = da/r
+!          s = db/r
+!       else
+!          c = one
+!          s = zero
+!          r = zero
+!       end if
+!       z = s
+!       if ( abs(c)>zero .and. abs(c)<=s ) z = one/c
+!       da = r
+!       db = z
+!
+!     end subroutine dsrotg
+! !*******************************************************************************
 
 !*******************************************************************************
 !>

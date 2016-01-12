@@ -61,7 +61,7 @@
         real(wp),dimension(:),intent(out) :: c      !! the constraint vector `dimension(m)`,
                                                     !! equality constraints (if any) first.
 
-        f = 100.0_wp*(x(2) - x(1)**2)**2 + (1.0_wp - x(1))**2  !objective functdion
+        f = 100.0_wp*(x(2) - x(1)**2)**2 + (1.0_wp - x(1))**2  !objective function
         c(1) = 1.0_wp - x(1)**2 - x(2)**2  !equality constraint (>=0)
 
     end subroutine rosenbrock_func
