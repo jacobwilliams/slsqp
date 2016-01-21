@@ -4,8 +4,7 @@ Modern Fortran Edition of the SLSQP Optimizer
 
 ### License
 
-  * Original sourcecode was released under a BSD license.
-  * Modifications by Jacob Williams released under a similar BSD license.
+  * The original sourcecode and the modifications are released under a [permissive BSD-style license](https://github.com/jacobwilliams/slsqp/blob/master/LICENSE).
 
 ### Development
 
