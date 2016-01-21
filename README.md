@@ -11,6 +11,10 @@ Modern Fortran Edition of the SLSQP Optimizer
 
   * Development continues on [GitHub](https://github.com/jacobwilliams/slsqp).
 
+### Documentation
+
+  The latest API documentation can be found [here](http://jacobwilliams.github.io/slsqp/). This was generated from the source code using [FORD](https://github.com/cmacmackin/ford) (note that the included `build.sh` script will also generate these files).
+
 ### References
 
 * [Original sourcecode at NETLIB](http://www.netlib.org/toms/733)
