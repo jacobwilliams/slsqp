@@ -38,8 +38,9 @@
         integer :: l_jw = 0 !! size of `jwork`
         integer,dimension(:),allocatable :: jw  !! integer work array
 
-        procedure(func),pointer :: f => null()  !! problem function subroutine
-        procedure(grad),pointer :: g => null()  !! gradient subroutine
+        procedure(func),pointer     :: f      => null()  !! problem function subroutine
+        procedure(grad),pointer     :: g      => null()  !! gradient subroutine
+        procedure(iterfunc),pointer :: report => null()  !! for reporting an iteration
 
         integer :: linesearch_mode = 1  !! linesearch mode.
                                         !! `1` = inexact (Armijo) linesearch,
@@ -61,7 +62,7 @@
     end type slsqp_solver
 
     abstract interface
-        subroutine func(me,x,f,c)  !! function computation
+        subroutine func(me,x,f,c)  !! for computing the function
             import :: wp,slsqp_solver
             implicit none
             class(slsqp_solver),intent(inout) :: me
@@ -70,7 +71,7 @@
             real(wp),dimension(:),intent(out) :: c  !! the constraint vector `dimension(m)`,
                                                     !! equality constraints (if any) first.
         end subroutine func
-        subroutine grad(me,x,g,a)
+        subroutine grad(me,x,g,a)  !! for computing the gradients
             import :: wp,slsqp_solver
             implicit none
             class(slsqp_solver),intent(inout)   :: me
@@ -78,6 +79,16 @@
             real(wp),dimension(:),intent(out)   :: g  !! objective function partials w.r.t x `dimension(n)`
             real(wp),dimension(:,:),intent(out) :: a  !! gradient matrix of constraints w.r.t. x `dimension(m,n)`
         end subroutine grad
+        subroutine iterfunc(me,iter,x,f,c)  !! for reporting an interation
+            import :: wp,slsqp_solver
+            implicit none
+            class(slsqp_solver),intent(inout) :: me
+            integer,intent(in)                :: iter  !! iteration number
+            real(wp),dimension(:),intent(in)  :: x     !! optimization variable vector
+            real(wp),intent(in)               :: f     !! value of the objective function
+            real(wp),dimension(:),intent(in)  :: c     !! the constraint vector `dimension(m)`,
+                                                       !! equality constraints (if any) first.
+        end subroutine iterfunc
     end interface
 
     contains
@@ -88,7 +99,7 @@
 !  initialize the [[slsqp_solver]] class.  see [[slsqp]] for more details.
 
     subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok,&
-                                linesearch_mode,iprint)
+                                linesearch_mode,iprint,report)
 
     implicit none
 
@@ -105,6 +116,7 @@
     logical,intent(out)               :: status_ok       !! will be false if there were errors
     integer,intent(in),optional       :: linesearch_mode !! 1 = inexact (default), 2 = exact
     integer,intent(in),optional       :: iprint          !! unit number of status messages (default=output_unit)
+    procedure(iterfunc),optional      :: report          !! user-defined procedure that will be called once per iteration
 
     integer :: n1,mineq
 
@@ -148,6 +160,7 @@
         me%acc = acc
         me%f => f
         me%g => g
+        if (present(report)) me%report => report
 
         allocate(me%xl(n)); me%xl = xl
         allocate(me%xu(n)); me%xu = xu
@@ -193,11 +206,12 @@
     implicit none
 
     class(slsqp_solver),intent(inout)   :: me
-    real(wp),dimension(:),intent(inout) :: x          !! in: initialize optimization variables,
-                                                      !! out: solution.
-    integer,intent(out)                 :: istat      !! status code
+    real(wp),dimension(:),intent(inout) :: x          !! **in:**  initial optimization variables,
+                                                      !! **out:** solution.
+    integer,intent(out)                 :: istat      !! status code (see `mode` in [[slsqp]]).
     integer,intent(out),optional        :: iterations !! number of iterations
 
+    !local variables:
     real(wp)                               :: f        !! objective function
     real(wp),dimension(max(1,me%m))        :: c        !! constraint vector
     real(wp),dimension(max(1,me%m),me%n+1) :: a        !! a matrix for slsqp
@@ -205,15 +219,11 @@
     real(wp),dimension(me%m)               :: cvec     !! constraint vector
     real(wp),dimension(me%n)               :: dfdx     !! objective function partials
     real(wp),dimension(me%m,me%n)          :: dcdx     !! constraint partials
-    integer :: i,mode,la,iter
-    real(wp) :: acc
-
-    !check setup:
-    if (size(x)/=me%n) then
-        call me%report_message('invalid size(x) in slsqp_wrapper')
-        istat = -100
-        return
-    end if
+    integer                                :: i        !! iteration counter
+    integer                                :: mode     !! reverse communication flag for [[slsqp]]
+    integer                                :: la       !! input to [[slsqp]]
+    integer                                :: iter     !! in/out for [[slsqp]]
+    real(wp)                               :: acc      !! in/out for [[slsqp]]
 
     !initialize:
     i    = 0
@@ -224,6 +234,13 @@
     g    = zero
     c    = zero
     if (present(iterations)) iterations = 0
+
+    !check setup:
+    if (size(x)/=me%n) then
+        call me%report_message('invalid size(x) in slsqp_wrapper')
+        istat = -100
+        return
+    end if
 
     !linesearch:
     select case(me%linesearch_mode)
@@ -243,18 +260,6 @@
         if (mode==0 .or. mode==1) then  !function evaluation (f&c)
             call me%f(x,f,cvec)
             c(1:me%m)   = cvec
-
-            !write(*,*) ''
-            !write(*,*) 'func'       !........
-            !write(*,*) 'x=',x
-            !write(*,*) 'f=',f
-            !write(*,*) 'c=',c
-
-            write(*,*) i,x,f,norm2(c)
-            i = i + 1
-
-            !note: not really an iteration (can also be during exact linesearch)
-
         end if
 
         if (mode==0 .or. mode==-1) then  !gradient evaluation (g&a)
@@ -262,15 +267,10 @@
             g(1:me%n)        = dfdx
             a(1:me%m,1:me%n) = dcdx
 
-            !write(*,*) ''
-            !write(*,*) 'grad'       !........
-            !write(*,*) 'x=',x
-            !write(*,*) 'g=',g
-            !write(*,*) 'a=',a
-
-            !write(*,*) i,x,f,norm2(c)
-            !i = i + 1
-
+            !this is an iteration:
+            !note: the initial guess is reported as iteration 0:
+            if (associated(me%report)) call me%report(i,x,f,c) !report iteration
+            i = i + 1  ! iteration counter
         end if
 
         !main routine:
@@ -281,6 +281,7 @@
 
         select case (mode)
         case(0) !required accuracy for solution obtained
+            if (associated(me%report)) call me%report(i,x,f,c) !report solution
             call me%report_message('required accuracy for solution obtained')
             exit
         case(1,-1)

@@ -7,7 +7,7 @@
 
     module slsqp_kinds
 
-    use, intrinsic :: iso_fortran_env
+    use, intrinsic :: iso_fortran_env, only: real64
 
     implicit none
 

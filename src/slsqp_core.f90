@@ -266,6 +266,8 @@
                       alpha,iexact,incons,ireset,itermx,ldat)
     implicit none
 
+    integer,intent(inout)   :: iter  !! **in:**  maximum number of iterations.
+                                     !! **out:** actual number of iterations.
     real(wp) ,intent(inout) :: t
     real(wp) ,intent(inout) :: f0
     real(wp) ,intent(inout) :: h1
@@ -286,7 +288,7 @@
     integer  ,intent(inout) :: itermx
     type(linmin_data),intent(inout) :: ldat !! data for [[linmin]].
 
-    integer :: iw(*), i, iter, k, j, la, m, meq, mode, n
+    integer :: iw(*), i, k, j, la, m, meq, mode, n
 
     real(wp) :: a(la,n+1) , c(la) , g(n+1) , l((n+1)*(n+2)/2) , &
                   mu(la) , r(m+n+n+2) , s(n+1) , u(n+1) , v(n+1) , &
@@ -429,9 +431,6 @@
 !   main iteration : search direction, steplength, ldl'-update
 
  200  iter = iter + 1
-
-    !    write(*,*) 'iter:', iter, x, f, c   ! ..... test ......
-
       mode = 9
       if ( iter>itermx ) return
 
@@ -564,6 +563,7 @@
          end if
          h3 = h3 + max(-c(j),h1)
       end do
+
       if ( (abs(f-f0)<acc .or. dnrm2(n,s,1)<acc) .and. h3<acc ) then
          mode = 0
       else
@@ -1023,13 +1023,13 @@
 !  Minimize \( \frac{1}{2} \mathbf{x}^T \mathbf{x}  \) subject to
 !  \( \mathbf{G} \mathbf{x} \ge \mathbf{h} \).
 !
-!  The declared dimension of w() must be at least (n+1)*(m+2)+2*m:
+!  The declared dimension of `w` must be at least `(n+1)*(m+2)+2*m`:
 !
-!       first (n+1)*m locs of w()  =  matrix e for problem nnls.
-!       next     n+1 locs of w()   =  vector f for problem nnls.
-!       next     n+1 locs of w()   =  vector z for problem nnls.
-!       next       m locs of w()   =  vector y for problem nnls.
-!       next       m locs of w()   =  vector wdual for problem nnls.
+!       first (n+1)*m locs of w = matrix e for problem nnls.
+!       next      n+1 locs of w = vector f for problem nnls.
+!       next      n+1 locs of w = vector z for problem nnls.
+!       next        m locs of w = vector y for problem nnls.
+!       next        m locs of w = vector wdual for problem nnls.
 !
 !### References
 !  * C.L. Lawson, R.J. Hanson, 'Solving least squares problems'

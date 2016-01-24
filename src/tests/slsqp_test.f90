@@ -28,7 +28,8 @@
     x = [0.1_wp, 0.1_wp] !initial guess
 
     call solver%initialize(n,m,meq,max_iter,acc,rosenbrock_func,rosenbrock_grad,&
-                            xl,xu,linesearch_mode=linesearch_mode,status_ok=status_ok)
+                            xl,xu,linesearch_mode=linesearch_mode,status_ok=status_ok,&
+                            report=report_iteration)
     if (status_ok) then
         call solver%optimize(x,istat,iterations)
         write(*,*) ''
@@ -81,6 +82,26 @@
         a(1,2) = -2.0_wp*x(2)     ! dc/dx2
 
     end subroutine rosenbrock_grad
+
+    subroutine report_iteration(me,iter,x,f,c)
+        use, intrinsic :: iso_fortran_env, only: output_unit
+        !! report an iteration (print to the console).
+        implicit none
+        class(slsqp_solver),intent(inout) :: me
+        integer,intent(in)                :: iter
+        real(wp),dimension(:),intent(in)  :: x
+        real(wp),intent(in)               :: f
+        real(wp),dimension(:),intent(in)  :: c
+
+        !write a header:
+        if (iter==0) then
+            write(output_unit,'(*(A20,1X))') 'iteration', 'x(1)', 'x(2)', 'f(1)', 'c(1)'
+        end if
+
+        !write the iteration data:
+        write(output_unit,'(I20,1X,(*(F20.16,1X)))') iter,x,f,c
+
+    end subroutine report_iteration
 
     end program slsqp_test
 !*******************************************************************************
