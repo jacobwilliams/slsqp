@@ -21,4 +21,4 @@ extra_mods: pyplot_module:https://github.com/jacobwilliams/pyplot-fortran
 Brief description
 ---------------
 
-This is a modern object-oriented Fortran implementation of the SLSQP Optimization Method.
+This is a modern object-oriented Fortran implementation of the SLSQP Optimization Method.  It can be used to solve nonlinear programming problems that seek to minimize a scalar performance index subject to nonlinear equality and inequality constraints as well as bounds on the variables.

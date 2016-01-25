@@ -30,6 +30,8 @@
     call solver%initialize(n,m,meq,max_iter,acc,rosenbrock_func,rosenbrock_grad,&
                             xl,xu,linesearch_mode=linesearch_mode,status_ok=status_ok,&
                             report=report_iteration)
+                            !alphamin=0.1_wp, alphamax=0.5_wp) !to limit search steps
+
     if (status_ok) then
         call solver%optimize(x,istat,iterations)
         write(*,*) ''

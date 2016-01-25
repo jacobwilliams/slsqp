@@ -87,35 +87,35 @@
 !  within the steplength algorithm.
 !
 !# Reference
-!   * Dieter Kraft: "a software package for sequential quadratic programming",
-!     dfvlr-fb 88-28, 1988
+!   * Dieter Kraft: "A software package for sequential quadratic programming",
+!     DFVLR-FB 88-28, 1988
 !
 !# History
 !   * implemented by: Dieter Kraft, DFVLR oberpfaffenhofen
 !   * date: april - october, 1981.
-!   * december, 31-st, 1984.
-!   * march   , 21-st, 1987, revised to fortan 77
-!   * march   , 20-th, 1989, revised to ms-fortran
-!   * april   , 14-th, 1989, hesse   in-line coded
-!   * february, 28-th, 1991, fortran/2 version 1.04 accepts statement functions
-!   * march   ,  1-st, 1991, tested with salford ftn77/386 compiler vers 2.40 in protected mode
-!   * january, 2016 : refactoring into modern fortran by jacob williams
+!   * December, 31-st, 1984.
+!   * March   , 21-st, 1987, revised to fortran 77
+!   * March   , 20-th, 1989, revised to ms-fortran
+!   * April   , 14-th, 1989, hesse   in-line coded
+!   * February, 28-th, 1991, fortran/2 version 1.04 accepts statement functions
+!   * March   ,  1-st, 1991, tested with salford ftn77/386 compiler vers 2.40 in protected mode
+!   * January ,        2016, Refactored into modern Fortran by Jacob Williams
 !
 !# License
-!  Copyright 1991: Dieter Kraft, FHM.
+!  Original version copyright 1991: Dieter Kraft, FHM.
 !  Released under a BSD license.
 !
-!@note: f,c,g,a must all be set by the user before each call.
+!@note `f`, `c`, `g`, `a` must all be set by the user before each call.
 
     subroutine slsqp(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w,l_w, &
-                     jw,l_jw,sdat,ldat)
+                     jw,l_jw,sdat,ldat,alphamin,alphamax)
 
     implicit none
 
-    integer,intent(in) :: m                     !! is the total number of constraints, m >= 0
-    integer,intent(in) :: meq                   !! is the number of equality constraints, meq >= 0
-    integer,intent(in) :: la                    !! see a, la >= max(m,1)
-    integer,intent(in) :: n                     !! is the number of varibles, n >= 1
+    integer,intent(in) :: m                     !! is the total number of constraints, \( m \ge 0 \)
+    integer,intent(in) :: meq                   !! is the number of equality constraints, \( m_{eq} \ge 0 \)
+    integer,intent(in) :: la                    !! see a, \( la \ge \max(m,1) \)
+    integer,intent(in) :: n                     !! is the number of varibles, \( n \ge 1 \)
     real(wp),dimension(n),intent(inout) :: x    !! x() stores the current iterate of the n vector x
                                                 !! on entry x() must be initialized. on exit x()
                                                 !! stores the solution vector x if mode = 0.
@@ -187,6 +187,8 @@
     integer,dimension(l_jw),intent(inout) :: jw !! jw() is a one dimensional integer working space
     type(slsqpb_data),intent(inout) :: sdat  !! data for [[slsqpb]].
     type(linmin_data),intent(inout) :: ldat  !! data for [[linmin]].
+    real(wp),intent(in) :: alphamin  !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    real(wp),intent(in) :: alphamax  !! max \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
 
     integer :: il , im , ir , is , iu , iv , iw , ix , mineq, n1
 
@@ -249,7 +251,7 @@
                   sdat%t,sdat%f0,sdat%h1,sdat%h2,sdat%h3,sdat%h4,&
                   sdat%n1,sdat%n2,sdat%n3,sdat%t0,sdat%gs,sdat%tol,sdat%line,&
                   sdat%alpha,sdat%iexact,sdat%incons,sdat%ireset,sdat%itermx,&
-                  ldat)
+                  ldat,alphamin,alphamax)
 
       end subroutine slsqp
 !*******************************************************************************
@@ -263,7 +265,8 @@
     subroutine slsqpb(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,r,l,x0,&
                       mu,s,u,v,w,iw,&
                       t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
-                      alpha,iexact,incons,ireset,itermx,ldat)
+                      alpha,iexact,incons,ireset,itermx,ldat,&
+                      alphamin,alphamax)
     implicit none
 
     integer,intent(inout)   :: iter  !! **in:**  maximum number of iterations.
@@ -287,6 +290,8 @@
     integer  ,intent(inout) :: ireset
     integer  ,intent(inout) :: itermx
     type(linmin_data),intent(inout) :: ldat !! data for [[linmin]].
+    real(wp),intent(in) :: alphamin  !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    real(wp),intent(in) :: alphamax  !! max \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
 
     integer :: iw(*), i, k, j, la, m, meq, mode, n
 
@@ -299,8 +304,6 @@
 !                     +(n1-meq+1)*(mineq+2) + 2*mineq
 !                     +(n1+mineq)*(n1-meq) + 2*meq + n1       for lsei
 !                      with mineq = m - meq + 2*n1  &  n1 = n+1
-
-    real(wp),parameter :: alfmin = 0.1_wp
 
       if ( mode<0 ) then
 
@@ -397,7 +400,7 @@
          h1 = t - t0
          if ( iexact+1==1 ) then
             if ( h1<=h3/ten .or. line>10 ) goto 500
-            alpha = max(h3/(two*(h3-h1)),alfmin)
+            alpha = min(max(h3/(two*(h3-h1)),alphamin),alphamax)
             goto 300
          elseif ( iexact+1==2 ) then
             goto 400
@@ -522,7 +525,7 @@
 !   line search with an l1-testfunction
 
       line = 0
-      alpha = one
+      alpha = alphamax
       if ( iexact==1 ) goto 400
 
 !   inexact linesearch
@@ -541,7 +544,7 @@
 !   exact linesearch
 
  400  if ( line/=3 ) then
-         alpha = linmin(line,alfmin,one,t,tol, &
+         alpha = linmin(line,alphamin,alphamax,t,tol, &
                          ldat%a, ldat%b, ldat%d, ldat%e, ldat%p,   ldat%q,   &
                          ldat%r, ldat%u, ldat%v, ldat%w, ldat%x,   ldat%m,   &
                          ldat%fu,ldat%fv,ldat%fw,ldat%fx,ldat%tol1,ldat%tol2 )
@@ -588,7 +591,7 @@
 !
 !  \( a(j)*x - b(j) \ge 0,          j=meq+1,...,m\),
 !
-!  \( xl(i) \le x(i) \le xu(i),     i=1,...,n    \),
+!  \( x_l(i) \le x(i) \le x_u(i),     i=1,...,n    \),
 !
 !  On entry, the user has to provide the arrays `l`, `g`, `a`, `b`, `xl`, `xu`.
 !  with dimensions: `l(n*(n+1)/2)`, `g(n)`, `a(la,n)`, `b(m)`, `xl(n)`, `xu(n)`.
