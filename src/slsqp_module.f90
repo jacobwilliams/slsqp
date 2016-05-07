@@ -19,6 +19,8 @@
 
     type,public :: slsqp_solver
 
+        !! The main class used to interface with the SLSQP solver.
+
         private
 
         integer  :: n        = 0        !! number of optimization variables (\( n > 0 \))
@@ -36,15 +38,15 @@
         real(wp),dimension(:),allocatable :: xl  !! lower bound on x
         real(wp),dimension(:),allocatable :: xu  !! upper bound on x
 
-        integer :: l_w = 0 !! size of `work`
+        integer :: l_w = 0 !! size of `w`
         real(wp),dimension(:),allocatable :: w !! real work array
 
-        integer :: l_jw = 0 !! size of `jwork`
+        integer :: l_jw = 0 !! size of `jw`
         integer,dimension(:),allocatable :: jw  !! integer work array
 
-        procedure(func),pointer     :: f      => null()  !! problem function subroutine
-        procedure(grad),pointer     :: g      => null()  !! gradient subroutine
-        procedure(iterfunc),pointer :: report => null()  !! for reporting an iteration
+        procedure(func),pointer     :: f      => null()         !! problem function subroutine
+        procedure(grad),pointer     :: g      => null()         !! gradient subroutine
+        procedure(iterfunc),pointer :: report => null()         !! for reporting an iteration
 
         integer :: linesearch_mode = 1  !! linesearch mode.
                                         !! `1` = inexact (Armijo) linesearch,
@@ -53,6 +55,9 @@
                                                 !! Only used when `linesearch_mode=2`
         type(slsqpb_data) :: slsqpb  !! data formerly within [[slsqpb]].
 
+        logical :: user_triggered_stop = .false.    !! if the `abort` method has been called
+                                                    !! to stop the iterations
+
     contains
 
         private
@@ -60,6 +65,7 @@
         procedure,public :: initialize => initialize_slsqp
         procedure,public :: destroy    => destroy_slsqp
         procedure,public :: optimize   => slsqp_wrapper
+        procedure,public :: abort      => stop_iterations
 
         procedure :: report_message
 
@@ -96,6 +102,23 @@
     end interface
 
     contains
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  A method that the user can call to stop the iterations.
+!  (it can be called in any of the functions).
+!  SLSQP will stop at the end of the next iteration.
+
+    subroutine stop_iterations(me)
+
+    implicit none
+
+    class(slsqp_solver),intent(inout) :: me
+
+    me%user_triggered_stop = .true.
+
+    end subroutine stop_iterations
 !*******************************************************************************
 
 !*******************************************************************************
@@ -346,6 +369,14 @@
             call me%report_message('unknown slsqp error')
             exit
         end select
+
+        if (me%user_triggered_stop) then
+            mode = -2
+            call me%report_message('user-triggered stop of slsqp')
+            me%user_triggered_stop = .false.    !have to reset in case
+                                                !method is called again.
+            exit
+        end if
 
     end do
 
