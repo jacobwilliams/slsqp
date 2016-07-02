@@ -34,53 +34,54 @@
 !### Author
 !  jack dongarra, linpack, 3/11/78.
 
-      subroutine daxpy(n,da,dx,incx,dy,incy)
-      implicit none
+    subroutine daxpy(n,da,dx,incx,dy,incy)
 
-      real(wp) :: dx(*) , dy(*) , da
-      integer :: i , incx , incy , ix , iy , m , mp1 , n
+    implicit none
 
-      if ( n<=0 ) return
-      if ( da==zero ) return
-      if ( incx==1 .and. incy==1 ) then
+    real(wp) :: dx(*) , dy(*) , da
+    integer :: i , incx , incy , ix , iy , m , mp1 , n
+
+    if ( n<=0 ) return
+    if ( da==zero ) return
+    if ( incx==1 .and. incy==1 ) then
 
         ! code for both increments equal to 1
 
         ! clean-up loop
 
-         m = mod(n,4)
-         if ( m/=0 ) then
+        m = mod(n,4)
+        if ( m/=0 ) then
             do i = 1 , m
-               dy(i) = dy(i) + da*dx(i)
+                dy(i) = dy(i) + da*dx(i)
             end do
             if ( n<4 ) return
-         end if
-         mp1 = m + 1
-         do i = mp1 , n , 4
+        end if
+        mp1 = m + 1
+        do i = mp1 , n , 4
             dy(i) = dy(i) + da*dx(i)
             dy(i+1) = dy(i+1) + da*dx(i+1)
             dy(i+2) = dy(i+2) + da*dx(i+2)
             dy(i+3) = dy(i+3) + da*dx(i+3)
-         end do
+        end do
 
-      else
+    else
 
-         ! code for unequal increments or equal increments
-         ! not equal to 1
+        ! code for unequal increments or equal increments
+        ! not equal to 1
 
-         ix = 1
-         iy = 1
-         if ( incx<0 ) ix = (-n+1)*incx + 1
-         if ( incy<0 ) iy = (-n+1)*incy + 1
-         do i = 1 , n
+        ix = 1
+        iy = 1
+        if ( incx<0 ) ix = (-n+1)*incx + 1
+        if ( incy<0 ) iy = (-n+1)*incy + 1
+        do i = 1 , n
             dy(iy) = dy(iy) + da*dx(ix)
             ix = ix + incx
             iy = iy + incy
-         end do
+        end do
 
-      end if
+    end if
 
-      end subroutine daxpy
+    end subroutine daxpy
 !*******************************************************************************
 
 !*******************************************************************************
@@ -93,27 +94,27 @@
 
     subroutine dcopy(n,dx,incx,dy,incy)
 
-      implicit none
+    implicit none
 
-      real(wp) :: dx(*) , dy(*)
-      integer :: i , incx , incy , ix , iy , m , mp1 , n
+    real(wp) :: dx(*) , dy(*)
+    integer :: i , incx , incy , ix , iy , m , mp1 , n
 
-      if ( n<=0 ) return
-      if ( incx==1 .and. incy==1 ) then
+    if ( n<=0 ) return
+    if ( incx==1 .and. incy==1 ) then
 
-         ! code for both increments equal to 1
+        ! code for both increments equal to 1
 
-         ! clean-up loop
+        ! clean-up loop
 
-         m = mod(n,7)
-         if ( m/=0 ) then
+        m = mod(n,7)
+        if ( m/=0 ) then
             do i = 1 , m
-               dy(i) = dx(i)
+                dy(i) = dx(i)
             end do
             if ( n<7 ) return
-         end if
-         mp1 = m + 1
-         do i = mp1 , n , 7
+        end if
+        mp1 = m + 1
+        do i = mp1 , n , 7
             dy(i) = dx(i)
             dy(i+1) = dx(i+1)
             dy(i+2) = dx(i+2)
@@ -121,24 +122,24 @@
             dy(i+4) = dx(i+4)
             dy(i+5) = dx(i+5)
             dy(i+6) = dx(i+6)
-         end do
+        end do
 
-      else
+    else
 
-         ! code for unequal increments or equal increments
-         ! not equal to 1
+        ! code for unequal increments or equal increments
+        ! not equal to 1
 
-         ix = 1
-         iy = 1
-         if ( incx<0 ) ix = (-n+1)*incx + 1
-         if ( incy<0 ) iy = (-n+1)*incy + 1
-         do i = 1 , n
+        ix = 1
+        iy = 1
+        if ( incx<0 ) ix = (-n+1)*incx + 1
+        if ( incy<0 ) iy = (-n+1)*incy + 1
+        do i = 1 , n
             dy(iy) = dx(ix)
             ix = ix + incx
             iy = iy + incy
-         end do
+        end do
 
-      end if
+    end if
 
     end subroutine dcopy
 !*******************************************************************************
@@ -151,58 +152,58 @@
 !### Author
 !  jack dongarra, linpack, 3/11/78.
 
-      real(wp) function ddot(n,dx,incx,dy,incy)
+    real(wp) function ddot(n,dx,incx,dy,incy)
 
-      implicit none
+    implicit none
 
-      real(wp) :: dx(*) , dy(*) , dtemp
-      integer :: i , incx , incy , ix , iy , m , mp1 , n
+    real(wp) :: dx(*) , dy(*) , dtemp
+    integer :: i , incx , incy , ix , iy , m , mp1 , n
 
-      ddot = zero
-      dtemp = zero
-      if ( n<=0 ) return
-      if ( incx==1 .and. incy==1 ) then
+    ddot = zero
+    dtemp = zero
+    if ( n<=0 ) return
+    if ( incx==1 .and. incy==1 ) then
 
-         ! code for both increments equal to 1
+        ! code for both increments equal to 1
 
-         ! clean-up loop
+        ! clean-up loop
 
-         m = mod(n,5)
-         if ( m/=0 ) then
+        m = mod(n,5)
+        if ( m/=0 ) then
             do i = 1 , m
-               dtemp = dtemp + dx(i)*dy(i)
+                dtemp = dtemp + dx(i)*dy(i)
             end do
             if ( n<5 ) then
-               ddot = dtemp
-               return
+                ddot = dtemp
+                return
             end if
-         end if
-         mp1 = m + 1
-         do i = mp1 , n , 5
+        end if
+        mp1 = m + 1
+        do i = mp1 , n , 5
             dtemp = dtemp + dx(i)*dy(i) + dx(i+1)*dy(i+1) + &
                     dx(i+2)*dy(i+2) + dx(i+3)*dy(i+3) + dx(i+4)*dy(i+4)
-         end do
-         ddot = dtemp
+        end do
+        ddot = dtemp
 
-      else
+    else
 
-         ! code for unequal increments or equal increments
-         ! not equal to 1
+        ! code for unequal increments or equal increments
+        ! not equal to 1
 
-         ix = 1
-         iy = 1
-         if ( incx<0 ) ix = (-n+1)*incx + 1
-         if ( incy<0 ) iy = (-n+1)*incy + 1
-         do i = 1 , n
+        ix = 1
+        iy = 1
+        if ( incx<0 ) ix = (-n+1)*incx + 1
+        if ( incy<0 ) iy = (-n+1)*incy + 1
+        do i = 1 , n
             dtemp = dtemp + dx(ix)*dy(iy)
             ix = ix + incx
             iy = iy + incy
-         end do
-         ddot = dtemp
+        end do
+        ddot = dtemp
 
-      end if
+    end if
 
-      end function ddot
+    end function ddot
 !*******************************************************************************
 
 !*******************************************************************************
@@ -222,40 +223,40 @@
 
     real(wp) function dnrm2(n,x,incx)
 
-        implicit none
+    implicit none
 
-        integer,intent(in)               :: incx
-        integer,intent(in)               :: n
-        real(wp),dimension(*),intent(in) :: x
+    integer,intent(in)               :: incx
+    integer,intent(in)               :: n
+    real(wp),dimension(*),intent(in) :: x
 
-        real(wp) :: absxi , norm , scale , ssq
-        integer :: ix
+    real(wp) :: absxi , norm , scale , ssq
+    integer :: ix
 
-        if ( n<1 .or. incx<1 ) then
-           norm = zero
-        elseif ( n==1 ) then
-           norm = abs(x(1))
-        else
-           scale = zero
-           ssq = one
-           ! the following loop is equivalent to this call to the lapack
-           ! auxiliary routine:
-           ! call dlassq( n, x, incx, scale, ssq )
-           do ix = 1 , 1 + (n-1)*incx , incx
-              if ( x(ix)/=zero ) then
-                 absxi = abs(x(ix))
-                 if ( scale<absxi ) then
+    if ( n<1 .or. incx<1 ) then
+        norm = zero
+    elseif ( n==1 ) then
+        norm = abs(x(1))
+    else
+        scale = zero
+        ssq = one
+        ! the following loop is equivalent to this call to the lapack
+        ! auxiliary routine:
+        ! call dlassq( n, x, incx, scale, ssq )
+        do ix = 1 , 1 + (n-1)*incx , incx
+            if ( x(ix)/=zero ) then
+                absxi = abs(x(ix))
+                if ( scale<absxi ) then
                     ssq = one + ssq*(scale/absxi)**2
                     scale = absxi
-                 else
+                else
                     ssq = ssq + (absxi/scale)**2
-                 end if
-              end if
-           end do
-           norm = scale*sqrt(ssq)
-        end if
+                end if
+            end if
+        end do
+        norm = scale*sqrt(ssq)
+    end if
 
-        dnrm2 = norm
+    dnrm2 = norm
 
     end function dnrm2
 !*******************************************************************************
@@ -270,45 +271,46 @@
 
     subroutine dscal(n,da,dx,incx)
 
-      implicit none
+    implicit none
 
-      real(wp) :: da , dx(*)
-      integer :: i , incx , m , mp1 , n , nincx
+    real(wp) :: da , dx(*)
+    integer :: i , incx , m , mp1 , n , nincx
 
-      if ( n<=0 .or. incx<=0 ) return
-      if ( incx==1 ) then
+    if ( n<=0 .or. incx<=0 ) return
+    if ( incx==1 ) then
 
-         ! code for increment equal to 1
+        ! code for increment equal to 1
 
-         ! clean-up loop
+        ! clean-up loop
 
-         m = mod(n,5)
-         if ( m/=0 ) then
+        m = mod(n,5)
+        if ( m/=0 ) then
             do i = 1 , m
-               dx(i) = da*dx(i)
+                dx(i) = da*dx(i)
             end do
             if ( n<5 ) return
-         end if
-         mp1 = m + 1
-         do i = mp1 , n , 5
+        end if
+        mp1 = m + 1
+        do i = mp1 , n , 5
             dx(i) = da*dx(i)
             dx(i+1) = da*dx(i+1)
             dx(i+2) = da*dx(i+2)
             dx(i+3) = da*dx(i+3)
             dx(i+4) = da*dx(i+4)
-         end do
-      else
+        end do
 
-         ! code for increment not equal to 1
+    else
 
-         nincx = n*incx
-         do i = 1 , nincx , incx
+        ! code for increment not equal to 1
+
+        nincx = n*incx
+        do i = 1 , nincx , incx
             dx(i) = da*dx(i)
-         end do
+        end do
 
-      end if
+    end if
 
-      end subroutine dscal
+    end subroutine dscal
 !*******************************************************************************
 
 !*******************************************************************************

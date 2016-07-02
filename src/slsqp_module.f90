@@ -51,7 +51,7 @@
         integer :: linesearch_mode = 1  !! linesearch mode.
                                         !! `1` = inexact (Armijo) linesearch,
                                         !! `2` = exact linesearch.
-        type(linmin_data),allocatable :: linmin !! data formerly within [[linmin]].
+        type(linmin_data) :: linmin !! data formerly within [[linmin]].
                                                 !! Only used when `linesearch_mode=2`
         type(slsqpb_data) :: slsqpb  !! data formerly within [[slsqpb]].
 
@@ -67,7 +67,7 @@
         procedure,public :: optimize   => slsqp_wrapper
         procedure,public :: abort      => stop_iterations
 
-        procedure :: report_message
+        procedure :: report_message  !! for reporting messages to the user
 
     end type slsqp_solver
 
@@ -181,7 +181,6 @@
                 me%linesearch_mode = linesearch_mode
             case(2)     !exact
                 me%linesearch_mode = linesearch_mode
-                allocate(me%linmin)
             case default
                 call me%report_message('error: invalid linesearch_mode (must be 1 or 2): ',&
                                         ival=linesearch_mode)
@@ -223,10 +222,12 @@
         !work arrays:
         n1 = n+1
         mineq = m - meq + 2*n1
+
         me%l_w = n1*(n1+1) + meq*(n1+1) + mineq*(n1+1) + &   !for lsq
                  (n1-meq+1)*(mineq+2) + 2*mineq        + &   !for lsi
                  (n1+mineq)*(n1-meq) + 2*meq + n1      + &   !for lsei
                   n1*n/2 + 2*m + 3*n +3*n1 + 1               !for slsqpb
+
         allocate(me%w(me%l_w))
         me%w = zero
 
@@ -256,7 +257,7 @@
 !>
 !  main routine for calling [[slsqp]].
 
-    subroutine slsqp_wrapper(me,x,istat,iterations)
+    subroutine slsqp_wrapper(me,x,istat,iterations,status_message)
 
     implicit none
 
@@ -265,6 +266,7 @@
                                                       !! **out:** solution.
     integer,intent(out)                 :: istat      !! status code (see `mode` in [[slsqp]]).
     integer,intent(out),optional        :: iterations !! number of iterations
+    character(len=:),intent(out),allocatable,optional :: status_message !! string status message corresponding to `istat`
 
     !local variables:
     real(wp)                               :: f        !! objective function
@@ -289,11 +291,14 @@
     g    = zero
     c    = zero
     if (present(iterations)) iterations = 0
+    call me%linmin%destroy()
+    call me%slsqpb%destroy()
 
     !check setup:
     if (size(x)/=me%n) then
-        call me%report_message('invalid size(x) in slsqp_wrapper')
         istat = -100
+        call me%report_message(mode_to_status_message(istat))
+        if (present(status_message)) status_message = mode_to_status_message(istat)
         return
     end if
 
@@ -304,10 +309,25 @@
     case(2)     !exact
         acc = -abs(me%acc)
     case default
-        call me%report_message('invalid linesearch_mode in slsqp_wrapper')
         istat = -101
+        call me%report_message(mode_to_status_message(istat))
+        if (present(status_message)) status_message = mode_to_status_message(istat)
         return
     end select
+
+    !make sure the functions have been associated:
+    if (.not. associated(me%f)) then
+        istat = -102
+        call me%report_message(mode_to_status_message(istat))
+        if (present(status_message)) status_message = mode_to_status_message(istat)
+        return
+    end if
+    if (.not. associated(me%g)) then
+        istat = -103
+        call me%report_message(mode_to_status_message(istat))
+        if (present(status_message)) status_message = mode_to_status_message(istat)
+        return
+    end if
 
     !main solver loop:
     do
@@ -334,45 +354,18 @@
                     me%w,me%l_w,me%jw,me%l_jw,&
                     me%slsqpb,me%linmin,me%alphamin,me%alphamax)
 
-        select case (mode)
-        case(0) !required accuracy for solution obtained
-            if (associated(me%report)) call me%report(i,x,f,c) !report solution
-            call me%report_message('required accuracy for solution obtained')
-            exit
-        case(1,-1)
+        if (mode==1 .or. mode==-1) then
             !continue to next call
-        case(2);
-            call me%report_message('number of equality contraints larger than n')
+        else
+            if (mode==0 .and. associated(me%report)) &
+                call me%report(i,x,f,c) !report solution
+            call me%report_message(mode_to_status_message(mode))
             exit
-        case(3);
-            call me%report_message('more than 3*n iterations in lsq subproblem')
-            exit
-        case(4);
-            call me%report_message('inequality constraints incompatible')
-            exit
-        case(5);
-            call me%report_message('singular matrix e in lsq subproblem')
-            exit
-        case(6);
-            call me%report_message('singular matrix c in lsq subproblem')
-            exit
-        case(7);
-            call me%report_message('rank-deficient equality constraint subproblem hfti')
-            exit
-        case(8);
-            call me%report_message('positive directional derivative for linesearch')
-            exit
-        case(9);
-            call me%report_message('more than max_iter iterations in slsqp')
-            exit
-        case default
-            call me%report_message('unknown slsqp error')
-            exit
-        end select
+        end if
 
         if (me%user_triggered_stop) then
             mode = -2
-            call me%report_message('user-triggered stop of slsqp')
+            call me%report_message(mode_to_status_message(mode))
             me%user_triggered_stop = .false.    !have to reset in case
                                                 !method is called again.
             exit
@@ -382,6 +375,7 @@
 
     istat = mode
     if (present(iterations)) iterations = iter
+    if (present(status_message)) status_message = mode_to_status_message(istat)
 
     end subroutine slsqp_wrapper
 !*******************************************************************************
@@ -445,6 +439,55 @@
     end if
 
     end subroutine report_message
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  Convert the [[slsqp]] `mode` flag to a message string.
+
+    pure function mode_to_status_message(imode) result(message)
+
+    implicit none
+
+    integer,intent(in) :: imode
+    character(len=:),allocatable :: message
+
+    select case (imode)
+    case(0) !required accuracy for solution obtained
+        message = 'required accuracy for solution obtained'
+    case(-100)
+        message = 'invalid size(x) in slsqp_wrapper'
+    case(-101)
+        message = 'invalid linesearch_mode in slsqp_wrapper'
+    case(-102)
+        message = 'function is not associated'
+    case(-103)
+        message = 'gradient function is not associated'
+    case(-2)
+        message = 'user-triggered stop of slsqp'
+    case(1,-1)
+        message = 'in progress'
+    case(2)
+        message = 'number of equality contraints larger than n'
+    case(3)
+        message = 'more than 3*n iterations in lsq subproblem'
+    case(4)
+        message = 'inequality constraints incompatible'
+    case(5)
+        message = 'singular matrix e in lsq subproblem'
+    case(6)
+        message = 'singular matrix c in lsq subproblem'
+    case(7)
+        message = 'rank-deficient equality constraint subproblem hfti'
+    case(8)
+        message = 'positive directional derivative for linesearch'
+    case(9)
+        message = 'more than max_iter iterations in slsqp'
+    case default
+        message = 'unknown slsqp error'
+    end select
+
+    end function mode_to_status_message
 !*******************************************************************************
 
 !*******************************************************************************

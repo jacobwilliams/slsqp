@@ -33,6 +33,8 @@
         real(wp) :: fx   = zero
         real(wp) :: tol1 = zero
         real(wp) :: tol2 = zero
+    contains
+        procedure :: destroy => destroy_linmin_data
     end type linmin_data
 
     type,public :: slsqpb_data
@@ -55,6 +57,8 @@
         integer  :: n1      = 0
         integer  :: n2      = 0
         integer  :: n3      = 0
+    contains
+        procedure :: destroy => destroy_slsqpb_data
     end type slsqpb_data
 
     public :: slsqp
@@ -246,8 +250,8 @@
 
       sdat%n1 = n1
 
-      call slsqpb(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w(ir),w(il), &
-                  w(ix),w(im),w(is),w(iu),w(iv),w(iw),jw,&
+      call slsqpb(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,&
+                  w(ir),w(il),w(ix),w(im),w(is),w(iu),w(iv),w(iw),jw,&
                   sdat%t,sdat%f0,sdat%h1,sdat%h2,sdat%h3,sdat%h4,&
                   sdat%n1,sdat%n2,sdat%n3,sdat%t0,sdat%gs,sdat%tol,sdat%line,&
                   sdat%alpha,sdat%iexact,sdat%incons,sdat%ireset,sdat%itermx,&
@@ -260,320 +264,336 @@
 !>
 !  nonlinear programming by solving sequentially quadratic programs
 !
-!  l1 - line search,  positive definite  bfgs update
+!  l1 - line search, positive definite bfgs update
 
-    subroutine slsqpb(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,r,l,x0,&
-                      mu,s,u,v,w,iw,&
+    subroutine slsqpb(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,&
+                      r,l,x0,mu,s,u,v,w,iw,&
                       t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
                       alpha,iexact,incons,ireset,itermx,ldat,&
                       alphamin,alphamax)
     implicit none
 
-    integer,intent(inout)   :: iter  !! **in:**  maximum number of iterations.
-                                     !! **out:** actual number of iterations.
-    real(wp) ,intent(inout) :: t
-    real(wp) ,intent(inout) :: f0
-    real(wp) ,intent(inout) :: h1
-    real(wp) ,intent(inout) :: h2
-    real(wp) ,intent(inout) :: h3
-    real(wp) ,intent(inout) :: h4
-    integer  ,intent(inout) :: n1
-    integer  ,intent(inout) :: n2
-    integer  ,intent(inout) :: n3
-    real(wp) ,intent(inout) :: t0
-    real(wp) ,intent(inout) :: gs
-    real(wp) ,intent(inout) :: tol
-    integer  ,intent(inout) :: line
-    real(wp) ,intent(inout) :: alpha
-    integer  ,intent(inout) :: iexact
-    integer  ,intent(inout) :: incons
-    integer  ,intent(inout) :: ireset
-    integer  ,intent(inout) :: itermx
-    type(linmin_data),intent(inout) :: ldat !! data for [[linmin]].
-    real(wp),intent(in) :: alphamin  !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
-    real(wp),intent(in) :: alphamax  !! max \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    integer,intent(in)                  :: m
+    integer,intent(in)                  :: meq
+    integer,intent(in)                  :: n
+    integer,intent(in)                  :: la
+    integer,intent(inout)               :: mode
+    integer,dimension(*),intent(inout)  :: iw
+    real(wp),dimension(la,n+1)          :: a
+    real(wp),dimension(la)              :: c
+    real(wp),dimension(n+1)             :: g
+    real(wp),dimension((n+1)*(n+2)/2)   :: l
+    real(wp),dimension(la)              :: mu
+    real(wp),dimension(m+n+n+2)         :: r
+    real(wp),dimension(n+1)             :: s
+    real(wp),dimension(n+1)             :: u
+    real(wp),dimension(n+1)             :: v
+    real(wp),dimension(n)               :: x
+    real(wp),dimension(n)               :: xl
+    real(wp),dimension(n)               :: xu
+    real(wp),dimension(n)               :: x0
+    real(wp)                            :: acc
+    real(wp)                            :: f
+    integer,intent(inout)               :: iter  !! **in:**  maximum number of iterations.
+                                                 !! **out:** actual number of iterations.
+    real(wp),intent(inout)              :: t
+    real(wp),intent(inout)              :: f0
+    real(wp),intent(inout)              :: h1
+    real(wp),intent(inout)              :: h2
+    real(wp),intent(inout)              :: h3
+    real(wp),intent(inout)              :: h4
+    integer,intent(inout)               :: n1
+    integer,intent(inout)               :: n2
+    integer,intent(inout)               :: n3
+    real(wp),intent(inout)              :: t0
+    real(wp),intent(inout)              :: gs
+    real(wp),intent(inout)              :: tol
+    integer,intent(inout)               :: line
+    real(wp),intent(inout)              :: alpha
+    integer,intent(inout)               :: iexact
+    integer,intent(inout)               :: incons
+    integer,intent(inout)               :: ireset
+    integer,intent(inout)               :: itermx
+    type(linmin_data),intent(inout)     :: ldat      !! data for [[linmin]].
+    real(wp),intent(in)                 :: alphamin  !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    real(wp),intent(in)                 :: alphamax  !! max \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    real(wp),dimension(*),intent(inout) :: w         !! dim(w) = n1*(n1+1) + meq*(n1+1) + mineq*(n1+1)   for lsq
+                                                     !!          +(n1-meq+1)*(mineq+2) + 2*mineq
+                                                     !!          +(n1+mineq)*(n1-meq) + 2*meq + n1       for lsei
+                                                     !!
+                                                     !! with mineq = m - meq + 2*n1  &  n1 = n+1
 
-    integer :: iw(*), i, k, j, la, m, meq, mode, n
+    integer :: i, j, k
 
-    real(wp) :: a(la,n+1) , c(la) , g(n+1) , l((n+1)*(n+2)/2) , &
-                  mu(la) , r(m+n+n+2) , s(n+1) , u(n+1) , v(n+1) , &
-                  w(*) , x(n) , xl(n) , xu(n) , x0(n) , &
-                  acc , f
+    if ( mode<0 ) then
 
-!     dim(w) =         n1*(n1+1) + meq*(n1+1) + mineq*(n1+1)  for lsq
-!                     +(n1-meq+1)*(mineq+2) + 2*mineq
-!                     +(n1+mineq)*(n1-meq) + 2*meq + n1       for lsei
-!                      with mineq = m - meq + 2*n1  &  n1 = n+1
+        ! call jacobian at current x
 
-      if ( mode<0 ) then
+        ! update cholesky-factors of hessian matrix by modified bfgs formula
 
-          !   call jacobian at current x
-
-          !   update cholesky-factors of hessian matrix by modified bfgs formula
-
-         do i = 1 , n
+        do i = 1 , n
             u(i) = g(i) - ddot(m,a(1,i),1,r,1) - v(i)
-         end do
+        end do
 
-         !   l'*s
+        ! l'*s
 
-         k = 0
-         do i = 1 , n
+        k = 0
+        do i = 1 , n
             h1 = zero
             k = k + 1
             do j = i + 1 , n
-               k = k + 1
-               h1 = h1 + l(k)*s(j)
+                k = k + 1
+                h1 = h1 + l(k)*s(j)
             end do
             v(i) = s(i) + h1
-         end do
+        end do
 
-         !   d*l'*s
+        ! d*l'*s
 
-         k = 1
-         do i = 1 , n
+        k = 1
+        do i = 1 , n
             v(i) = l(k)*v(i)
             k = k + n1 - i
-         end do
+        end do
 
-         !   l*d*l'*s
+        ! l*d*l'*s
 
-         do i = n , 1 , -1
+        do i = n , 1 , -1
             h1 = zero
             k = i
             do j = 1 , i - 1
-               h1 = h1 + l(k)*v(j)
-               k = k + n - j
+                h1 = h1 + l(k)*v(j)
+                k = k + n - j
             end do
             v(i) = v(i) + h1
-         end do
+        end do
 
-         h1 = ddot(n,s,1,u,1)
-         h2 = ddot(n,s,1,v,1)
-         h3 = 0.2_wp*h2
-         if ( h1<h3 ) then
+        h1 = ddot(n,s,1,u,1)
+        h2 = ddot(n,s,1,v,1)
+        h3 = 0.2_wp*h2
+        if ( h1<h3 ) then
             h4 = (h2-h3)/(h2-h1)
             h1 = h3
             call dscal(n,h4,u,1)
             call daxpy(n,one-h4,v,1,u,1)
-         end if
-         call ldl(n,l,u,+one/h1,v)
-         call ldl(n,l,v,-one/h2,u)
+        end if
+        call ldl(n,l,u,+one/h1,v)
+        call ldl(n,l,v,-one/h2,u)
 
-         !   end of main iteration
+        ! end of main iteration
 
-         goto 200
+        goto 200
 
-      elseif ( mode==0 ) then
+    elseif ( mode==0 ) then
 
-         itermx = iter
-         if ( acc>=zero ) then
+        itermx = iter
+        if ( acc>=zero ) then
             iexact = 0
-         else
+        else
             iexact = 1
-         end if
-         acc = abs(acc)
-         tol = ten*acc
-         iter = 0
-         ireset = 0
-         n1 = n + 1
-         n2 = n1*n/2
-         n3 = n2 + 1
-         s(1) = zero
-         mu(1) = zero
-         call dcopy(n,s(1),0,s,1)
-         call dcopy(m,mu(1),0,mu,1)
+        end if
+        acc = abs(acc)
+        tol = ten*acc
+        iter = 0
+        ireset = 0
+        n1 = n + 1
+        n2 = n1*n/2
+        n3 = n2 + 1
+        s(1) = zero
+        mu(1) = zero
+        call dcopy(n,s(1),0,s,1)
+        call dcopy(m,mu(1),0,mu,1)
 
-      else
+    else
 
-         !   call functions at current x
+        ! call functions at current x
 
-         t = f
-         do j = 1 , m
+        t = f
+        do j = 1 , m
             if ( j<=meq ) then
-               h1 = c(j)
+                h1 = c(j)
             else
-               h1 = zero
+                h1 = zero
             end if
             t = t + mu(j)*max(-c(j),h1)
-         end do
-         h1 = t - t0
-         if ( iexact+1==1 ) then
+        end do
+        h1 = t - t0
+        if ( iexact+1==1 ) then
             if ( h1<=h3/ten .or. line>10 ) goto 500
             alpha = min(max(h3/(two*(h3-h1)),alphamin),alphamax)
             goto 300
-         elseif ( iexact+1==2 ) then
+        elseif ( iexact+1==2 ) then
             goto 400
-         else
+        else
             goto 500
-         end if
+        end if
 
-      end if
+    end if
 
-!   reset bfgs matrix
+    ! reset bfgs matrix
 
- 100  ireset = ireset + 1
-      if ( ireset>5 ) then
-         ! check relaxed convergence in case of positive directional derivative
-         if ( (abs(f-f0)<tol .or. dnrm2(n,s,1)<tol) .and. h3<tol ) then
+100 ireset = ireset + 1
+    if ( ireset>5 ) then
+        ! check relaxed convergence in case of positive directional derivative
+        if ( (abs(f-f0)<tol .or. dnrm2(n,s,1)<tol) .and. h3<tol ) then
             mode = 0
-         else
+        else
             mode = 8
-         end if
-         return
-      else
-         l(1) = zero
-         call dcopy(n2,l(1),0,l,1)
-         j = 1
-         do i = 1 , n
+        end if
+        return
+    else
+        l(1) = zero
+        call dcopy(n2,l(1),0,l,1)
+        j = 1
+        do i = 1 , n
             l(j) = one
             j = j + n1 - i
-         end do
-      end if
+        end do
+    end if
 
-!   main iteration : search direction, steplength, ldl'-update
+    ! main iteration : search direction, steplength, ldl'-update
 
- 200  iter = iter + 1
-      mode = 9
-      if ( iter>itermx ) return
+200 iter = iter + 1
+    mode = 9
+    if ( iter>itermx ) return
 
-!   search direction as solution of qp - subproblem
+    ! search direction as solution of qp - subproblem
 
-      call dcopy(n,xl,1,u,1)
-      call dcopy(n,xu,1,v,1)
-      call daxpy(n,-one,x,1,u,1)
-      call daxpy(n,-one,x,1,v,1)
-      h4 = one
-      call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,iw,mode)
+    call dcopy(n,xl,1,u,1)
+    call dcopy(n,xu,1,v,1)
+    call daxpy(n,-one,x,1,u,1)
+    call daxpy(n,-one,x,1,v,1)
+    h4 = one
+    call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,iw,mode)
 
-!   augmented problem for inconsistent linearization
+    ! augmented problem for inconsistent linearization
 
-      if ( mode==6 ) then
-         if ( n==meq ) mode = 4
-      end if
-      if ( mode==4 ) then
-         do j = 1 , m
+    if ( mode==6 ) then
+        if ( n==meq ) mode = 4
+    end if
+    if ( mode==4 ) then
+        do j = 1 , m
             if ( j<=meq ) then
-               a(j,n1) = -c(j)
+                a(j,n1) = -c(j)
             else
-               a(j,n1) = max(-c(j),zero)
+                a(j,n1) = max(-c(j),zero)
             end if
-         end do
-         s(1) = zero
-         call dcopy(n,s(1),0,s,1)
-         h3 = zero
-         g(n1) = zero
-         l(n3) = hun
-         s(n1) = one
-         u(n1) = zero
-         v(n1) = one
-         incons = 0
- 250     call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,iw,mode)
-         h4 = one - s(n1)
-         if ( mode==4 ) then
+        end do
+        s(1) = zero
+        call dcopy(n,s(1),0,s,1)
+        h3 = zero
+        g(n1) = zero
+        l(n3) = hun
+        s(n1) = one
+        u(n1) = zero
+        v(n1) = one
+        incons = 0
+250     call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,iw,mode)
+        h4 = one - s(n1)
+        if ( mode==4 ) then
             l(n3) = ten*l(n3)
             incons = incons + 1
             if ( incons<=5 ) goto 250
             return
-         elseif ( mode/=1 ) then
+        elseif ( mode/=1 ) then
             return
-         end if
-      elseif ( mode/=1 ) then
-         return
-      end if
+        end if
+    elseif ( mode/=1 ) then
+        return
+    end if
 
-!   update multipliers for l1-test
+    ! update multipliers for l1-test
 
-      do i = 1 , n
-         v(i) = g(i) - ddot(m,a(1,i),1,r,1)
-      end do
-      f0 = f
-      call dcopy(n,x,1,x0,1)
-      gs = ddot(n,g,1,s,1)
-      h1 = abs(gs)
-      h2 = zero
-      do j = 1 , m
-         if ( j<=meq ) then
+    do i = 1 , n
+        v(i) = g(i) - ddot(m,a(1,i),1,r,1)
+    end do
+    f0 = f
+    call dcopy(n,x,1,x0,1)
+    gs = ddot(n,g,1,s,1)
+    h1 = abs(gs)
+    h2 = zero
+    do j = 1 , m
+        if ( j<=meq ) then
             h3 = c(j)
-         else
+        else
             h3 = zero
-         end if
-         h2 = h2 + max(-c(j),h3)
-         h3 = abs(r(j))
-         mu(j) = max(h3,(mu(j)+h3)/two)
-         h1 = h1 + h3*abs(c(j))
-      end do
+        end if
+        h2 = h2 + max(-c(j),h3)
+        h3 = abs(r(j))
+        mu(j) = max(h3,(mu(j)+h3)/two)
+        h1 = h1 + h3*abs(c(j))
+    end do
 
-!   check convergence
+    ! check convergence
 
-      mode = 0
-      if ( h1<acc .and. h2<acc ) return
-      h1 = zero
-      do j = 1 , m
-         if ( j<=meq ) then
+    mode = 0
+    if ( h1<acc .and. h2<acc ) return
+    h1 = zero
+    do j = 1 , m
+        if ( j<=meq ) then
             h3 = c(j)
-         else
+        else
             h3 = zero
-         end if
-         h1 = h1 + mu(j)*max(-c(j),h3)
-      end do
-      t0 = f + h1
-      h3 = gs - h1*h4
-      mode = 8
-      if ( h3>=zero ) goto 100
+        end if
+        h1 = h1 + mu(j)*max(-c(j),h3)
+    end do
+    t0 = f + h1
+    h3 = gs - h1*h4
+    mode = 8
+    if ( h3>=zero ) goto 100
 
-!   line search with an l1-testfunction
+    ! line search with an l1-testfunction
 
-      line = 0
-      alpha = alphamax
-      if ( iexact==1 ) goto 400
+    line = 0
+    alpha = alphamax
+    if ( iexact==1 ) goto 400
 
-!   inexact linesearch
+    ! inexact linesearch
 
- 300  line = line + 1
-      h3 = alpha*h3
-      call dscal(n,alpha,s,1)
-      call dcopy(n,x0,1,x,1)
-      call daxpy(n,one,s,1,x,1)
+300 line = line + 1
+    h3 = alpha*h3
+    call dscal(n,alpha,s,1)
+    call dcopy(n,x0,1,x,1)
+    call daxpy(n,one,s,1,x,1)
 
-      call enforce_bounds(x,xl,xu)  ! ensure that x doesn't violate bounds
+    call enforce_bounds(x,xl,xu)  ! ensure that x doesn't violate bounds
 
-      mode = 1
-      return
+    mode = 1
+    return
 
-!   exact linesearch
+    ! exact linesearch
 
- 400  if ( line/=3 ) then
-         alpha = linmin(line,alphamin,alphamax,t,tol, &
-                         ldat%a, ldat%b, ldat%d, ldat%e, ldat%p,   ldat%q,   &
-                         ldat%r, ldat%u, ldat%v, ldat%w, ldat%x,   ldat%m,   &
-                         ldat%fu,ldat%fv,ldat%fw,ldat%fx,ldat%tol1,ldat%tol2 )
-         call dcopy(n,x0,1,x,1)
-         call daxpy(n,alpha,s,1,x,1)
-         mode = 1
-         return
-      end if
-      call dscal(n,alpha,s,1)
+400 if ( line/=3 ) then
+        alpha = linmin(line,alphamin,alphamax,t,tol, &
+        ldat%a, ldat%b, ldat%d, ldat%e, ldat%p,   ldat%q,   &
+        ldat%r, ldat%u, ldat%v, ldat%w, ldat%x,   ldat%m,   &
+        ldat%fu,ldat%fv,ldat%fw,ldat%fx,ldat%tol1,ldat%tol2 )
+        call dcopy(n,x0,1,x,1)
+        call daxpy(n,alpha,s,1,x,1)
+        mode = 1
+        return
+    end if
+    call dscal(n,alpha,s,1)
 
-!   check convergence
+    ! check convergence
 
- 500  h3 = zero
-      do j = 1 , m
-         if ( j<=meq ) then
+500 h3 = zero
+    do j = 1 , m
+        if ( j<=meq ) then
             h1 = c(j)
-         else
+        else
             h1 = zero
-         end if
-         h3 = h3 + max(-c(j),h1)
-      end do
+        end if
+        h3 = h3 + max(-c(j),h1)
+    end do
 
-      if ( (abs(f-f0)<acc .or. dnrm2(n,s,1)<acc) .and. h3<acc ) then
-         mode = 0
-      else
-         mode = -1
-      end if
+    if ( (abs(f-f0)<acc .or. dnrm2(n,s,1)<acc) .and. h3<acc ) then
+        mode = 0
+    else
+        mode = -1
+    end if
 
-      end subroutine slsqpb
+    end subroutine slsqpb
 !*******************************************************************************
 
 !*******************************************************************************
@@ -1041,15 +1061,18 @@
 !
 !### History
 !  * Jacob Williams, refactored into modern Fortran, Jan. 2016.
+!
+!@note The 1995 version of this routine may have some sort of problem.
+!      Using a refactored version of the original routine.
 
-    subroutine ldp(g,mdg,m,n,h,x,xnorm,w,index,mode)
+    subroutine ldp(g,mg,m,n,h,x,xnorm,w,index,mode)
 
     implicit none
 
-    integer,intent(in)                   :: mdg
+    integer,intent(in)                   :: mg
     integer,intent(in)                   :: m
     integer,intent(in)                   :: n
-    real(wp),dimension(mdg,n),intent(in) :: g     !! on entry `g` stores the `m` by `n` matrix of
+    real(wp),dimension(mg,n),intent(in)  :: g     !! on entry `g` stores the `m` by `n` matrix of
                                                   !! linear inequality constraints. `g` has first
                                                   !! dimensioning parameter `mg`
     real(wp),dimension(m),intent(in)     :: h     !! the right side of the inequality system.
@@ -1068,82 +1091,60 @@
                                                   !! ***3:*** iteration count exceeded by [[nnls]],
                                                   !! ***4:*** inequality constraints incompatible.
 
-      integer :: i , iw , iwdual , iy , iz , j , jf , np1
-      real(wp) :: fac , rnorm
+    integer :: i , iw , iwdual , iy , iz , j , jf , n1
+    real(wp) :: fac , rnorm
 
-      if ( n<=0 ) then
-         ! error return.
-         mode = 2
-         return
-      else
-         do j = 1 , n
-            x(j) = zero
-         end do
-         xnorm = zero
-         if ( m>0 ) then
-            ! copy g**t into first n rows and m columns of e.
-            ! copy h**t into row n+1 of e.
-            iw = 0
-            do j = 1 , m
-               do i = 1 , n
-                  iw = iw + 1
-                  w(iw) = g(j,i)
-               end do
-               iw = iw + 1
-               w(iw) = h(j)
+    if ( n<=0 ) then
+       ! error return.
+       mode = 2
+    else
+        ! state dual problem
+        mode = 1
+        x = zero
+        xnorm = zero
+        if (m/=0) then
+            iw=0
+            do j=1,m
+                do i=1,n
+                    iw=iw+1
+                    w(iw)=g(j,i)
+                end do
+                iw=iw+1
+                w(iw)=h(j)
             end do
-            jf = iw + 1
-            ! store n zeros followed by a one into f.
-            do i = 1 , n
-               iw = iw + 1
-               w(iw) = zero
+            jf=iw+1
+            do i=1,n
+                iw=iw+1
+                w(iw)=zero
             end do
-            w(iw+1) = one
-
-            np1 = n + 1
-            iz = iw + 2
-            iy = iz + np1
-            iwdual = iy + m
-
-            call nnls(w,np1,np1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),index,mode)
-            if ( mode/=1 ) return ! if unsuccessful in nnls.
-            if ( rnorm<=zero ) then
-               ! returning with constraints not compatible.
-               mode = 4
-               return
-            else
-               fac = one
-               iw = iy - 1
-               do i = 1 , m
-                  iw = iw + 1
-                  ! here we are using the solution vector y.
-                  fac = fac - h(i)*w(iw)
-               end do
-
-               if ( diff(one+fac,one)<=zero ) then
-                  mode = 4
-                  return
-               else
-                  fac = one/fac
-                  do j = 1 , n
-                     iw = iy - 1
-                     do i = 1 , m
-                        iw = iw + 1
-                        ! here we are using the solution vector y.
-                        x(j) = x(j) + g(i,j)*w(iw)
-                     end do
-                     x(j) = x(j)*fac
-                  end do
-                  do j = 1 , n
-                     xnorm = xnorm + x(j)**2
-                  end do
-                  xnorm = sqrt(xnorm)
-               end if
+            w(iw+1)=one
+            n1=n+1
+            iz=iw+2
+            iy=iz+n1
+            iwdual=iy+m
+            ! solve dual problem
+            call nnls (w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),index,mode)
+            if (mode==1) then
+                mode=4
+                if (rnorm>zero) then
+                    !  compute solution of primal problem
+                    fac=one-ddot(m,h,1,w(iy),1)
+                    if (diff(one+fac,one)>zero) then
+                        mode=1
+                        fac=one/fac
+                        do j=1,n
+                            x(j)=fac*ddot(m,g(1,j),1,w(iy),1)
+                        end do
+                        xnorm=dnrm2(n,x,1)
+                        ! compute lagrange multipliers for primal problem
+                        w(1)=zero
+                        call dcopy(m,w(1),0,w,1)
+                        call daxpy(m,fac,w(iy),1,w,1)
+                    end if
+                end if
             end if
-         end if
-         ! successful return.
-         mode = 1
-      end if
+        end if
+    end if
 
     end subroutine ldp
 !*******************************************************************************
@@ -1154,11 +1155,15 @@
 !  Returns \( d = u - v \).
 
     pure elemental function diff(u,v) result(d)
-        implicit none
-        real(wp),intent(in) :: u
-        real(wp),intent(in) :: v
-        real(wp)            :: d
-        d = u - v
+
+    implicit none
+
+    real(wp),intent(in) :: u
+    real(wp),intent(in) :: v
+    real(wp)            :: d
+
+    d = u - v
+
     end function diff
 !*******************************************************************************
 
@@ -2104,6 +2109,32 @@
     end where
 
     end subroutine enforce_bounds
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  Destructor for [[slsqpb_data]] type.
+
+    subroutine destroy_slsqpb_data(me)
+
+    implicit none
+
+    class(slsqpb_data),intent(out) :: me
+
+    end subroutine destroy_slsqpb_data
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  Destructor for [[linmin_data]] type.
+
+    subroutine destroy_linmin_data(me)
+
+    implicit none
+
+    class(linmin_data),intent(out) :: me
+
+    end subroutine destroy_linmin_data
 !*******************************************************************************
 
 !*******************************************************************************
