@@ -1,5 +1,7 @@
 # slsqp
 
+[![GitHub release](https://img.shields.io/github/release/jacobwilliams/slsqp.svg?style=plastic)](https://github.com/jacobwilliams/slsqp/releases/latest)
+
 Modern Fortran Edition of the SLSQP Optimizer
 
 ### Description
@@ -24,6 +26,8 @@ Updates to the original code include:
   * The original sourcecode and the modifications are released under a [permissive BSD-style license](https://github.com/jacobwilliams/slsqp/blob/master/LICENSE).
 
 ### Development
+
+[![Build Status](https://img.shields.io/travis/jacobwilliams/slsqp/master.svg?style=plastic)](https://travis-ci.org/jacobwilliams/slsqp)
 
   * Development continues on [GitHub](https://github.com/jacobwilliams/slsqp).
 
