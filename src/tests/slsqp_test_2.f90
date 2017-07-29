@@ -49,15 +49,24 @@
 
     subroutine test_func(me,x,f,c)
 
-        !! compute the function.
+        !!  Compute the objective function and constraints
+        !!
+        !!  Minimize:
+        !!
+        !!   * \( f = x_1^2 + x_2^2 + x_3 \)
+        !!
+        !!  Subject to:
+        !!
+        !!   * \( c_1 = x_1 x_2 - x_3 = 0 \)
+        !!   * \( c_2 = x_3 - 1 \ge 0 \)
 
         implicit none
 
         class(slsqp_solver),intent(inout) :: me
-        real(wp),dimension(:),intent(in)  :: x      !! optimization variable vector
-        real(wp),intent(out)              :: f      !! value of the objective function
-        real(wp),dimension(:),intent(out) :: c      !! the constraint vector `dimension(m)`,
-                                                    !! equality constraints (if any) first.
+        real(wp),dimension(:),intent(in)  :: x   !! optimization variable vector
+        real(wp),intent(out)              :: f   !! value of the objective function
+        real(wp),dimension(:),intent(out) :: c   !! the constraint vector `dimension(m)`,
+                                                 !! equality constraints (if any) first.
 
         f = x(1)**2 + x(2)**2 + x(3)  !objective function
 
