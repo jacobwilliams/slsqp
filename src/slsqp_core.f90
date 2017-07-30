@@ -117,7 +117,7 @@
     integer,intent(in) :: m                     !! is the total number of constraints, \( m \ge 0 \)
     integer,intent(in) :: meq                   !! is the number of equality constraints, \( m_{eq} \ge 0 \)
     integer,intent(in) :: la                    !! see `a`, \( la \ge \max(m,1) \)
-    integer,intent(in) :: n                     !! is the number of varibles, \( n \ge 1 \)
+    integer,intent(in) :: n                     !! is the number of variables, \( n \ge 1 \)
     real(wp),dimension(n),intent(inout) :: x    !! `x()` stores the current iterate of the `n` vector `x`
                                                 !! on entry `x()` must be initialized. on exit `x()`
                                                 !! stores the solution vector `x` if `mode = 0`.
@@ -614,22 +614,20 @@
 !
 !  subject to:
 !
-!  \( a(j)*x - b(j) = 0,            j=1,...,meq  \),
-!
-!  \( a(j)*x - b(j) \ge 0,          j=meq+1,...,m\),
-!
-!  \( x_l(i) \le x(i) \le x_u(i),     i=1,...,n    \),
+!  * \( a(j)*x - b(j) = 0,              j=1,...,meq  \),
+!  * \( a(j)*x - b(j) \ge 0,            j=meq+1,...,m\),
+!  * \( x_l(i) \le x(i) \le x_u(i),     i=1,...,n    \),
 !
 !  On entry, the user has to provide the arrays `l`, `g`, `a`, `b`, `xl`, `xu`.
 !  with dimensions: `l(n*(n+1)/2)`, `g(n)`, `a(la,n)`, `b(m)`, `xl(n)`, `xu(n)`.
 !
-!  The working array `w` must have at least the following dimension:
-!````
-!       dim(w) =  (3*n+m)*(n+1)                   for lsq
-!                +(n-meq+1)*(mineq+2) + 2*mineq   for lsi
-!                +(n+mineq)*(n-meq) + 2*meq + n   for lsei
-!                  with mineq = m - meq + 2*n
-!````
+!  The working array `w` must have at least the following dimension: dim(w) =
+!
+!  * `(3*n+m)*(n+1)`                    for [[lsq]]
+!  * `+(n-meq+1)*(mineq+2) + 2*mineq`   for [[lsi]]
+!  * `+(n+mineq)*(n-meq) + 2*meq + n`   for [[lsei]]
+!
+!  with `mineq = m - meq + 2*n`
 !
 !  On return, no array will be changed by the subroutine.
 !
@@ -650,13 +648,14 @@
     real(wp),dimension(m+n+n) :: y  !! stores the vector of lagrange multipliers of dimension
                                     !! m+n+n (constraints+lower+upper bounds)
     integer :: mode                 !! is a success-failure flag with the following meanings:
-                                    !! **1:** successful computation,
-                                    !! **2:** error return because of wrong dimensions (`n<1`),
-                                    !! **3:** iteration count exceeded by [[nnls]],
-                                    !! **4:** inequality constraints incompatible,
-                                    !! **5:** matrix `e` is not of full rank,
-                                    !! **6:** matrix `c` is not of full rank,
-                                    !! **7:** rank defect in [[hfti]]
+                                    !!
+                                    !! * **1:** successful computation,
+                                    !! * **2:** error return because of wrong dimensions (`n<1`),
+                                    !! * **3:** iteration count exceeded by [[nnls]],
+                                    !! * **4:** inequality constraints incompatible,
+                                    !! * **5:** matrix `e` is not of full rank,
+                                    !! * **6:** matrix `c` is not of full rank,
+                                    !! * **7:** rank defect in [[hfti]]
 
     real(wp),dimension(nl)   :: l
     real(wp),dimension(n)    :: g
@@ -851,13 +850,14 @@
                                                     !! in its first `mc+mg` elements
     integer,dimension(*)    ,intent(inout)  :: jw
     integer,intent(out)                     :: mode !! is a success-failure flag with the following meanings:
-                                                    !! ***1:*** successful computation,
-                                                    !! ***2:*** error return because of wrong dimensions (`n<1`),
-                                                    !! ***3:*** iteration count exceeded by [[nnls]],
-                                                    !! ***4:*** inequality constraints incompatible,
-                                                    !! ***5:*** matrix `e` is not of full rank,
-                                                    !! ***6:*** matrix `c` is not of full rank,
-                                                    !! ***7:*** rank defect in [[hfti]]
+                                                    !!
+                                                    !! * ***1:*** successful computation,
+                                                    !! * ***2:*** error return because of wrong dimensions (`n<1`),
+                                                    !! * ***3:*** iteration count exceeded by [[nnls]],
+                                                    !! * ***4:*** inequality constraints incompatible,
+                                                    !! * ***5:*** matrix `e` is not of full rank,
+                                                    !! * ***6:*** matrix `c` is not of full rank,
+                                                    !! * ***7:*** rank defect in [[hfti]]
 
     integer :: i , ie, if , ig , iw , j , k , krank , l , mc1
     real(wp) :: t , dum(1)
@@ -1004,14 +1004,15 @@
     real(wp),dimension(n)   ,intent(out)    :: x     !! stores the solution vector
     real(wp),intent(out)                    :: xnorm !! stores the residuum of the solution in euclidian norm
     real(wp),dimension(*)   ,intent(inout)  :: w     !! stores the vector of lagrange multipliers in its first
-                                                     !!        mg elements
+                                                     !! `mg` elements
     integer,dimension(lg)   ,intent(inout)  :: jw
     integer,intent(out)                     :: mode  !! is a success-failure flag with the following meanings:
-                                                     !! ***1:*** successful computation,
-                                                     !! ***2:*** error return because of wrong dimensions (`n<1`),
-                                                     !! ***3:*** iteration count exceeded by [[nnls]],
-                                                     !! ***4:*** inequality constraints incompatible,
-                                                     !! ***5:*** matrix `e` is not of full rank.
+                                                     !!
+                                                     !! * ***1:*** successful computation,
+                                                     !! * ***2:*** error return because of wrong dimensions (`n<1`),
+                                                     !! * ***3:*** iteration count exceeded by [[nnls]],
+                                                     !! * ***4:*** inequality constraints incompatible,
+                                                     !! * ***5:*** matrix `e` is not of full rank.
 
     integer :: i, j
     real(wp) :: t
@@ -1102,10 +1103,11 @@
     real(wp),intent(out)                 :: xnorm !! euclidian norm of the solution vector
                                                   !! if computation is successful
     integer,intent(out)                  :: mode  !! success-failure flag with the following meanings:
-                                                  !! ***1:*** successful computation,
-                                                  !! ***2:*** error return because of wrong dimensions (`n<=0`),
-                                                  !! ***3:*** iteration count exceeded by [[nnls]],
-                                                  !! ***4:*** inequality constraints incompatible.
+                                                  !!
+                                                  !! * ***1:*** successful computation,
+                                                  !! * ***2:*** error return because of wrong dimensions (`n<=0`),
+                                                  !! * ***3:*** iteration count exceeded by [[nnls]],
+                                                  !! * ***4:*** inequality constraints incompatible.
 
     integer :: i , iw , iwdual , iy , iz , j , jf , n1
     real(wp) :: fac , rnorm
@@ -1222,13 +1224,16 @@
     integer,dimension(n),intent(out)        :: index   !! an integer working array.
                                                        !! on exit the contents of this array define the sets
                                                        !! `p` and `z` as follows:
-                                                       !! `index(1:nsetp) = set p`.
-                                                       !! `index(iz1:iz2) = set z`.
+                                                       !!
+                                                       !! * `index(1:nsetp) = set p`.
+                                                       !! * `index(iz1:iz2) = set z`.
+                                                       !!
                                                        !! where: `iz1 = nsetp + 1 = npp1`, `iz2 = n`
     integer,intent(out)                     :: mode    !! this is a success-failure flag with the following meanings:
-                                                       !! ***1*** the solution has been computed successfully.
-                                                       !! ***2*** the dimensions of the problem are bad. either `m<=0` or `n<=0`.
-                                                       !! ***3*** iteration count exceeded. more than `3*n` iterations.
+                                                       !!
+                                                       !! * ***1*** the solution has been computed successfully.
+                                                       !! * ***2*** the dimensions of the problem are bad. either `m<=0` or `n<=0`.
+                                                       !! * ***3*** iteration count exceeded. more than `3*n` iterations.
 
     integer :: i,ii,ip,iter,itmax,iz,iz1,iz2,izmax,j,jj,jz,l,npp1,nsetp,rtnkey
     real(wp) :: alpha,asave,cc,sm,ss,t,temp,unorm,up,wmax,ztest
@@ -1891,6 +1896,7 @@
     real(wp),dimension(*),intent(inout) :: a     !! ***In:*** positive definite matrix of dimension `n`;
                                                  !! only the lower triangle is used and is stored column by
                                                  !! column as one dimensional array of dimension `n*(n+1)/2`.
+                                                 !!
                                                  !! ***Out:*** updated \(LDL^T\) factors
     real(wp),dimension(*),intent(inout) :: w     !! working array of dimension `n` (used only if \( \sigma \lt 0 \) ).
     real(wp),dimension(*),intent(inout) :: z     !! vector of dimension `n` of updating elements.

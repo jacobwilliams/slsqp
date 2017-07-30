@@ -48,11 +48,12 @@
         procedure(grad),pointer     :: g      => null()         !! gradient subroutine
         procedure(iterfunc),pointer :: report => null()         !! for reporting an iteration
 
-        integer :: linesearch_mode = 1  !! linesearch mode.
-                                        !! `1` = inexact (Armijo) linesearch,
-                                        !! `2` = exact linesearch.
+        integer :: linesearch_mode = 1  !! linesearch mode:
+                                        !!
+                                        !! * `1` = inexact (Armijo) linesearch,
+                                        !! * `2` = exact linesearch.
         type(linmin_data) :: linmin !! data formerly within [[linmin]].
-                                                !! Only used when `linesearch_mode=2`
+                                    !! Only used when `linesearch_mode=2`
         type(slsqpb_data) :: slsqpb  !! data formerly within [[slsqpb]].
 
         logical :: user_triggered_stop = .false.    !! if the `abort` method has been called
