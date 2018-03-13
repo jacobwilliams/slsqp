@@ -48,11 +48,12 @@
         procedure(grad),pointer     :: g      => null()         !! gradient subroutine
         procedure(iterfunc),pointer :: report => null()         !! for reporting an iteration
 
-        integer :: linesearch_mode = 1  !! linesearch mode.
-                                        !! `1` = inexact (Armijo) linesearch,
-                                        !! `2` = exact linesearch.
+        integer :: linesearch_mode = 1  !! linesearch mode:
+                                        !!
+                                        !! * `1` = inexact (Armijo) linesearch,
+                                        !! * `2` = exact linesearch.
         type(linmin_data) :: linmin !! data formerly within [[linmin]].
-                                                !! Only used when `linesearch_mode=2`
+                                    !! Only used when `linesearch_mode=2`
         type(slsqpb_data) :: slsqpb  !! data formerly within [[slsqpb]].
 
         logical :: user_triggered_stop = .false.    !! if the `abort` method has been called
@@ -89,7 +90,7 @@
             real(wp),dimension(:),intent(out)   :: g  !! objective function partials w.r.t x `dimension(n)`
             real(wp),dimension(:,:),intent(out) :: a  !! gradient matrix of constraints w.r.t. x `dimension(m,n)`
         end subroutine grad
-        subroutine iterfunc(me,iter,x,f,c)  !! for reporting an interation
+        subroutine iterfunc(me,iter,x,f,c)  !! for reporting an iteration
             import :: wp,slsqp_solver
             implicit none
             class(slsqp_solver),intent(inout) :: me
@@ -194,9 +195,9 @@
         if (present(alphamax)) me%alphamax = alphamax
 
         !verify valid values for alphamin and alphamax: 0<alphamin<alphamax<=1
-        if (me%alphamin<=0.0_wp .or. me%alphamax<=0.0_wp .or. &
+        if (me%alphamin<=zero .or. me%alphamax<=zero .or. &
             me%alphamax<=me%alphamin .or. &
-            me%alphamin>=1.0_wp .or. me%alphamax>1.0_wp) then
+            me%alphamin>=one .or. me%alphamax>one) then
 
             call me%report_message('error: invalid values for alphamin or alphamax.')
             call me%report_message('  alphamin =',rval=me%alphamin)
@@ -454,37 +455,37 @@
 
     select case (imode)
     case(0) !required accuracy for solution obtained
-        message = 'required accuracy for solution obtained'
+        message = 'Required accuracy for solution obtained'
     case(-100)
-        message = 'invalid size(x) in slsqp_wrapper'
+        message = 'Invalid size(x) in slsqp_wrapper'
     case(-101)
-        message = 'invalid linesearch_mode in slsqp_wrapper'
+        message = 'Invalid linesearch_mode in slsqp_wrapper'
     case(-102)
-        message = 'function is not associated'
+        message = 'Function is not associated'
     case(-103)
-        message = 'gradient function is not associated'
+        message = 'Gradient function is not associated'
     case(-2)
-        message = 'user-triggered stop of slsqp'
+        message = 'User-triggered stop of slsqp'
     case(1,-1)
-        message = 'in progress'
+        message = 'In progress'
     case(2)
-        message = 'number of equality contraints larger than n'
+        message = 'Number of equality constraints larger than n'
     case(3)
-        message = 'more than 3*n iterations in lsq subproblem'
+        message = 'More than 3*n iterations in lsq subproblem'
     case(4)
-        message = 'inequality constraints incompatible'
+        message = 'Inequality constraints incompatible'
     case(5)
-        message = 'singular matrix e in lsq subproblem'
+        message = 'Singular matrix e in lsq subproblem'
     case(6)
-        message = 'singular matrix c in lsq subproblem'
+        message = 'Singular matrix c in lsq subproblem'
     case(7)
-        message = 'rank-deficient equality constraint subproblem hfti'
+        message = 'Rank-deficient equality constraint subproblem hfti'
     case(8)
-        message = 'positive directional derivative for linesearch'
+        message = 'Positive directional derivative for linesearch'
     case(9)
-        message = 'more than max_iter iterations in slsqp'
+        message = 'More than max_iter iterations in slsqp'
     case default
-        message = 'unknown slsqp error'
+        message = 'Unknown slsqp error'
     end select
 
     end function mode_to_status_message
