@@ -53,7 +53,7 @@
                                         !! * `1` = inexact (Armijo) linesearch,
                                         !! * `2` = exact linesearch.
         type(linmin_data) :: linmin !! data formerly within [[linmin]].
-                                    !! Only used when `linesearch_mode=2`
+                                                !! Only used when `linesearch_mode=2`
         type(slsqpb_data) :: slsqpb  !! data formerly within [[slsqpb]].
 
         logical :: user_triggered_stop = .false.    !! if the `abort` method has been called
@@ -229,6 +229,10 @@
                  (n1+mineq)*(n1-meq) + 2*meq + n1      + &   !for lsei
                   n1*n/2 + 2*m + 3*n +3*n1 + 1               !for slsqpb
 
+        me%l_w = me%l_w + 100  ! for mode=2, I think w doesn't have enough elements
+                               ! and I think the memory is getting corrupted.
+                               ! Add a little extra and fix it later!!
+        
         allocate(me%w(me%l_w))
         me%w = zero
 
@@ -248,7 +252,7 @@
     subroutine destroy_slsqp(me)
 
     implicit none
-
+    
     class(slsqp_solver),intent(out) :: me
 
     end subroutine destroy_slsqp
