@@ -201,34 +201,7 @@
 
     integer :: il , im , ir , is , iu , iv , iw , ix , mineq, n1
 
-    !  Note: there seems to be two slightly different specifications
-    !        of the appropriate length of w. are they equivalent???
-    !
-    !         notice:    for proper dimensioning of w it is recommended to
-    !                    copy the following statements into the head of
-    !                    the calling program (and remove the comment c)
-    ! #######################################################################
-    !     integer len_w, len_jw, m, n, n1, meq, mineq
-    !     parameter (m=... , meq=... , n=...  )
-    !     parameter (n1= n+1, mineq= m-meq+n1+n1)
-    !     parameter (len_w=
-    !    $           (3*n1+m)*(n1+1)
-    !    $          +(n1-meq+1)*(mineq+2) + 2*mineq
-    !    $          +(n1+mineq)*(n1-meq) + 2*meq + n1
-    !    $          +(n+1)*n/2 + 2*m + 3*n + 3*n1 + 1,
-    !    $           len_jw=mineq)
-    !     real(wp) w(len_w)
-    !     integer          jw(len_jw)
-    ! #######################################################################
-    !
-    !     dim(w) =         n1*(n1+1) + meq*(n1+1) + mineq*(n1+1)  for lsq
-    !                    +(n1-meq+1)*(mineq+2) + 2*mineq          for lsi
-    !                    +(n1+mineq)*(n1-meq) + 2*meq + n1        for lsei
-    !                    + n1*n/2 + 2*m + 3*n +3*n1 + 1           for slsqpb
-    !                      with mineq = m - meq + 2*n1  &  n1 = n+1
-
     !   check length of working arrays
-
     n1 = n + 1
     mineq = m - meq + n1 + n1
     il = (3*n1+m)*(n1+1) + (n1-meq+1)*(mineq+2) + 2*mineq + (n1+mineq)&
@@ -237,6 +210,12 @@
     if ( l_w<il .or. l_jw<im ) then
         mode = 1000*max(10,il)
         mode = mode + max(10,im)
+        return
+    end if
+    if (meq>n) then
+        ! note: calling lsq when meq>n is corrupting the
+        ! memory in some way, so just catch this here.
+        mode = 2
         return
     end if
 
