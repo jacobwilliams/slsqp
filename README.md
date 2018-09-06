@@ -12,7 +12,7 @@ Updates to the original code include:
 
 * It has been translated into free-form source.
 * It is now thread safe. The original version was not thread safe due to the use of saved variables in one of the subroutines.
-* It no longer uses obsolescent and non-standard Fortran features. It should now be 100% standard compliment (Fortran 2008).
+* It no longer uses obsolescent and non-standard Fortran features. It should now be 100% standard compliant (Fortran 2008).
 * It now has an easy-to-use object-oriented interface. The `slsqp_class` is used for all interactions with the solver. Methods include `initialize()`, `optimize()`, and `destroy()`.
 * It includes updated versions of some of the third-party routines used in the original code (BLAS, LINPACK, and NNLS).
 * Some new features were added to support printing error  messages and reporting iterations to the user.
