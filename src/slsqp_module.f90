@@ -293,9 +293,10 @@
     integer                                :: iter     !! in/out for [[slsqp]]
     real(wp)                               :: acc      !! in/out for [[slsqp]]
 
-    real(wp),dimension(me%n)               :: delta
-    real(wp)                               :: fr, fl
-    real(wp),dimension(me%m)        :: cvecr,cvecl
+    integer                                :: ig       !! loop index to approximate gradient
+    real(wp),dimension(me%n)               :: delta    !! step to approximate gradient
+    real(wp)                               :: fr, fl   !! right and left function value to approximate objective function's gradient
+    real(wp),dimension(me%m)               :: cvecr,cvecl !! same for constraints vector
 
     !initialize:
     i    = 0
@@ -354,13 +355,16 @@
 
         if (mode==0 .or. mode==-1) then  !gradient evaluation (g&a)
             if (me%approx_grad) then ! by first order approxiamtion
-                do i=1,me%n
-                    delta    = zero
-                    delta(i) = me%grad_delta
+                do ig=1,me%n
+                    !initialize a delta to perturb the objective function and the constraint vector
+                    delta     = zero
+                    delta(ig) = me%grad_delta
+                    !get the right and left value of the objective fcn and the constraint vcr
                     call me%f(x+delta,fr,cvecr)
                     call me%f(x-delta,fl,cvecl)
-                    g(i)   = (fr-fl) / ( two*delta(i) )
-                    a(:,i) = (cvecr-cvecl) / ( two*delta(i) )
+                    !compute the gradients by first-order finite differences
+                    g(ig)   = (fr-fl) / ( two*delta(ig) )
+                    a(:,ig) = (cvecr-cvecl) / ( two*delta(ig) )
                 end do
             else ! user supplied
                 call me%g(x,dfdx,dcdx)
