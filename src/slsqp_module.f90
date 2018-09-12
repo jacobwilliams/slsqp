@@ -28,6 +28,8 @@
         integer  :: meq      = 0        !! number of equality constraints (\( m \ge m_{eq} \ge 0 \))
         integer  :: max_iter = 0        !! maximum number of iterations
         real(wp) :: acc      = zero     !! accuracy tolerance
+        logical  :: approx_grad = .false.  !! true if gradients must approximate by first order différence
+        real(wp) :: grad_delta = zero     !! delta to approximate gradients
 
         !these two were not in the original code:
         real(wp) :: alphamin = 0.1_wp   !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
@@ -72,6 +74,7 @@
 
     end type slsqp_solver
 
+    public :: func, grad, iterfunc
     abstract interface
         subroutine func(me,x,f,c)  !! for computing the function
             import :: wp,slsqp_solver
@@ -127,12 +130,13 @@
 !  initialize the [[slsqp_solver]] class.  see [[slsqp]] for more details.
 
     subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok,&
-                                linesearch_mode,iprint,report,alphamin,alphamax)
+                                linesearch_mode,iprint,report,alphamin,alphamax,&
+                                approx_grad,grad_delta)
 
     implicit none
 
     class(slsqp_solver),intent(inout) :: me
-    integer,intent(in)                :: n               !! the number of varibles, \( n \ge 1 \)
+    integer,intent(in)                :: n               !! the number of variables, \( n \ge 1 \)
     integer,intent(in)                :: m               !! total number of constraints, \( m \ge 0 \)
     integer,intent(in)                :: meq             !! number of equality constraints, \( m_{eq} \ge 0 \)
     integer,intent(in)                :: max_iter        !! maximum number of iterations
@@ -147,6 +151,8 @@
     procedure(iterfunc),optional      :: report          !! user-defined procedure that will be called once per iteration
     real(wp),intent(in),optional      :: alphamin        !! minimum alpha for linesearch [default 0.1]
     real(wp),intent(in),optional      :: alphamax        !! maximum alpha for linesearch [default 1.0]
+    logical,intent(in),optional       :: approx_grad     !! true if gradient must be approximated by finite differences
+    real(wp),intent(in),optional      :: grad_delta      !! delta to compute this approximated gradient
 
     integer :: n1,mineq,i
 
@@ -235,9 +241,13 @@
         me%l_jw = mineq
         allocate(me%jw(me%l_jw))
         me%jw = 0
-
+        if (present(approx_grad)) then
+            me%approx_grad = approx_grad
+            if (present(grad_delta)) then
+                me%grad_delta = grad_delta
+            end if
+        end if
     end if
-
     end subroutine initialize_slsqp
 !*******************************************************************************
 
@@ -283,6 +293,10 @@
     integer                                :: iter     !! in/out for [[slsqp]]
     real(wp)                               :: acc      !! in/out for [[slsqp]]
 
+    real(wp),dimension(me%n)               :: delta
+    real(wp)                               :: fr, fl
+    real(wp),dimension(me%m)        :: cvecr,cvecl
+
     !initialize:
     i    = 0
     iter = me%max_iter
@@ -323,7 +337,7 @@
         if (present(status_message)) status_message = mode_to_status_message(istat)
         return
     end if
-    if (.not. associated(me%g)) then
+    if ((.not.me%approx_grad).and.(.not. associated(me%g))) then
         istat = -103
         call me%report_message(mode_to_status_message(istat))
         if (present(status_message)) status_message = mode_to_status_message(istat)
@@ -339,10 +353,20 @@
         end if
 
         if (mode==0 .or. mode==-1) then  !gradient evaluation (g&a)
-            call me%g(x,dfdx,dcdx)
-            g(1:me%n)        = dfdx
-            a(1:me%m,1:me%n) = dcdx
-
+            if (me%approx_grad) then ! by first order approxiamtion
+                do i=1,me%n
+                    delta    = zero
+                    delta(i) = me%grad_delta
+                    call me%f(x+delta,fr,cvecr)
+                    call me%f(x-delta,fl,cvecl)
+                    g(i)   = (fr-fl) / ( two*delta(i) )
+                    a(:,i) = (cvecr-cvecl) / ( two*delta(i) )
+                end do
+            else ! user supplied
+                call me%g(x,dfdx,dcdx)
+                g(1:me%n)        = dfdx
+                a(1:me%m,1:me%n) = dcdx
+            end if
             !this is an iteration:
             !note: the initial guess is reported as iteration 0:
             if (associated(me%report)) call me%report(i,x,f,c) !report iteration
