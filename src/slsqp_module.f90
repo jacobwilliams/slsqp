@@ -29,7 +29,7 @@
         integer  :: max_iter = 0        !! maximum number of iterations
         real(wp) :: acc      = zero     !! accuracy tolerance
         logical  :: approx_grad = .false.  !! true if gradients must approximate by first order différence
-        real(wp) :: grad_delta = 1e.8_wp     !! delta to approximate gradients
+        real(wp) :: grad_delta = 1.e8_wp     !! delta to approximate gradients
 
         !these two were not in the original code:
         real(wp) :: alphamin = 0.1_wp   !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
