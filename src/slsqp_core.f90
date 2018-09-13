@@ -110,7 +110,7 @@
 !@note `f`, `c`, `g`, `a` must all be set by the user before each call.
 
     subroutine slsqp(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w,l_w, &
-                     jw,l_jw,sdat,ldat,alphamin,alphamax)
+                     sdat,ldat,alphamin,alphamax)
 
     implicit none
 
@@ -167,9 +167,8 @@
                                     !! * ** 7 **: rank-deficient equality constraint subproblem [[hfti]]
                                     !! * ** 8 **: positive directional derivative for linesearch
                                     !! * ** 9 **: more than `iter` iterations in sqp
-                                    !! * ** >=10 **: working space `w` or `jw` too small,
+                                    !! * ** >=10 **: working space `w` too small,
                                     !!   `w` should be enlarged to `l_w=mode/1000`,
-                                    !!   `jw` should be enlarged to `l_jw=mode-1000*l_w`
     integer,intent(in) :: l_w       !! the length of `w`, which should be at least:
                                     !!
                                     !! * `(3*n1+m)*(n1+1)`                     **for lsq**
@@ -178,8 +177,6 @@
                                     !! * `+ n1*n/2 + 2*m + 3*n + 3*n1 + 1`     **for slsqpb**
                                     !!
                                     !! with `mineq = m - meq + 2*n1` & `n1 = n+1`
-    integer,intent(in) :: l_jw      !! the length of `jw` which should be at least
-                                    !! `mineq = m - meq + 2*(n+1)`.
     real(wp),dimension(l_w),intent(inout) :: w  !! `w()` is a one dimensional working space.
                                                 !! the first `m+n+n*n1/2` elements of `w` must not be
                                                 !! changed between subsequent calls of [[slsqp]].
@@ -193,11 +190,12 @@
                                                 !! contain the multipliers associated with all
                                                 !! constraints of the quadratic program finding
                                                 !! the search direction to the solution `x*`
-    integer,dimension(l_jw),intent(inout) :: jw !! `jw()` is a one dimensional integer working space
     type(slsqpb_data),intent(inout) :: sdat  !! data for [[slsqpb]].
     type(linmin_data),intent(inout) :: ldat  !! data for [[linmin]].
-    real(wp),intent(in) :: alphamin  !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
-    real(wp),intent(in) :: alphamax  !! max \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    real(wp),intent(in) :: alphamin  !! min \( \alpha \) for line search
+                                     !! \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    real(wp),intent(in) :: alphamax  !! max \( \alpha \) for line search
+                                     !! \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
 
     integer :: il , im , ir , is , iu , iv , iw , ix , mineq, n1
 
@@ -207,15 +205,17 @@
     il = (3*n1+m)*(n1+1) + (n1-meq+1)*(mineq+2) + 2*mineq + (n1+mineq)&
          *(n1-meq) + 2*meq + n1*n/2 + 2*m + 3*n + 4*n1 + 1
     im = max(mineq,n1-meq)
-    if ( l_w<il .or. l_jw<im ) then
+    if ( l_w<il ) then
         mode = 1000*max(10,il)
         mode = mode + max(10,im)
+        iter = 0
         return
     end if
     if (meq>n) then
         ! note: calling lsq when meq>n is corrupting the
         ! memory in some way, so just catch this here.
         mode = 2
+        iter = 0
         return
     end if
 
@@ -235,7 +235,7 @@
     sdat%n1 = n1
 
     call slsqpb(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,&
-                w(ir),w(il),w(ix),w(im),w(is),w(iu),w(iv),w(iw),jw,&
+                w(ir),w(il),w(ix),w(im),w(is),w(iu),w(iv),w(iw),&
                 sdat%t,sdat%f0,sdat%h1,sdat%h2,sdat%h3,sdat%h4,&
                 sdat%n1,sdat%n2,sdat%n3,sdat%t0,sdat%gs,sdat%tol,sdat%line,&
                 sdat%alpha,sdat%iexact,sdat%incons,sdat%ireset,sdat%itermx,&
@@ -251,7 +251,7 @@
 !  l1 - line search, positive definite bfgs update
 
     subroutine slsqpb(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,&
-                      r,l,x0,mu,s,u,v,w,iw,&
+                      r,l,x0,mu,s,u,v,w,&
                       t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
                       alpha,iexact,incons,ireset,itermx,ldat,&
                       alphamin,alphamax)
@@ -286,7 +286,6 @@
                                                !! * `+(n1+mineq)*(n1-meq) + 2*meq + n1`       for [[lsei]]
                                                !!
                                                !! with `mineq = m - meq + 2*n1` & `n1 = n+1`
-    integer,dimension(*),intent(inout)  :: iw
     real(wp),intent(inout)              :: t
     real(wp),intent(inout)              :: f0
     real(wp),intent(inout)              :: h1
@@ -306,8 +305,10 @@
     integer,intent(inout)               :: ireset
     integer,intent(inout)               :: itermx
     type(linmin_data),intent(inout)     :: ldat      !! data for [[linmin]].
-    real(wp),intent(in)                 :: alphamin  !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
-    real(wp),intent(in)                 :: alphamax  !! max \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    real(wp),intent(in)                 :: alphamin  !! min \( \alpha \) for line search
+                                                     !! \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    real(wp),intent(in)                 :: alphamax  !! max \( \alpha \) for line search
+                                                     !! \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
 
     integer :: i, j, k
 
@@ -450,7 +451,7 @@
     call daxpy(n,-one,x,1,u,1)
     call daxpy(n,-one,x,1,v,1)
     h4 = one
-    call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,iw,mode)
+    call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode)
 
     ! augmented problem for inconsistent linearization
 
@@ -474,7 +475,7 @@
         u(n1) = zero
         v(n1) = one
         incons = 0
-250     call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,iw,mode)
+250     call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode)
         h4 = one - s(n1)
         if ( mode==4 ) then
             l(n3) = ten*l(n3)
@@ -614,7 +615,7 @@
 !  * coded dieter kraft, april 1987
 !  * revised march 1989
 
-    subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,jw,mode)
+    subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,mode)
 
     implicit none
 
@@ -643,7 +644,6 @@
     real(wp),dimension(*)    :: w
     real(wp),dimension(n)    :: xl
     real(wp),dimension(n)    :: xu
-    integer,dimension(*)     :: jw
     real(wp) :: diag , xnorm
     integer :: i , ic , id , ie , if , ig , ih , il , im , ip , &
                iu , iw , i1 , i2 , i3 , i4 , mineq , &
@@ -757,7 +757,7 @@
       iw = iu + n
 
       call lsei(w(ic),w(id),w(ie),w(if),w(ig),w(ih),max(1,meq),meq,n,n, &
-                m1,m1,n,x,xnorm,w(iw),jw,mode)
+                m1,m1,n,x,xnorm,w(iw),mode)
 
       if ( mode==1 ) then
          ! restore lagrange multipliers
@@ -806,7 +806,7 @@
 !  * 18.5.1981, dieter kraft, dfvlr oberpfaffenhofen
 !  * 20.3.1987, dieter kraft, dfvlr oberpfaffenhofen
 
-    subroutine lsei(c,d,e,f,g,h,lc,mc,le,me,lg,mg,n,x,xnrm,w,jw,mode)
+    subroutine lsei(c,d,e,f,g,h,lc,mc,le,me,lg,mg,n,x,xnrm,w,mode)
 
     implicit none
 
@@ -827,7 +827,6 @@
     real(wp),intent(out)                    :: xnrm !! stores the residuum of the solution in euclidian norm
     real(wp),dimension(*)   ,intent(inout)  :: w    !! on return, stores the vector of lagrange multipliers
                                                     !! in its first `mc+mg` elements
-    integer,dimension(*)    ,intent(inout)  :: jw
     integer,intent(out)                     :: mode !! is a success-failure flag with the following meanings:
                                                     !!
                                                     !! * ***1:*** successful computation,
@@ -893,7 +892,7 @@
                     h(i) = h(i) - ddot(mc,g(i,1),lg,x,1)
                 end do
                 call lsi(w(ie),w(if),w(ig),h,me,me,mg,mg,l,x(mc1),xnrm,  &
-                         w(mc1),jw,mode)
+                         w(mc1),mode)
                 if ( mc==0 ) return
                 t = dnrm2(mc,x,1)
                 xnrm = sqrt(xnrm*xnrm+t*t)
@@ -905,7 +904,7 @@
                 mode = 7
                 k = max(le,n)
                 t = sqrt(epmach)
-                call hfti(w(ie),me,me,l,w(if),k,1,t,krank,dum,w,w(l+1),jw)
+                call hfti(w(ie),me,me,l,w(if),k,1,t,krank,dum,w,w(l+1))
                 xnrm = dum(1)
                 call dcopy(l,w(if),1,x(mc1),1)
                 if ( krank/=l ) return
@@ -967,7 +966,7 @@
 !  * 03.01.1980, dieter kraft: coded
 !  * 20.03.1987, dieter kraft: revised to fortran 77
 
-    subroutine lsi(e,f,g,h,le,me,lg,mg,n,x,xnorm,w,jw,mode)
+    subroutine lsi(e,f,g,h,le,me,lg,mg,n,x,xnorm,w,mode)
 
     implicit none
 
@@ -984,7 +983,6 @@
     real(wp),intent(out)                    :: xnorm !! stores the residuum of the solution in euclidian norm
     real(wp),dimension(*)   ,intent(inout)  :: w     !! stores the vector of lagrange multipliers in its first
                                                      !! `mg` elements
-    integer,dimension(lg)   ,intent(inout)  :: jw
     integer,intent(out)                     :: mode  !! is a success-failure flag with the following meanings:
                                                      !!
                                                      !! * ***1:*** successful computation,
@@ -1017,7 +1015,7 @@
 
     !  solve least distance problem
 
-    call ldp(g,lg,mg,n,h,x,xnorm,w,jw,mode)
+    call ldp(g,lg,mg,n,h,x,xnorm,w,mode)
     if ( mode==1 ) then
 
         !  solution of original problem
@@ -1061,7 +1059,7 @@
 !@note The 1995 version of this routine may have some sort of problem.
 !      Using a refactored version of the original routine.
 
-    subroutine ldp(g,mg,m,n,h,x,xnorm,w,index,mode)
+    subroutine ldp(g,mg,m,n,h,x,xnorm,w,mode)
 
     implicit none
 
@@ -1078,7 +1076,6 @@
                                                   !! on exit `w` stores the lagrange multipliers
                                                   !! associated with the constraints.
                                                   !! at the solution of problem `ldp`.
-    integer,dimension(m),intent(inout)   :: index !! integer working space
     real(wp),intent(out)                 :: xnorm !! euclidian norm of the solution vector
                                                   !! if computation is successful
     integer,intent(out)                  :: mode  !! success-failure flag with the following meanings:
@@ -1120,7 +1117,7 @@
             iy=iz+n1
             iwdual=iy+m
             ! solve dual problem
-            call nnls (w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),index,mode)
+            call nnls (w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode)
             if (mode==1) then
                 mode=4
                 if (rnorm>zero) then
@@ -1181,7 +1178,7 @@
 !### History
 !  * Jacob Williams, refactored into modern Fortran, Jan. 2016.
 
-    subroutine nnls(a,mda,m,n,b,x,rnorm,w,zz,index,mode)
+    subroutine nnls(a,mda,m,n,b,x,rnorm,w,zz,mode)
 
     implicit none
 
@@ -1200,14 +1197,6 @@
                                                        !! the dual solution vector. `w` will satisfy `w(i) = 0`
                                                        !! for all `i` in set `p` and `w(i) <= 0` for all `i` in set `z`.
     real(wp),dimension(m),intent(inout)     :: zz      !! an m-array of working space.
-    integer,dimension(n),intent(out)        :: index   !! an integer working array.
-                                                       !! on exit the contents of this array define the sets
-                                                       !! `p` and `z` as follows:
-                                                       !!
-                                                       !! * `index(1:nsetp) = set p`.
-                                                       !! * `index(iz1:iz2) = set z`.
-                                                       !!
-                                                       !! where: `iz1 = nsetp + 1 = npp1`, `iz2 = n`
     integer,intent(out)                     :: mode    !! this is a success-failure flag with the following meanings:
                                                        !!
                                                        !! * ***1*** the solution has been computed successfully.
@@ -1217,6 +1206,14 @@
     integer :: i,ii,ip,iter,itmax,iz,iz1,iz2,izmax,j,jj,jz,l,npp1,nsetp,rtnkey
     real(wp) :: alpha,asave,cc,sm,ss,t,temp,unorm,up,wmax,ztest
     real(wp),dimension(1) :: dummy
+    integer,dimension(n) :: index   !! an integer working array.
+                                    !! the contents of this array define the sets
+                                    !! `p` and `z` as follows:
+                                    !!
+                                    !! * `index(1:nsetp) = set p`.
+                                    !! * `index(iz1:iz2) = set z`.
+                                    !!
+                                    !! where: `iz1 = nsetp + 1 = npp1`, `iz2 = n`
 
     real(wp),parameter :: factor = 0.01_wp
 
@@ -1228,12 +1225,9 @@
     iter = 0
     itmax = 3*n
 
-    ! initialize the arrays index() and x().
-
-    do i = 1 , n
-        x(i) = zero
-        index(i) = i
-    end do
+    ! initialize the arrays index(1:n) and x(1:n).
+    x = zero
+    index = [(i, i=1,n)]
 
     iz2 = n
     iz1 = 1
@@ -1377,12 +1371,7 @@
         jj = index(ip)
         zz(ip) = zz(ip)/a(ip,jj)
     end do
-    !   if ( rtnkey==1 ) then    !.....original
-    !       !continue
-    !   else if ( rtnkey/=2 ) then
-    !       return
-    !   end if
-    if (rtnkey/=1 .and. rtnkey/=2) return  !......replaced with
+    if (rtnkey/=1 .and. rtnkey/=2) return
 
     ! ******  secondary loop begins here ******
 
@@ -1502,7 +1491,7 @@
 !### History
 !  * Jacob Williams, refactored into modern Fortran, Jan. 2016.
 
-    subroutine hfti(a,mda,m,n,b,mdb,nb,tau,krank,rnorm,h,g,ip)
+    subroutine hfti(a,mda,m,n,b,mdb,nb,tau,krank,rnorm,h,g)
 
     implicit none
 
@@ -1524,8 +1513,6 @@
                                                       !! defined by the `j-th` column vector of the array `b`.
     real(wp),dimension(n),intent(inout)      :: h     !! array of working space
     real(wp),dimension(n),intent(inout)      :: g     !! array of working space
-    integer,dimension(n),intent(inout)       :: ip    !! integer array of working space
-                                                      !! recording permutation indices of column vectors
     real(wp),dimension(mdb,nb),intent(inout) :: b     !! if `nb = 0` the subroutine will make no reference
                                                       !! to the array `b`. if `nb > 0` the array `b` must
                                                       !! initially contain the `m x nb` matrix `b` of the
@@ -1535,6 +1522,8 @@
     integer  :: i, ii, ip1, j, jb, jj, k, kp1, l, ldiag, lmax
     real(wp) :: hmax, sm, tmp
     logical  :: need_lmax
+    integer,dimension(n) :: ip    !! integer array of working space
+                                  !! recording permutation indices of column vectors
 
     real(wp),parameter :: factor = 0.001_wp
 

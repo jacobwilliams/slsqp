@@ -41,9 +41,6 @@
         integer :: l_w = 0 !! size of `w`
         real(wp),dimension(:),allocatable :: w !! real work array
 
-        integer :: l_jw = 0 !! size of `jw`
-        integer,dimension(:),allocatable :: jw  !! integer work array
-
         procedure(func),pointer     :: f      => null()         !! problem function subroutine
         procedure(grad),pointer     :: g      => null()         !! gradient subroutine
         procedure(iterfunc),pointer :: report => null()         !! for reporting an iteration
@@ -232,10 +229,6 @@
         allocate(me%w(me%l_w))
         me%w = zero
 
-        me%l_jw = mineq
-        allocate(me%jw(me%l_jw))
-        me%jw = 0
-
     end if
 
     end subroutine initialize_slsqp
@@ -267,7 +260,9 @@
                                                       !! **out:** solution.
     integer,intent(out)                 :: istat      !! status code (see `mode` in [[slsqp]]).
     integer,intent(out),optional        :: iterations !! number of iterations
-    character(len=:),intent(out),allocatable,optional :: status_message !! string status message corresponding to `istat`
+    character(len=:),intent(out),allocatable,optional :: status_message
+                                                      !! string status message
+                                                      !! corresponding to `istat`
 
     !local variables:
     real(wp)                               :: f        !! objective function
@@ -352,7 +347,7 @@
         !main routine:
         call slsqp(me%m,me%meq,la,me%n,x,me%xl,me%xu,&
                     f,c,g,a,acc,iter,mode,&
-                    me%w,me%l_w,me%jw,me%l_jw,&
+                    me%w,me%l_w,&
                     me%slsqpb,me%linmin,me%alphamin,me%alphamax)
 
         if (mode==1 .or. mode==-1) then
