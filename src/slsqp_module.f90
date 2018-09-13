@@ -35,8 +35,8 @@
                                            !! * 1 - approximate by basic backward differences
                                            !! * 2 - approximate by basic forward differences
                                            !! * 3 - approximate by basic central differences
-        real(wp) :: grad_delta  = 1.0e8_wp !! perturbation step size to approximate gradients
-                                           !! by finite differences (`gradient_mode` 1-3).
+        real(wp) :: gradient_delta  = 1.0e8_wp !! perturbation step size to approximate gradients
+                                               !! by finite differences (`gradient_mode` 1-3).
 
         !these two were not in the original code:
         real(wp) :: alphamin = 0.1_wp   !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
@@ -138,7 +138,7 @@
 
     subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok,&
                                 linesearch_mode,iprint,report,alphamin,alphamax,&
-                                gradient_mode,grad_delta)
+                                gradient_mode,gradient_delta)
 
     implicit none
 
@@ -165,9 +165,10 @@
                                                          !! * 1 - approximate by basic backward differences
                                                          !! * 2 - approximate by basic forward differences
                                                          !! * 3 - approximate by basic central differences
-    real(wp),intent(in),optional      :: grad_delta      !! perturbation step size (>epsilon) to compute the approximated
+    real(wp),intent(in),optional      :: gradient_delta  !! perturbation step size (>epsilon) to compute the approximated
                                                          !! gradient by finite differences (`gradient_mode` 1-3).
-                                                         !! note that this is an absolute step.
+                                                         !! note that this is an absolute step that does not respect
+                                                         !! the `xl` or `xu` variable bounds.
 
     integer :: n1,mineq,i
 
@@ -258,8 +259,8 @@
         me%jw = 0
         if (present(gradient_mode)) then
             me%gradient_mode = gradient_mode
-            if (present(grad_delta)) then
-                me%grad_delta = grad_delta
+            if (present(gradient_delta)) then
+                me%gradient_delta = gradient_delta
             end if
         end if
     end if
@@ -367,7 +368,7 @@
         if (present(status_message)) status_message = mode_to_status_message(istat)
         return
     end if
-    if (me%gradient_mode/=0 .and. me%grad_delta<=epmach) then
+    if (me%gradient_mode/=0 .and. me%gradient_delta<=epmach) then
         istat = -105
         call me%report_message(mode_to_status_message(istat))
         if (present(status_message)) status_message = mode_to_status_message(istat)
@@ -398,7 +399,7 @@
                     !initialize a delta to perturb the objective
                     !function and the constraint vector
                     delta     = zero
-                    delta(ig) = me%grad_delta
+                    delta(ig) = me%gradient_delta
                     !get the right and left value of the objective
                     !function and the constraint vector
                     select case (me%gradient_mode)
