@@ -81,7 +81,6 @@
 
     end type slsqp_solver
 
-    public :: func, grad, iterfunc
     abstract interface
         subroutine func(me,x,f,c)  !! for computing the function
             import :: wp,slsqp_solver
