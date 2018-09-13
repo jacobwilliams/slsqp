@@ -23,13 +23,20 @@
 
         private
 
-        integer  :: n        = 0        !! number of optimization variables (\( n > 0 \))
-        integer  :: m        = 0        !! number of constraints (\( m \ge 0 \))
-        integer  :: meq      = 0        !! number of equality constraints (\( m \ge m_{eq} \ge 0 \))
-        integer  :: max_iter = 0        !! maximum number of iterations
-        real(wp) :: acc      = zero     !! accuracy tolerance
-        logical  :: approx_grad = .false.  !! true if gradients must approximate by first order différence
-        real(wp) :: grad_delta = 1.e8_wp     !! delta to approximate gradients
+        integer  :: n           = 0        !! number of optimization variables (\( n > 0 \))
+        integer  :: m           = 0        !! number of constraints (\( m \ge 0 \))
+        integer  :: meq         = 0        !! number of equality constraints (\( m \ge m_{eq} \ge 0 \))
+        integer  :: max_iter    = 0        !! maximum number of iterations
+        real(wp) :: acc         = zero     !! accuracy tolerance
+
+        integer  :: gradient_mode = 0      !! how the gradients are computed:
+                                           !!
+                                           !! * 0 - use the user-supplied `g` subroutine. [default]
+                                           !! * 1 - approximate by basic backward differences
+                                           !! * 2 - approximate by basic forward differences
+                                           !! * 3 - approximate by basic central differences
+        real(wp) :: grad_delta  = 1.0e8_wp !! perturbation step size to approximate gradients
+                                           !! by finite differences (`gradient_mode` 1-3).
 
         !these two were not in the original code:
         real(wp) :: alphamin = 0.1_wp   !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
@@ -131,7 +138,7 @@
 
     subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok,&
                                 linesearch_mode,iprint,report,alphamin,alphamax,&
-                                approx_grad,grad_delta)
+                                gradient_mode,grad_delta)
 
     implicit none
 
@@ -141,7 +148,8 @@
     integer,intent(in)                :: meq             !! number of equality constraints, \( m_{eq} \ge 0 \)
     integer,intent(in)                :: max_iter        !! maximum number of iterations
     procedure(func)                   :: f               !! problem function
-    procedure(grad)                   :: g               !! function to compute gradients
+    procedure(grad)                   :: g               !! function to compute gradients (must be
+                                                         !! associated if `gradient_mode=0`)
     real(wp),dimension(n),intent(in)  :: xl              !! lower bounds on `x`
     real(wp),dimension(n),intent(in)  :: xu              !! upper bounds on `x`
     real(wp),intent(in)               :: acc             !! accuracy
@@ -151,8 +159,15 @@
     procedure(iterfunc),optional      :: report          !! user-defined procedure that will be called once per iteration
     real(wp),intent(in),optional      :: alphamin        !! minimum alpha for linesearch [default 0.1]
     real(wp),intent(in),optional      :: alphamax        !! maximum alpha for linesearch [default 1.0]
-    logical,intent(in),optional       :: approx_grad     !! true if gradient must be approximated by finite differences
-    real(wp),intent(in),optional      :: grad_delta      !! delta to compute this approximated gradient
+    integer,intent(in),optional       :: gradient_mode   !! how the gradients are to be computed:
+                                                         !!
+                                                         !! * 0 - use the user-supplied `g` subroutine. [default]
+                                                         !! * 1 - approximate by basic backward differences
+                                                         !! * 2 - approximate by basic forward differences
+                                                         !! * 3 - approximate by basic central differences
+    real(wp),intent(in),optional      :: grad_delta      !! perturbation step size (>epsilon) to compute the approximated
+                                                         !! gradient by finite differences (`gradient_mode` 1-3).
+                                                         !! note that this is an absolute step.
 
     integer :: n1,mineq,i
 
@@ -241,8 +256,8 @@
         me%l_jw = mineq
         allocate(me%jw(me%l_jw))
         me%jw = 0
-        if (present(approx_grad)) then
-            me%approx_grad = approx_grad
+        if (present(gradient_mode)) then
+            me%gradient_mode = gradient_mode
             if (present(grad_delta)) then
                 me%grad_delta = grad_delta
             end if
@@ -282,8 +297,8 @@
     !local variables:
     real(wp)                               :: f        !! objective function
     real(wp),dimension(max(1,me%m))        :: c        !! constraint vector
-    real(wp),dimension(max(1,me%m),me%n+1) :: a        !! a matrix for slsqp
-    real(wp),dimension(me%n+1)             :: g        !! g matrix for slsqp
+    real(wp),dimension(max(1,me%m),me%n+1) :: a        !! a matrix for [[slsqp]]
+    real(wp),dimension(me%n+1)             :: g        !! g matrix for [[slsqp]]
     real(wp),dimension(me%m)               :: cvec     !! constraint vector
     real(wp),dimension(me%n)               :: dfdx     !! objective function partials
     real(wp),dimension(me%m,me%n)          :: dcdx     !! constraint partials
@@ -292,11 +307,13 @@
     integer                                :: la       !! input to [[slsqp]]
     integer                                :: iter     !! in/out for [[slsqp]]
     real(wp)                               :: acc      !! in/out for [[slsqp]]
-
     integer                                :: ig       !! loop index to approximate gradient
-    real(wp),dimension(me%n)               :: delta    !! step to approximate gradient
-    real(wp)                               :: fr, fl   !! right and left function value to approximate objective function's gradient
-    real(wp),dimension(me%m)               :: cvecr,cvecl !! same for constraints vector
+    real(wp),dimension(me%n)               :: delta    !! perturbation step size to approximate gradient
+    real(wp)                               :: fr       !! right function value to approximate objective function's gradient
+    real(wp)                               :: fl       !! left function value to approximate objective function's gradient
+    real(wp),dimension(me%m)               :: cvecr    !! right function value to approximate constraints vector's gradient
+    real(wp),dimension(me%m)               :: cvecl    !! left function value to approximate constraints vector's gradient
+    real(wp)                               :: fact     !! denominator factor for finite difference approximation
 
     !initialize:
     i    = 0
@@ -338,8 +355,20 @@
         if (present(status_message)) status_message = mode_to_status_message(istat)
         return
     end if
-    if ((.not.me%approx_grad).and.(.not. associated(me%g))) then
+    if ((me%gradient_mode==0).and.(.not. associated(me%g))) then
         istat = -103
+        call me%report_message(mode_to_status_message(istat))
+        if (present(status_message)) status_message = mode_to_status_message(istat)
+        return
+    end if
+    if (me%gradient_mode<0 .or. me%gradient_mode>3) then
+        istat = -104
+        call me%report_message(mode_to_status_message(istat))
+        if (present(status_message)) status_message = mode_to_status_message(istat)
+        return
+    end if
+    if (me%gradient_mode/=0 .and. me%grad_delta<=epmach) then
+        istat = -105
         call me%report_message(mode_to_status_message(istat))
         if (present(status_message)) status_message = mode_to_status_message(istat)
         return
@@ -354,23 +383,40 @@
         end if
 
         if (mode==0 .or. mode==-1) then  !gradient evaluation (g&a)
-            if (me%approx_grad) then ! by first order approxiamtion
-                do ig=1,me%n
-                    !initialize a delta to perturb the objective function and the constraint vector
-                    delta     = zero
-                    delta(ig) = me%grad_delta
-                    !get the right and left value of the objective fcn and the constraint vcr
-                    call me%f(x+delta,fr,cvecr)
-                    call me%f(x-delta,fl,cvecl)
-                    !compute the gradients by first-order finite differences
-                    g(ig)   = (fr-fl) / ( two*delta(ig) )
-                    a(:,ig) = (cvecr-cvecl) / ( two*delta(ig) )
-                end do
-            else ! user supplied
+            select case (me%gradient_mode)
+            case (0) ! user supplied gradients
                 call me%g(x,dfdx,dcdx)
                 g(1:me%n)        = dfdx
                 a(1:me%m,1:me%n) = dcdx
-            end if
+            case default ! approximate using finite differences
+                if (me%gradient_mode==3) then
+                    fact = two  ! central differences
+                else
+                    fact = one  ! forward/backward differences
+                end if
+                do ig=1,me%n
+                    !initialize a delta to perturb the objective
+                    !function and the constraint vector
+                    delta     = zero
+                    delta(ig) = me%grad_delta
+                    !get the right and left value of the objective
+                    !function and the constraint vector
+                    select case (me%gradient_mode)
+                    case (1) ! backward difference
+                        call me%f(x,fr,cvecr)
+                        call me%f(x-delta,fl,cvecl)
+                    case (2) ! forward difference
+                        call me%f(x+delta,fr,cvecr)
+                        call me%f(x,fl,cvecl)
+                    case (3) ! central difference
+                        call me%f(x+delta,fr,cvecr)
+                        call me%f(x-delta,fl,cvecl)
+                    end select
+                    !compute the gradients by first-order finite differences
+                    g(ig)   = (fr-fl)       / ( fact*delta(ig) )
+                    a(:,ig) = (cvecr-cvecl) / ( fact*delta(ig) )
+                end do
+            end select
             !this is an iteration:
             !note: the initial guess is reported as iteration 0:
             if (associated(me%report)) call me%report(i,x,f,c) !report iteration
@@ -492,6 +538,10 @@
         message = 'Function is not associated'
     case(-103)
         message = 'Gradient function is not associated'
+    case(-104)
+        message = 'Invalid gradient mode'
+    case(-105)
+        message = 'Invalid perturbation step size for finite difference gradients'
     case(-2)
         message = 'User-triggered stop of slsqp'
     case(1,-1)

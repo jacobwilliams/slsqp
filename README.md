@@ -17,9 +17,9 @@ Updates to the original code include:
 * It includes updated versions of some of the third-party routines used in the original code (BLAS, LINPACK, and NNLS).
 * Some new features were added to support printing error  messages and reporting iterations to the user.
 * The user can now specify the max and min `alpha` to use during the line search.
+* The user can supply a routine to compute the gradients of the objective function and constriants, or allow the code to estimate them using finite differences (backward, forward, or central).
 * The documentation strings in the code have been converted to [FORD](https://github.com/cmacmackin/ford) format, allowing for [nicely formatted documentation](http://jacobwilliams.github.io/slsqp/) to be auto-generated.
 * A couple of bug fixes noted elsewhere have been applied.
-
 
 ### License
 

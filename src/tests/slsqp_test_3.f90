@@ -18,40 +18,48 @@
     real(wp),dimension(n),parameter :: xu = [ 1.0_wp,  1.0_wp]  !! upper bounds
     real(wp),parameter              :: acc = 1.0e-8_wp          !! tolerance
     integer,parameter               :: linesearch_mode = 1      !! use inexact linesearch.
+    real(wp),parameter              :: grad_delta = 1.0e-5_wp   !! step to approximate gradient
 
-    type(slsqp_solver)    :: solver      !! instantiate an slsqp solver
-    real(wp),dimension(n) :: x           !! optimization variable vector
-    integer               :: istat       !! for solver status check
-    logical               :: status_ok   !! for initialization status check
-    integer               :: iterations  !! number of iterations by the solver
+    type(slsqp_solver)      :: solver        !! instantiate an slsqp solver
+    real(wp),dimension(n)   :: x             !! optimization variable vector
+    integer                 :: istat         !! for solver status check
+    logical                 :: status_ok     !! for initialization status check
+    integer                 :: iterations    !! number of iterations by the solver
+    integer                 :: gradient_mode !! gradient computation mode
+    procedure(func),pointer :: f             !! pointer to `rosenbrock_func`
+    procedure(grad),pointer :: g             !! not used here since we are letting
+                                             !! slsqp compute the gradients
 
-    logical,parameter  :: approx_grad = .true. !! if true approximate gradient by finite difference
-    real(wp),parameter :: grad_delta = 1e-8    !! step to approximate gradient
+    ! test each of the gradient modes (backward, forward, and central diffs)
+    do gradient_mode = 1, 3
 
-    procedure(func),pointer :: f
-    procedure(grad),pointer :: g
-
-    x = [0.1_wp, 0.1_wp] !initial guess
-
-    f => rosenbrock_func
-    g => null()
-
-    call solver%initialize(n,m,meq,max_iter,acc,f,g,&
-                            xl,xu,linesearch_mode=linesearch_mode,status_ok=status_ok,&
-                            report=report_iteration,&
-                            approx_grad=approx_grad,grad_delta=grad_delta)
-                            !alphamin=0.1_wp, alphamax=0.5_wp) !to limit search steps
-
-    if (status_ok) then
-        call solver%optimize(x,istat,iterations)
         write(*,*) ''
-        write(*,*) 'solution   :', x
-        write(*,*) 'istat      :', istat
-        write(*,*) 'iterations :', iterations
-        write(*,*) ''
-    else
-        error stop 'error calling slsqp.'
-    end if
+        write(*,*) '---------------------------'
+        write(*,*) 'gradient mode:', gradient_mode
+        write(*,*) '---------------------------'
+
+        x = [0.1_wp, 0.1_wp] !initial guess
+
+        f => rosenbrock_func
+        g => null()
+
+        call solver%initialize(n,m,meq,max_iter,acc,f,g,&
+                                xl,xu,linesearch_mode=linesearch_mode,status_ok=status_ok,&
+                                report=report_iteration,&
+                                gradient_mode=gradient_mode,grad_delta=grad_delta)
+
+        if (status_ok) then
+            call solver%optimize(x,istat,iterations)
+            write(*,*) ''
+            write(*,*) 'solution   :', x
+            write(*,*) 'istat      :', istat
+            write(*,*) 'iterations :', iterations
+            write(*,*) ''
+        else
+            error stop 'error calling slsqp.'
+        end if
+
+    end do
 
     !solution:  x1 = 0.7864151509699762
     !           x2 = 0.6176983165977831
