@@ -26,9 +26,6 @@
     logical                 :: status_ok     !! for initialization status check
     integer                 :: iterations    !! number of iterations by the solver
     integer                 :: gradient_mode !! gradient computation mode
-    procedure(func),pointer :: f             !! pointer to `rosenbrock_func`
-    procedure(grad),pointer :: g             !! not used here since we are letting
-                                             !! slsqp compute the gradients
 
     ! test each of the gradient modes (backward, forward, and central diffs)
     do gradient_mode = 1, 3
@@ -40,10 +37,7 @@
 
         x = [0.1_wp, 0.1_wp] !initial guess
 
-        f => rosenbrock_func
-        g => null()
-
-        call solver%initialize(n,m,meq,max_iter,acc,f,g,&
+        call solver%initialize(n,m,meq,max_iter,acc,rosenbrock_func,dummy_grad,&
                                 xl,xu,linesearch_mode=linesearch_mode,status_ok=status_ok,&
                                 report=report_iteration,&
                                 gradient_mode=gradient_mode,gradient_delta=gradient_delta)
@@ -86,6 +80,21 @@
         c(1) = 1.0_wp - x(1)**2 - x(2)**2  !equality constraint (>=0)
 
     end subroutine rosenbrock_func
+
+    subroutine dummy_grad(me,x,g,a)
+
+        !! not used in this case
+
+        implicit none
+
+        class(slsqp_solver),intent(inout)   :: me
+        real(wp),dimension(:),intent(in)    :: x    !! optimization variable vector
+        real(wp),dimension(:),intent(out)   :: g    !! objective function partials w.r.t x `dimension(n)`
+        real(wp),dimension(:,:),intent(out) :: a    !! gradient matrix of constraints w.r.t. x `dimension(m,n)`
+
+        error stop 'this routine is not meant to be called'
+
+    end subroutine dummy_grad
 
     subroutine report_iteration(me,iter,x,f,c)
         use, intrinsic :: iso_fortran_env, only: output_unit
