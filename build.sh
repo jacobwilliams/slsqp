@@ -20,7 +20,7 @@ FORDMD='slsqp.md'               # FORD config file name
 #FCOMPILER='gnu' #Set compiler to gfortran
 #FCOMPILERFLAGS='-c -O2 -std=f2008'
 
-FCOMPILER='intel' #Set compiler to gfortran
+FCOMPILER='intel' #Set compiler to ifort
 FCOMPILERFLAGS='-c -O2'
 
 #build using FoBiS:

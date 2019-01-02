@@ -250,9 +250,6 @@
         allocate(me%w(me%l_w))
         me%w = zero
 
-        me%l_jw = mineq
-        allocate(me%jw(me%l_jw))
-        me%jw = 0
         if (present(gradient_mode)) then
             me%gradient_mode = gradient_mode
             if (present(gradient_delta)) then
