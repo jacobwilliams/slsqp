@@ -27,9 +27,9 @@
         integer  :: m           = 0        !! number of constraints (\( m \ge 0 \))
         integer  :: meq         = 0        !! number of equality constraints (\( m \ge m_{eq} \ge 0 \))
         integer  :: max_iter    = 0        !! maximum number of iterations
-        real(wp) :: acc         = zero      !! accuracy tolerance
+        real(wp) :: acc         = zero     !! accuracy tolerance
         real(wp) :: tolf        = zero     !! accuracy tolerance over f:  if |f| < tolf then stop
-        real(wp) :: toldf       = zero     !! accuracy tolerance over df: if |fn+1 - fn| < toldf then stop
+        real(wp) :: toldf       = zero     !! accuracy tolerance over df: if |fn+1 - fn| < toldf then stop. It's different from acc in the case of positve derivative
         real(wp) :: toldx       = zero     !! accuracy tolerance over xf: if |xn+1 - xn| < toldx then stop
 
         integer  :: gradient_mode = 0      !! how the gradients are computed:
@@ -140,7 +140,7 @@
 
     subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok,&
                                 linesearch_mode,iprint,report,alphamin,alphamax,&
-                                gradient_mode,gradient_delta)
+                                gradient_mode,gradient_delta,tolf,toldf,toldx)
 
     implicit none
 
@@ -171,6 +171,9 @@
                                                          !! gradient by finite differences (`gradient_mode` 1-3).
                                                          !! note that this is an absolute step that does not respect
                                                          !! the `xl` or `xu` variable bounds.
+    real(wp),intent(in),optional      :: tolf            !! stopping criterion if |f| < tolf then stop.
+    real(wp),intent(in),optional      :: toldf           !! stopping criterion if |fn+1 - fn| < toldf then stop
+    real(wp),intent(in),optional      :: toldx           !! stopping criterion if ||xn+1 - xn|| < toldx then stop
 
     integer :: n1,mineq,i
 
@@ -230,6 +233,10 @@
             return
 
         end if
+
+        if (present(tolf))  me%tolf     = tolf
+        if (present(toldf)) me%toldf    = toldf
+        if (present(toldx)) me%toldx    = toldx
 
         status_ok = .true.
         me%n = n
@@ -430,7 +437,8 @@
         call slsqp(me%m,me%meq,la,me%n,x,me%xl,me%xu,&
                     f,c,g,a,acc,iter,mode,&
                     me%w,me%l_w,me%jw,me%l_jw,&
-                    me%slsqpb,me%linmin,me%alphamin,me%alphamax)
+                    me%slsqpb,me%linmin,me%alphamin,me%alphamax,&
+                    me%tolf,me%toldf,me%toldx)
 
         if (mode==1 .or. mode==-1) then
             !continue to next call

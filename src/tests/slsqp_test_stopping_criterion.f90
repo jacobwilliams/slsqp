@@ -25,14 +25,15 @@
 
     integer,parameter               :: n = 2                    !! number of optimization variables
     integer,parameter               :: m = 1                    !! total number of constraints
-    integer,parameter               :: meq = 0                  !! number of equality constraints
+    integer,parameter               :: meq = 1                  !! number of equality constraints
     integer,parameter               :: max_iter = 100           !! maximum number of allowed iterations
     real(wp),dimension(n),parameter :: xl = [-1.0_wp, -1.0_wp]  !! lower bounds
     real(wp),dimension(n),parameter :: xu = [ 1.0_wp,  1.0_wp]  !! upper bounds
-    real(wp),parameter              :: acc  = 1.0e-8_wp         !! accuracy tolerance
-    real(wp),parameter              :: tolf  = 1.0e-8_wp        !! accuracy tolerance over f:  if |f| < tolf then stop
-    real(wp),parameter              :: toldf = 1.0e-8_wp        !! accuracy tolerance over df: if |fn+1 - fn| < toldf then stop
-    real(wp),parameter              :: toldx = 1.0e-8_wp        !! accuracy tolerance over dx: if |xn+1 - xn| < toldx then stop
+    real(wp),parameter              :: acc   = 1.e-8_wp         !! accuracy tolerance
+    real(wp),parameter              :: tolf  = 0.e+0_wp         !! accuracy tolerance over f:  if |f| < tolf then stop
+    real(wp),parameter              :: toldf = 0.e+0_wp         !! accuracy tolerance over df: if |fn+1 - fn| < toldf then stop.
+                                                                !! It's different from acc in the event of positive derivative
+    real(wp),parameter              :: toldx = 0.e+0_wp         !! accuracy tolerance over dx: if |xn+1 - xn| < toldx then stop
     integer,parameter               :: linesearch_mode = 1      !! use inexact linesearch.
 
     type(slsqp_solver)    :: solver      !! instantiate an slsqp solver
@@ -45,9 +46,15 @@
     xlast = x
     call rosenbrock_func(solver,xlast,flast,clast)
 
+    write(*,*) 'The stopping criterion are'
+    write(*,*) 'acc  ',acc
+    write(*,*) 'tolf ',tolf
+    write(*,*) 'toldf',toldf
+    write(*,*) 'toldx',toldx
+
     call solver%initialize(n,m,meq,max_iter,acc,rosenbrock_func,rosenbrock_grad,&
                             xl,xu,linesearch_mode=linesearch_mode,status_ok=status_ok,&
-                            report=report_iteration)
+                            report=report_iteration,tolf=tolf,toldf=toldf,toldx=toldx)
                             !alphamin=0.1_wp, alphamax=0.5_wp) !to limit search steps
 
     if (status_ok) then
@@ -116,11 +123,15 @@
 
         !write a header:
         if (iter==0) then
-            write(output_unit,'(*(A20,1X))') 'iteration', 'f','|df|','x(1)', 'x(2)', '|dx|', 'c(1)'
+            write(output_unit,'(*(A17,1X))') &
+            'iteration', 'f','|fn+1-fn|', '||xn+1-xn||', 'c(1)',&
+            'f<tolf','|fn+1-fn|<toldf','|fn+1-fn|<acc','||xn+1-xn||<toldx','abs(c)<acc'
         end if
 
         !write the iteration data:
-        write(output_unit,'(I20,1X,(*(F20.16,1X)))') iter,f,abs(f-flast),x,sqrt(sum((x-xlast)**2)),c
+        write(output_unit,'(I17,1X,4(ES17.10,1X),5(L17,1x))') &
+            iter,f,abs(f-flast),sqrt(sum((x-xlast)**2)),c,&
+            f<tolf,abs(f-flast)<toldf,abs(f-flast)<acc,sqrt(sum((x-xlast)**2))<toldx,abs(c)<acc
 
         xlast = x
         flast = f

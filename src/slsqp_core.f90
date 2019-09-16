@@ -110,7 +110,7 @@
 !@note `f`, `c`, `g`, `a` must all be set by the user before each call.
 
     subroutine slsqp(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w,l_w, &
-                     jw,l_jw,sdat,ldat,alphamin,alphamax)
+                     jw,l_jw,sdat,ldat,alphamin,alphamax,tolf,toldf,toldx)
 
     implicit none
 
@@ -198,7 +198,9 @@
     type(linmin_data),intent(inout) :: ldat  !! data for [[linmin]].
     real(wp),intent(in) :: alphamin  !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
     real(wp),intent(in) :: alphamax  !! max \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
-
+    real(wp),intent(in) :: tolf      !! stopping criterion if |f| < tolf then stop.
+    real(wp),intent(in) :: toldf     !! stopping criterion if |fn+1 - fn| < toldf then stop
+    real(wp),intent(in) :: toldx     !! stopping criterion if ||xn+1 - xn|| < toldx then stop
     integer :: il , im , ir , is , iu , iv , iw , ix , mineq, n1
 
     !   check length of working arrays
@@ -239,7 +241,7 @@
                 sdat%t,sdat%f0,sdat%h1,sdat%h2,sdat%h3,sdat%h4,&
                 sdat%n1,sdat%n2,sdat%n3,sdat%t0,sdat%gs,sdat%tol,sdat%line,&
                 sdat%alpha,sdat%iexact,sdat%incons,sdat%ireset,sdat%itermx,&
-                ldat,alphamin,alphamax)
+                ldat,alphamin,alphamax,tolf,toldf,toldx)
 
     end subroutine slsqp
 !*******************************************************************************
@@ -254,7 +256,7 @@
                       r,l,x0,mu,s,u,v,w,iw,&
                       t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
                       alpha,iexact,incons,ireset,itermx,ldat,&
-                      alphamin,alphamax)
+                      alphamin,alphamax,tolf,toldf,toldx)
     implicit none
 
     integer,intent(in)                  :: m
@@ -308,7 +310,9 @@
     type(linmin_data),intent(inout)     :: ldat      !! data for [[linmin]].
     real(wp),intent(in)                 :: alphamin  !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
     real(wp),intent(in)                 :: alphamax  !! max \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
-
+    real(wp),intent(in)                 :: tolf      !! stopping criterion if |f| < tolf then stop.
+    real(wp),intent(in)                 :: toldf     !! stopping criterion if |fn+1 - fn| < toldf then stop
+    real(wp),intent(in)                 :: toldx     !! stopping criterion if ||xn+1 - xn|| < toldx then stop
     integer :: i, j, k
 
     if ( mode<0 ) then
@@ -421,7 +425,8 @@
 100 ireset = ireset + 1
     if ( ireset>5 ) then
         ! check relaxed convergence in case of positive directional derivative
-        if ( (abs(f-f0)<tol .or. dnrm2(n,s,1)<tol) .and. h3<tol ) then
+        if ( ( abs(f)<tolf .or. abs(f-f0)<toldf .or. dnrm2(n,x-x0,1)<toldx & 
+            .or. abs(f-f0)<tol .or. dnrm2(n,s,1)<tol) .and. h3<tol ) then
             mode = 0
         else
             mode = 8
@@ -572,8 +577,8 @@
         end if
         h3 = h3 + max(-c(j),h1)
     end do
-
-    if ( (abs(f-f0)<acc .or. dnrm2(n,s,1)<acc) .and. h3<acc ) then
+    if ( ( abs(f)<tolf .or. abs(f-f0)<toldf .or. dnrm2(n,x-x0,1)<toldx &
+        .or. abs(f-f0)<acc  .or. dnrm2(n,s,1)<acc  ) .and. h3<acc ) then
         mode = 0
     else
         mode = -1
