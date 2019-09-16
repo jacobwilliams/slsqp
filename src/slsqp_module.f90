@@ -27,7 +27,10 @@
         integer  :: m           = 0        !! number of constraints (\( m \ge 0 \))
         integer  :: meq         = 0        !! number of equality constraints (\( m \ge m_{eq} \ge 0 \))
         integer  :: max_iter    = 0        !! maximum number of iterations
-        real(wp) :: acc         = zero     !! accuracy tolerance
+        real(wp) :: acc         = zero      !! accuracy tolerance
+        real(wp) :: tolf        = zero     !! accuracy tolerance over f:  if |f| < tolf then stop
+        real(wp) :: toldf       = zero     !! accuracy tolerance over df: if |fn+1 - fn| < toldf then stop
+        real(wp) :: toldx       = zero     !! accuracy tolerance over xf: if |xn+1 - xn| < toldx then stop
 
         integer  :: gradient_mode = 0      !! how the gradients are computed:
                                            !!
