@@ -42,7 +42,7 @@
     integer :: i , incx , incy , ix , iy , m , mp1 , n
 
     if ( n<=0 ) return
-    if ( da==zero ) return
+    if ( abs(da)<=zero ) return
     if ( incx==1 .and. incy==1 ) then
 
         ! code for both increments equal to 1
@@ -243,7 +243,7 @@
         ! auxiliary routine:
         ! call dlassq( n, x, incx, scale, ssq )
         do ix = 1 , 1 + (n-1)*incx , incx
-            if ( x(ix)/=zero ) then
+            if ( abs(x(ix))>zero ) then
                 absxi = abs(x(ix))
                 if ( scale<absxi ) then
                     ssq = one + ssq*(scale/absxi)**2

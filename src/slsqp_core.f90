@@ -1413,7 +1413,7 @@
     ! if all new constrained coeffs are feasible then alpha will
     ! still = 2.    if so exit from secondary loop to main loop.
 
-    if ( alpha==two ) then
+    if ( abs(alpha-two)<=0. ) then
         ! ******  end of secondary loop  ******
 
         do ip = 1 , nsetp
@@ -1773,7 +1773,7 @@
                     sm = sm + c(i3)*u(1,i)
                     i3 = i3 + ice
                 end do
-                if ( sm/=0 ) then
+                if ( abs(sm)>0 ) then
                     sm = sm*b
                     c(i2) = c(i2) + sm*up
                     do i = l1 , m
@@ -1831,7 +1831,7 @@
         s = c*xr
         sig = abs(a)*yr
     else
-        if ( b/=zero ) then
+        if ( abs(b)>zero ) then
             xr = a/b
             yr = sqrt(one+xr**2)
             s = sign(one/yr,b)
@@ -1883,7 +1883,7 @@
     integer :: i , ij , j
     real(wp) :: t , v , u , tp , beta , alpha , delta , gamma
 
-    if ( sigma/=zero ) then
+    if ( abs(sigma)>zero ) then
         ij = 1
         t = one/sigma
         if ( sigma<=zero ) then
@@ -2004,12 +2004,12 @@
         if ( fu>fx ) then
             if ( u<x ) a = u
             if ( u>=x ) b = u
-            if ( fu<=fw .or. w==x ) then
+            if ( fu<=fw .or. abs(w-x)<=0._wp ) then
                 v = w
                 fv = fw
                 w = u
                 fw = fu
-            else if ( fu<=fv .or. v==x .or. v==w ) then
+            else if ( fu<=fv .or. abs(v-x)<=0._wp .or. abs(v-w)<=0._wp ) then
                 v = u
                 fv = fu
             end if
