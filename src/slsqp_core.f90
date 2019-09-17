@@ -110,7 +110,7 @@
 !@note `f`, `c`, `g`, `a` must all be set by the user before each call.
 
     subroutine slsqp(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w,l_w, &
-                     sdat,ldat,alphamin,alphamax)
+                     sdat,ldat,alphamin,alphamax,tolf,toldf,toldx)
 
     implicit none
 
@@ -196,6 +196,9 @@
                                      !! \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
     real(wp),intent(in) :: alphamax  !! max \( \alpha \) for line search
                                      !! \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    real(wp),intent(in) :: tolf      !! stopping criterion if \( |f| < tolf \) then stop.
+    real(wp),intent(in) :: toldf     !! stopping criterion if \( |f_{n+1} - f_n| < toldf \) then stop.
+    real(wp),intent(in) :: toldx     !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop.
 
     integer :: il , im , ir , is , iu , iv , iw , ix , mineq, n1
 
@@ -239,7 +242,7 @@
                 sdat%t,sdat%f0,sdat%h1,sdat%h2,sdat%h3,sdat%h4,&
                 sdat%n1,sdat%n2,sdat%n3,sdat%t0,sdat%gs,sdat%tol,sdat%line,&
                 sdat%alpha,sdat%iexact,sdat%incons,sdat%ireset,sdat%itermx,&
-                ldat,alphamin,alphamax)
+                ldat,alphamin,alphamax,tolf,toldf,toldx)
 
     end subroutine slsqp
 !*******************************************************************************
@@ -254,7 +257,7 @@
                       r,l,x0,mu,s,u,v,w,&
                       t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
                       alpha,iexact,incons,ireset,itermx,ldat,&
-                      alphamin,alphamax)
+                      alphamin,alphamax,tolf,toldf,toldx)
     implicit none
 
     integer,intent(in)                  :: m
@@ -309,6 +312,9 @@
                                                      !! \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
     real(wp),intent(in)                 :: alphamax  !! max \( \alpha \) for line search
                                                      !! \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
+    real(wp),intent(in)                 :: tolf      !! stopping criterion if \( |f| < tolf \) then stop.
+    real(wp),intent(in)                 :: toldf     !! stopping criterion if \( |f_{n+1} - f_n| < toldf \) then stop
+    real(wp),intent(in)                 :: toldx     !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop
 
     integer :: i, j, k
 
@@ -422,11 +428,7 @@
 100 ireset = ireset + 1
     if ( ireset>5 ) then
         ! check relaxed convergence in case of positive directional derivative
-        if ( (abs(f-f0)<tol .or. dnrm2(n,s,1)<tol) .and. h3<tol ) then
-            mode = 0
-        else
-            mode = 8
-        end if
+        mode = check_convergence(n,f,f0,x,x0,s,h3,tol,tolf,toldf,toldx,0,8)
         return
     else
         l(1) = zero
@@ -573,14 +575,63 @@
         end if
         h3 = h3 + max(-c(j),h1)
     end do
-
-    if ( (abs(f-f0)<acc .or. dnrm2(n,s,1)<acc) .and. h3<acc ) then
-        mode = 0
-    else
-        mode = -1
-    end if
+    mode = check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,0,-1)
 
     end subroutine slsqpb
+!*******************************************************************************
+
+!*******************************************************************************
+!>
+!  Check for convergence.
+
+    function check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,&
+                                converged,not_converged) result(mode)
+
+    implicit none
+
+    integer,intent(in) :: n
+    real(wp),intent(in) :: f
+    real(wp),intent(in) :: f0
+    real(wp),dimension(:),intent(in) :: x
+    real(wp),dimension(:),intent(in) :: x0
+    real(wp),dimension(:),intent(in) :: s
+    real(wp),intent(in) :: h3
+    real(wp),intent(in) :: acc
+    real(wp),intent(in) :: tolf
+    real(wp),intent(in) :: toldf
+    real(wp),intent(in) :: toldx
+    integer,intent(in) :: converged     !! mode value if converged
+    integer,intent(in) :: not_converged !! mode value if not converged
+    integer :: mode
+
+    logical :: ok ! temp variable
+    real(wp),dimension(n) :: xmx0
+
+    if (h3<acc) then
+        mode = not_converged
+    else
+
+        ! if any are OK then it is converged
+        ok = .false.
+        if (.not. ok) ok = abs(f-f0)<acc
+        if (.not. ok) ok = dnrm2(n,s,1)<acc
+        ! note that these can be ignored if they are < 0:
+        if (.not. ok .and. tolf>=zero)  ok = abs(f)<tolf
+        if (.not. ok .and. toldf>=zero) ok = abs(f-f0)<toldf
+        if (.not. ok .and. toldx>=zero) then
+            xmx0 = x-x0 ! to avoid array temporary warning
+            ok = dnrm2(n,xmx0,1)<toldx
+        end if
+
+        if (ok) then
+            mode = converged
+        else
+            mode = not_converged
+        end if
+
+    end if
+
+    end function check_convergence
 !*******************************************************************************
 
 !*******************************************************************************
@@ -1402,7 +1453,7 @@
     ! if all new constrained coeffs are feasible then alpha will
     ! still = 2.    if so exit from secondary loop to main loop.
 
-    if ( alpha==two ) then
+    if ( abs(alpha-two)<=zero ) then
         ! ******  end of secondary loop  ******
 
         do ip = 1 , nsetp
@@ -1548,14 +1599,14 @@
                     h(l) = h(l) - a(j-1,l)**2
                     if ( h(l)>h(lmax) ) lmax = l
                 end do
-                if ( diff(hmax+factor*h(lmax),hmax)>0 ) need_lmax = .false.
+                if ( diff(hmax+factor*h(lmax),hmax)>zero ) need_lmax = .false.
             end if
 
             if (need_lmax) then
                 ! compute squared column lengths and find lmax
                 lmax = j
                 do l = j , n
-                    h(l) = 0.
+                    h(l) = zero
                     do i = j , m
                         h(l) = h(l) + a(i,l)**2
                     end do
@@ -1731,17 +1782,17 @@
         do j = l1 , m
             cl = max(abs(u(1,j)),cl)
         end do
-        if ( cl<=0 ) return
+        if ( cl<=zero ) return
         clinv = one/cl
         sm = (u(1,lpivot)*clinv)**2
         do j = l1 , m
             sm = sm + (u(1,j)*clinv)**2
         end do
         cl = cl*sqrt(sm)
-        if ( u(1,lpivot)>0 ) cl = -cl
+        if ( u(1,lpivot)>zero ) cl = -cl
         up = u(1,lpivot) - cl
         u(1,lpivot) = cl
-    else if ( cl<=0 ) then
+    else if ( cl<=zero ) then
         return
     end if
 
@@ -1749,7 +1800,7 @@
         ! apply the transformation i+u*(u**t)/b to c.
         b = up*u(1,lpivot)
         ! b must be nonpositive here.
-        if ( b<0 ) then
+        if ( b<zero ) then
             b = one/b
             i2 = 1 - icv + ice*(lpivot-1)
             incr = ice*(l1-lpivot)
@@ -1762,7 +1813,7 @@
                     sm = sm + c(i3)*u(1,i)
                     i3 = i3 + ice
                 end do
-                if ( sm/=0 ) then
+                if ( abs(sm)>zero ) then
                     sm = sm*b
                     c(i2) = c(i2) + sm*up
                     do i = l1 , m
@@ -1820,7 +1871,7 @@
         s = c*xr
         sig = abs(a)*yr
     else
-        if ( b/=zero ) then
+        if ( abs(b)>zero ) then
             xr = a/b
             yr = sqrt(one+xr**2)
             s = sign(one/yr,b)
@@ -1872,7 +1923,7 @@
     integer :: i , ij , j
     real(wp) :: t , v , u , tp , beta , alpha , delta , gamma
 
-    if ( sigma/=zero ) then
+    if ( abs(sigma)>zero ) then
         ij = 1
         t = one/sigma
         if ( sigma<=zero ) then
@@ -1993,12 +2044,12 @@
         if ( fu>fx ) then
             if ( u<x ) a = u
             if ( u>=x ) b = u
-            if ( fu<=fw .or. w==x ) then
+            if ( fu<=fw .or. abs(w-x)<=zero ) then
                 v = w
                 fv = fw
                 w = u
                 fw = fu
-            else if ( fu<=fv .or. v==x .or. v==w ) then
+            else if ( fu<=fv .or. abs(v-x)<=zero .or. abs(v-w)<=zero ) then
                 v = u
                 fv = fu
             end if
