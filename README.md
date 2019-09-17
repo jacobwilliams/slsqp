@@ -38,6 +38,8 @@ A [FoBiS](https://github.com/szaghi/FoBiS) configuration file (`slsqp.fobis`) is
 
   To generate the documentation using [ford](https://github.com/cmacmackin/ford), run: ```FoBis.py rule --execute makedoc -f slsqp.fobis```
 
+  To run the test programs, run: ```FoBis.py rule --execute tests -f slsqp.fobis```
+
 ### Development
 
 [![Build Status](https://img.shields.io/travis/jacobwilliams/slsqp/master.svg?style=plastic)](https://travis-ci.org/jacobwilliams/slsqp)
