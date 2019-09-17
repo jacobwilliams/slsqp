@@ -28,6 +28,10 @@
         integer  :: meq         = 0        !! number of equality constraints (\( m \ge m_{eq} \ge 0 \))
         integer  :: max_iter    = 0        !! maximum number of iterations
         real(wp) :: acc         = zero     !! accuracy tolerance
+        real(wp) :: tolf        = -one     !! accuracy tolerance over f:  if \( |f| < tolf \) then stop
+        real(wp) :: toldf       = -one     !! accuracy tolerance over df: if \( |f_{n+1} - f_n| < toldf \) then stop.
+                                           !! It's different from `acc` in the case of positive derivative
+        real(wp) :: toldx       = -one     !! accuracy tolerance over xf: if \( |x_{n+1} - x_n| < toldx \) then stop
 
         integer  :: gradient_mode = 0      !! how the gradients are computed:
                                            !!
@@ -49,9 +53,6 @@
 
         integer :: l_w = 0 !! size of `w`
         real(wp),dimension(:),allocatable :: w !! real work array
-
-        integer :: l_jw = 0 !! size of `jw`
-        integer,dimension(:),allocatable :: jw  !! integer work array
 
         procedure(func),pointer     :: f      => null()         !! problem function subroutine
         procedure(grad),pointer     :: g      => null()         !! gradient subroutine
@@ -137,7 +138,7 @@
 
     subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok,&
                                 linesearch_mode,iprint,report,alphamin,alphamax,&
-                                gradient_mode,gradient_delta)
+                                gradient_mode,gradient_delta,tolf,toldf,toldx)
 
     implicit none
 
@@ -168,6 +169,9 @@
                                                          !! gradient by finite differences (`gradient_mode` 1-3).
                                                          !! note that this is an absolute step that does not respect
                                                          !! the `xl` or `xu` variable bounds.
+    real(wp),intent(in),optional      :: tolf            !! stopping criterion if \( |f| < tolf \) then stop.
+    real(wp),intent(in),optional      :: toldf           !! stopping criterion if \( |f_{n+1} - f_n| < toldf \) then stop
+    real(wp),intent(in),optional      :: toldx           !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop
 
     integer :: n1,mineq,i
 
@@ -228,6 +232,10 @@
 
         end if
 
+        if (present(tolf))  me%tolf     = tolf
+        if (present(toldf)) me%toldf    = toldf
+        if (present(toldx)) me%toldx    = toldx
+
         status_ok = .true.
         me%n = n
         me%m = m
@@ -253,9 +261,6 @@
         allocate(me%w(me%l_w))
         me%w = zero
 
-        me%l_jw = mineq
-        allocate(me%jw(me%l_jw))
-        me%jw = 0
         if (present(gradient_mode)) then
             me%gradient_mode = gradient_mode
             if (present(gradient_delta)) then
@@ -263,6 +268,7 @@
             end if
         end if
     end if
+
     end subroutine initialize_slsqp
 !*******************************************************************************
 
@@ -292,30 +298,41 @@
                                                       !! **out:** solution.
     integer,intent(out)                 :: istat      !! status code (see `mode` in [[slsqp]]).
     integer,intent(out),optional        :: iterations !! number of iterations
-    character(len=:),intent(out),allocatable,optional :: status_message !! string status message corresponding to `istat`
+    character(len=:),intent(out),allocatable,optional :: status_message
+                                                      !! string status message
+                                                      !! corresponding to `istat`
 
-    !local variables:
-    real(wp)                               :: f        !! objective function
-    real(wp),dimension(max(1,me%m))        :: c        !! constraint vector
-    real(wp),dimension(max(1,me%m),me%n+1) :: a        !! a matrix for [[slsqp]]
-    real(wp),dimension(me%n+1)             :: g        !! g matrix for [[slsqp]]
-    real(wp),dimension(me%m)               :: cvec     !! constraint vector
-    real(wp),dimension(me%n)               :: dfdx     !! objective function partials
-    real(wp),dimension(me%m,me%n)          :: dcdx     !! constraint partials
-    integer                                :: i        !! iteration counter
-    integer                                :: mode     !! reverse communication flag for [[slsqp]]
-    integer                                :: la       !! input to [[slsqp]]
-    integer                                :: iter     !! in/out for [[slsqp]]
-    real(wp)                               :: acc      !! in/out for [[slsqp]]
-    integer                                :: ig       !! loop index to approximate gradient
-    real(wp),dimension(me%n)               :: delta    !! perturbation step size to approximate gradient
-    real(wp)                               :: fr       !! right function value to approximate objective function's gradient
-    real(wp)                               :: fl       !! left function value to approximate objective function's gradient
-    real(wp),dimension(me%m)               :: cvecr    !! right function value to approximate constraints vector's gradient
-    real(wp),dimension(me%m)               :: cvecl    !! left function value to approximate constraints vector's gradient
-    real(wp)                               :: fact     !! denominator factor for finite difference approximation
+    ! local variables:
+    real(wp),dimension(:),allocatable   :: c        !! constraint vector -- `dimension(max(1,me%m))`
+    real(wp),dimension(:,:),allocatable :: a        !! a matrix for [[slsqp]] -- `dimension(max(1,me%m),me%n+1)`
+    real(wp),dimension(:),allocatable   :: g        !! g matrix for [[slsqp]] -- `dimension(me%n+1)`
+    real(wp),dimension(:),allocatable   :: cvec     !! constraint vector -- `dimension(me%m)`
+    real(wp),dimension(:),allocatable   :: dfdx     !! objective function partials -- `dimension(me%n)`
+    real(wp),dimension(:,:),allocatable :: dcdx     !! constraint partials -- `dimension(me%m,me%n)`
+    real(wp),dimension(:),allocatable   :: delta    !! perturbation step size to approximate gradient -- `dimension(me%n)`
+    real(wp),dimension(:),allocatable   :: cvecr    !! right function value to approximate constraints vector's gradient -- `dimension(me%m)`
+    real(wp),dimension(:),allocatable   :: cvecl    !! left function value to approximate constraints vector's gradient -- `dimension(me%m)`
+    real(wp)                            :: f        !! objective function
+    integer                             :: i        !! iteration counter
+    integer                             :: mode     !! reverse communication flag for [[slsqp]]
+    integer                             :: la       !! input to [[slsqp]]
+    integer                             :: iter     !! in/out for [[slsqp]]
+    real(wp)                            :: acc      !! in/out for [[slsqp]]
+    integer                             :: ig       !! loop index to approximate gradient
+    real(wp)                            :: fr       !! right function value to approximate objective function's gradient
+    real(wp)                            :: fl       !! left function value to approximate objective function's gradient
+    real(wp)                            :: fact     !! denominator factor for finite difference approximation
 
     !initialize:
+    allocate(c(max(1,me%m))       )
+    allocate(a(max(1,me%m),me%n+1))
+    allocate(g(me%n+1)            )
+    allocate(cvec(me%m)           )
+    allocate(dfdx(me%n)           )
+    allocate(dcdx(me%m,me%n)      )
+    allocate(delta(me%n)          )
+    allocate(cvecr(me%m)          )
+    allocate(cvecl(me%m)          )
     i    = 0
     iter = me%max_iter
     la   = max(1,me%m)
@@ -379,7 +396,7 @@
 
         if (mode==0 .or. mode==1) then  !function evaluation (f&c)
             call me%f(x,f,cvec)
-            c(1:me%m)   = cvec
+            c(1:me%m) = cvec
         end if
 
         if (mode==0 .or. mode==-1) then  !gradient evaluation (g&a)
@@ -426,8 +443,9 @@
         !main routine:
         call slsqp(me%m,me%meq,la,me%n,x,me%xl,me%xu,&
                     f,c,g,a,acc,iter,mode,&
-                    me%w,me%l_w,me%jw,me%l_jw,&
-                    me%slsqpb,me%linmin,me%alphamin,me%alphamax)
+                    me%w,me%l_w,&
+                    me%slsqpb,me%linmin,me%alphamin,me%alphamax,&
+                    me%tolf,me%toldf,me%toldx)
 
         if (mode==1 .or. mode==-1) then
             !continue to next call

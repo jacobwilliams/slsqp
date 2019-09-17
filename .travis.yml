@@ -24,6 +24,7 @@ script:
   - ./bin/slsqp_test
   - ./bin/slsqp_test_2
   - ./bin/slsqp_test_3
+  - ./bin/slsqp_test_71
 
 after_success:
   - git config --global user.name "TRAVIS-CI-for-$(git --no-pager show -s --format='%cn' $TRAVIS_COMMIT)"
