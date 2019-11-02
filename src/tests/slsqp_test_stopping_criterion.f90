@@ -3,23 +3,10 @@
 !
 !  Test for the [[slsqp_module]].
 
-    module report_variable
-        
-        use slsqp_kinds
-        
-        implicit none
-        
-        real(wp) :: flast
-        real(wp),dimension(2) :: xlast
-        real(wp),dimension(1) :: clast
-    
-    end module
-
-    program slsqp_test_criterion
+    program slsqp_test_stopping_criterion
 
     use slsqp_module
     use slsqp_kinds
-    use report_variable
 
     implicit none
 
@@ -41,6 +28,9 @@
     integer               :: istat       !! for solver status check
     logical               :: status_ok   !! for initialization status check
     integer               :: iterations  !! number of iterations by the solver
+    real(wp)              :: flast
+    real(wp),dimension(2) :: xlast
+    real(wp),dimension(1) :: clast
 
     x = [0.1_wp, 0.1_wp] !initial guess
     xlast = x
@@ -111,9 +101,8 @@
     end subroutine rosenbrock_grad
 
     subroutine report_iteration(me,iter,x,f,c)
-        use, intrinsic :: iso_fortran_env, only: output_unit
-        use report_variable
         !! report an iteration (print to the console).
+        use, intrinsic :: iso_fortran_env, only: output_unit
         implicit none
         class(slsqp_solver),intent(inout) :: me
         integer,intent(in)                :: iter
@@ -139,5 +128,5 @@
 
     end subroutine report_iteration
 
-    end program
+    end program slsqp_test_stopping_criterion
 !*******************************************************************************

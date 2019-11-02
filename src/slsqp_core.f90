@@ -1832,12 +1832,14 @@
 !>
 !  Compute orthogonal rotation matrix.
 !
-!  Compute matrix \( \left[ \begin{array}{cc} c & s \\ -s & c \end{array} \right] \)
-!  so that \(
+!  Compute matrix $$ \left[ \begin{array}{cc} c & s \\ -s & c \end{array} \right] $$
+!  so that
+!
+!  $$
 !  \left[ \begin{array}{cc} c & s \\ -s & c \end{array} \right]
 !  \left[ \begin{array}{c} a \\ b \end{array} \right]  =
 !  \left[ \begin{array}{c} \sqrt{a^2+b^2} \\ 0 \end{array} \right]
-!  \)
+!  $$
 !
 !  Compute \( \sigma = \sqrt{a^2+b^2} \)
 !
