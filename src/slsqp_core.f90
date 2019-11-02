@@ -412,13 +412,31 @@
         end do
         h1 = t - t0
         if ( iexact+1==1 ) then
-            if ( h1<=h3/ten .or. line>10 ) goto 500
-            alpha = min(max(h3/(two*(h3-h1)),alphamin),alphamax)
-            goto 300
+            if ( h1<=h3/ten .or. line>10 ) then
+                !goto 500
+                call convergence_check()
+                return
+            else
+                alpha = min(max(h3/(two*(h3-h1)),alphamin),alphamax)
+                !goto 300
+                call inexact_linesearch()
+                return
+            end if
         else if ( iexact+1==2 ) then
-            goto 400
+            !goto 400
+
+            call exact_linesearch()
+            if ( line/=3 ) then
+                return
+            else
+                call convergence_check()
+            end if
+            return
+
         else
-            goto 500
+            !goto 500
+            call convergence_check()
+            return
         end if
 
     end if
@@ -535,47 +553,76 @@
 
     line = 0
     alpha = alphamax
-    if ( iexact==1 ) goto 400
+    if ( iexact==1 ) then
+        !goto 400
 
-    ! inexact linesearch
+        call exact_linesearch()
+        if ( line/=3 ) then
+            return
+        else
+            call convergence_check()
+        end if
+        return
 
-300 line = line + 1
-    h3 = alpha*h3
-    call dscal(n,alpha,s,1)
-    call dcopy(n,x0,1,x,1)
-    call daxpy(n,one,s,1,x,1)
-
-    call enforce_bounds(x,xl,xu)  ! ensure that x doesn't violate bounds
-
-    mode = 1
-    return
-
-    ! exact linesearch
-
-400 if ( line/=3 ) then
-        alpha = linmin(line,alphamin,alphamax,t,tol, &
-        ldat%a, ldat%b, ldat%d, ldat%e, ldat%p,   ldat%q,   &
-        ldat%r, ldat%u, ldat%v, ldat%w, ldat%x,   ldat%m,   &
-        ldat%fu,ldat%fv,ldat%fw,ldat%fx,ldat%tol1,ldat%tol2 )
-        call dcopy(n,x0,1,x,1)
-        call daxpy(n,alpha,s,1,x,1)
-        mode = 1
+    else
+        !goto 300
+        call inexact_linesearch()
         return
     end if
-    call dscal(n,alpha,s,1)
+
+    ! ----------
+
+    call inexact_linesearch()
+    return
+
+    call exact_linesearch()
+    if ( line/=3 ) return
 
     ! check convergence
+500 continue
+    call convergence_check()
 
-500 h3 = zero
-    do j = 1 , m
-        if ( j<=meq ) then
-            h1 = c(j)
-        else
-            h1 = zero
-        end if
-        h3 = h3 + max(-c(j),h1)
-    end do
-    mode = check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,0,-1)
+    contains
+
+        subroutine inexact_linesearch()  ! 300
+            line = line + 1
+            h3 = alpha*h3
+            call dscal(n,alpha,s,1)
+            call dcopy(n,x0,1,x,1)
+            call daxpy(n,one,s,1,x,1)
+
+            call enforce_bounds(x,xl,xu)  ! ensure that x doesn't violate bounds
+
+            mode = 1
+            !return
+        end subroutine inexact_linesearch
+
+        subroutine exact_linesearch() ! 400
+            if ( line/=3 ) then
+                alpha = linmin(line,alphamin,alphamax,t,tol, &
+                ldat%a, ldat%b, ldat%d, ldat%e, ldat%p,   ldat%q,   &
+                ldat%r, ldat%u, ldat%v, ldat%w, ldat%x,   ldat%m,   &
+                ldat%fu,ldat%fv,ldat%fw,ldat%fx,ldat%tol1,ldat%tol2 )
+                call dcopy(n,x0,1,x,1)
+                call daxpy(n,alpha,s,1,x,1)
+                mode = 1
+                return
+            end if
+            call dscal(n,alpha,s,1)
+        end subroutine exact_linesearch
+
+        subroutine convergence_check()  ! 500
+            h3 = zero
+            do j = 1 , m
+                if ( j<=meq ) then
+                    h1 = c(j)
+                else
+                    h1 = zero
+                end if
+                h3 = h3 + max(-c(j),h1)
+            end do
+            mode = check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,0,-1)
+        end subroutine convergence_check
 
     end subroutine slsqpb
 !*******************************************************************************
