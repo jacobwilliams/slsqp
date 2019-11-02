@@ -413,28 +413,18 @@
         h1 = t - t0
         if ( iexact+1==1 ) then
             if ( h1<=h3/ten .or. line>10 ) then
-                !goto 500
                 call convergence_check()
                 return
             else
                 alpha = min(max(h3/(two*(h3-h1)),alphamin),alphamax)
-                !goto 300
                 call inexact_linesearch()
                 return
             end if
         else if ( iexact+1==2 ) then
-            !goto 400
-
             call exact_linesearch()
-            if ( line/=3 ) then
-                return
-            else
-                call convergence_check()
-            end if
+            if ( line==3 ) call convergence_check()
             return
-
         else
-            !goto 500
             call convergence_check()
             return
         end if
@@ -554,33 +544,11 @@
     line = 0
     alpha = alphamax
     if ( iexact==1 ) then
-        !goto 400
-
         call exact_linesearch()
-        if ( line/=3 ) then
-            return
-        else
-            call convergence_check()
-        end if
-        return
-
+        if ( line==3 ) call convergence_check()
     else
-        !goto 300
         call inexact_linesearch()
-        return
     end if
-
-    ! ----------
-
-    call inexact_linesearch()
-    return
-
-    call exact_linesearch()
-    if ( line/=3 ) return
-
-    ! check convergence
-500 continue
-    call convergence_check()
 
     contains
 
@@ -590,11 +558,8 @@
             call dscal(n,alpha,s,1)
             call dcopy(n,x0,1,x,1)
             call daxpy(n,one,s,1,x,1)
-
             call enforce_bounds(x,xl,xu)  ! ensure that x doesn't violate bounds
-
             mode = 1
-            !return
         end subroutine inexact_linesearch
 
         subroutine exact_linesearch() ! 400
@@ -606,9 +571,9 @@
                 call dcopy(n,x0,1,x,1)
                 call daxpy(n,alpha,s,1,x,1)
                 mode = 1
-                return
+            else
+                call dscal(n,alpha,s,1)
             end if
-            call dscal(n,alpha,s,1)
         end subroutine exact_linesearch
 
         subroutine convergence_check()  ! 500
