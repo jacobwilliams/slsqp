@@ -11,8 +11,7 @@ before_install:
   - sudo apt-get install graphviz
   - sudo ln -fs /usr/bin/gfortran-4.9 /usr/bin/gfortran && gfortran --version
   - sudo -H pip install FoBiS.py && FoBiS.py --version
-  - sudo -H pip install ford==5.0.6 && ford --version
-  - sudo -H pip install --upgrade markdown==2.6.9
+  - sudo -H pip install ford && ford --version
   - sudo -H pip install matplotlib
   - export PATH=".:$PATH"
 
@@ -25,6 +24,7 @@ script:
   - ./bin/slsqp_test_2
   - ./bin/slsqp_test_3
   - ./bin/slsqp_test_71
+  - ./bin/slsqp_test_stopping_criterion.f90
 
 after_success:
   - git config --global user.name "TRAVIS-CI-for-$(git --no-pager show -s --format='%cn' $TRAVIS_COMMIT)"
