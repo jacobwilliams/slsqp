@@ -414,20 +414,17 @@
         if ( iexact+1==1 ) then
             if ( h1<=h3/ten .or. line>10 ) then
                 call convergence_check()
-                return
             else
                 alpha = min(max(h3/(two*(h3-h1)),alphamin),alphamax)
                 call inexact_linesearch()
-                return
             end if
         else if ( iexact+1==2 ) then
             call exact_linesearch()
             if ( line==3 ) call convergence_check()
-            return
         else
             call convergence_check()
-            return
         end if
+        return
 
     end if
 
