@@ -24,7 +24,7 @@ script:
   - ./bin/slsqp_test_2
   - ./bin/slsqp_test_3
   - ./bin/slsqp_test_71
-  - ./bin/slsqp_test_stopping_criterion.f90
+  - ./bin/slsqp_test_stopping_criterion
 
 after_success:
   - git config --global user.name "TRAVIS-CI-for-$(git --no-pager show -s --format='%cn' $TRAVIS_COMMIT)"
