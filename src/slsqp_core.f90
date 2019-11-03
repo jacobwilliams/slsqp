@@ -2160,7 +2160,7 @@
 !>
 !  enforce the bound constraints on x.
 
-    subroutine enforce_bounds(x,xl,xu)
+    pure subroutine enforce_bounds(x,xl,xu)
 
     implicit none
 
