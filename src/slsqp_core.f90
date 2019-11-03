@@ -375,8 +375,6 @@
 
         ! end of main iteration
 
-        goto 200
-
     else if ( mode==0 ) then
 
         itermx = iter
@@ -396,6 +394,9 @@
         mu(1) = zero
         call dcopy(n,s(1),0,s,1)
         call dcopy(m,mu(1),0,mu,1)
+
+        call reset_bfgs_matrix()
+        if ( ireset>5 ) return
 
     else
 
@@ -423,122 +424,114 @@
             call exact_linesearch()
             if ( line==3 ) call convergence_check()
         end select
+
         return
 
     end if
 
-    ! reset bfgs matrix
+    do
+        ! main iteration : search direction, steplength, ldl'-update
 
-100 ireset = ireset + 1
-    if ( ireset>5 ) then
-        ! check relaxed convergence in case of positive directional derivative
-        mode = check_convergence(n,f,f0,x,x0,s,h3,tol,tolf,toldf,toldx,0,8)
-        return
-    else
-        l(1) = zero
-        call dcopy(n2,l(1),0,l,1)
-        j = 1
+        iter = iter + 1
+        mode = 9
+        if ( iter>itermx ) return
+
+        ! search direction as solution of qp - subproblem
+
+        call dcopy(n,xl,1,u,1)
+        call dcopy(n,xu,1,v,1)
+        call daxpy(n,-one,x,1,u,1)
+        call daxpy(n,-one,x,1,v,1)
+        h4 = one
+        call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode)
+
+        ! augmented problem for inconsistent linearization
+
+        if ( mode==6 ) then
+            if ( n==meq ) mode = 4
+        end if
+        if ( mode==4 ) then
+            do j = 1 , m
+                if ( j<=meq ) then
+                    a(j,n1) = -c(j)
+                else
+                    a(j,n1) = max(-c(j),zero)
+                end if
+            end do
+            s(1) = zero
+            call dcopy(n,s(1),0,s,1)
+            h3 = zero
+            g(n1) = zero
+            l(n3) = hun
+            s(n1) = one
+            u(n1) = zero
+            v(n1) = one
+            incons = 0
+            do
+                call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode)
+                h4 = one - s(n1)
+                if ( mode==4 ) then
+                    l(n3) = ten*l(n3)
+                    incons = incons + 1
+                    if ( incons<=5 ) cycle
+                    return
+                else if ( mode/=1 ) then
+                    return
+                else
+                    exit
+                end if
+            end do
+
+        else if ( mode/=1 ) then
+            return
+        end if
+
+        ! update multipliers for l1-test
+
         do i = 1 , n
-            l(j) = one
-            j = j + n1 - i
+            v(i) = g(i) - ddot(m,a(1,i),1,r,1)
         end do
-    end if
-
-    ! main iteration : search direction, steplength, ldl'-update
-
-200 iter = iter + 1
-    mode = 9
-    if ( iter>itermx ) return
-
-    ! search direction as solution of qp - subproblem
-
-    call dcopy(n,xl,1,u,1)
-    call dcopy(n,xu,1,v,1)
-    call daxpy(n,-one,x,1,u,1)
-    call daxpy(n,-one,x,1,v,1)
-    h4 = one
-    call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode)
-
-    ! augmented problem for inconsistent linearization
-
-    if ( mode==6 ) then
-        if ( n==meq ) mode = 4
-    end if
-    if ( mode==4 ) then
+        f0 = f
+        call dcopy(n,x,1,x0,1)
+        gs = ddot(n,g,1,s,1)
+        h1 = abs(gs)
+        h2 = zero
         do j = 1 , m
             if ( j<=meq ) then
-                a(j,n1) = -c(j)
+                h3 = c(j)
             else
-                a(j,n1) = max(-c(j),zero)
+                h3 = zero
             end if
-        end do
-        s(1) = zero
-        call dcopy(n,s(1),0,s,1)
-        h3 = zero
-        g(n1) = zero
-        l(n3) = hun
-        s(n1) = one
-        u(n1) = zero
-        v(n1) = one
-        incons = 0
-        do
-            call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode)
-            h4 = one - s(n1)
-            if ( mode==4 ) then
-                l(n3) = ten*l(n3)
-                incons = incons + 1
-                if ( incons<=5 ) cycle
-                return
-            else if ( mode/=1 ) then
-                return
-            else
-                exit
-            end if
+            h2 = h2 + max(-c(j),h3)
+            h3 = abs(r(j))
+            mu(j) = max(h3,(mu(j)+h3)/two)
+            h1 = h1 + h3*abs(c(j))
         end do
 
-    else if ( mode/=1 ) then
-        return
-    end if
+        ! check convergence
 
-    ! update multipliers for l1-test
-
-    do i = 1 , n
-        v(i) = g(i) - ddot(m,a(1,i),1,r,1)
-    end do
-    f0 = f
-    call dcopy(n,x,1,x0,1)
-    gs = ddot(n,g,1,s,1)
-    h1 = abs(gs)
-    h2 = zero
-    do j = 1 , m
-        if ( j<=meq ) then
-            h3 = c(j)
+        mode = 0
+        if ( h1<acc .and. h2<acc ) return
+        h1 = zero
+        do j = 1 , m
+            if ( j<=meq ) then
+                h3 = c(j)
+            else
+                h3 = zero
+            end if
+            h1 = h1 + mu(j)*max(-c(j),h3)
+        end do
+        t0 = f + h1
+        h3 = gs - h1*h4
+        mode = 8
+        if ( h3>=zero ) then
+            call reset_bfgs_matrix()
+            if ( ireset>5 ) return
         else
-            h3 = zero
+            exit
         end if
-        h2 = h2 + max(-c(j),h3)
-        h3 = abs(r(j))
-        mu(j) = max(h3,(mu(j)+h3)/two)
-        h1 = h1 + h3*abs(c(j))
-    end do
 
-    ! check convergence
-
-    mode = 0
-    if ( h1<acc .and. h2<acc ) return
-    h1 = zero
-    do j = 1 , m
-        if ( j<=meq ) then
-            h3 = c(j)
-        else
-            h3 = zero
-        end if
-        h1 = h1 + mu(j)*max(-c(j),h3)
     end do
-    t0 = f + h1
-    h3 = gs - h1*h4
-    mode = 8
-    if ( h3>=zero ) goto 100
 
     ! line search with an l1-testfunction
 
@@ -553,6 +546,23 @@
 
     contains
 
+        subroutine reset_bfgs_matrix()  ! 100
+            ireset = ireset + 1
+            if ( ireset>5 ) then
+                ! check relaxed convergence in case of positive directional derivative
+                mode = check_convergence(n,f,f0,x,x0,s,h3,tol,tolf,toldf,toldx,0,8)
+                return
+            else
+                l(1) = zero
+                call dcopy(n2,l(1),0,l,1)
+                j = 1
+                do i = 1 , n
+                    l(j) = one
+                    j = j + n1 - i
+                end do
+            end if
+        end subroutine reset_bfgs_matrix
+
         subroutine inexact_linesearch()  ! 300
             line = line + 1
             h3 = alpha*h3
@@ -566,9 +576,9 @@
         subroutine exact_linesearch() ! 400
             if ( line/=3 ) then
                 alpha = linmin(line,alphamin,alphamax,t,tol, &
-                ldat%a, ldat%b, ldat%d, ldat%e, ldat%p,   ldat%q,   &
-                ldat%r, ldat%u, ldat%v, ldat%w, ldat%x,   ldat%m,   &
-                ldat%fu,ldat%fv,ldat%fw,ldat%fx,ldat%tol1,ldat%tol2 )
+                               ldat%a, ldat%b, ldat%d, ldat%e, ldat%p,   ldat%q,   &
+                               ldat%r, ldat%u, ldat%v, ldat%w, ldat%x,   ldat%m,   &
+                               ldat%fu,ldat%fv,ldat%fw,ldat%fx,ldat%tol1,ldat%tol2 )
                 call dcopy(n,x0,1,x,1)
                 call daxpy(n,alpha,s,1,x,1)
                 mode = 1
