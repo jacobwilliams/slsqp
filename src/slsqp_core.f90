@@ -411,19 +411,18 @@
             t = t + mu(j)*max(-c(j),h1)
         end do
         h1 = t - t0
-        if ( iexact+1==1 ) then
+        select case (iexact)
+        case(0)
             if ( h1<=h3/ten .or. line>10 ) then
                 call convergence_check()
             else
                 alpha = min(max(h3/(two*(h3-h1)),alphamin),alphamax)
                 call inexact_linesearch()
             end if
-        else if ( iexact+1==2 ) then
+        case(1)
             call exact_linesearch()
             if ( line==3 ) call convergence_check()
-        else
-            call convergence_check()
-        end if
+        end select
         return
 
     end if
@@ -482,16 +481,21 @@
         u(n1) = zero
         v(n1) = one
         incons = 0
-250     call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode)
-        h4 = one - s(n1)
-        if ( mode==4 ) then
-            l(n3) = ten*l(n3)
-            incons = incons + 1
-            if ( incons<=5 ) goto 250
-            return
-        else if ( mode/=1 ) then
-            return
-        end if
+        do
+            call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode)
+            h4 = one - s(n1)
+            if ( mode==4 ) then
+                l(n3) = ten*l(n3)
+                incons = incons + 1
+                if ( incons<=5 ) cycle
+                return
+            else if ( mode/=1 ) then
+                return
+            else
+                exit
+            end if
+        end do
+
     else if ( mode/=1 ) then
         return
     end if
