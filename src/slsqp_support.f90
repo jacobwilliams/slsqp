@@ -34,12 +34,18 @@
 !### Author
 !  jack dongarra, linpack, 3/11/78.
 
-    subroutine daxpy(n,da,dx,incx,dy,incy)
+    pure subroutine daxpy(n,da,dx,incx,dy,incy)
 
     implicit none
 
-    real(wp) :: dx(*) , dy(*) , da
-    integer :: i , incx , incy , ix , iy , m , mp1 , n
+    integer,intent(in)                  :: n
+    real(wp),intent(in)                 :: da
+    real(wp),dimension(*),intent(in)    :: dx
+    integer,intent(in)                  :: incx
+    real(wp),dimension(*),intent(inout) :: dy
+    integer,intent(in)                  :: incy
+
+    integer :: i , ix , iy , m , mp1
 
     if ( n<=0 ) return
     if ( abs(da)<=zero ) return
@@ -92,12 +98,17 @@
 !### Author
 !  jack dongarra, linpack, 3/11/78.
 
-    subroutine dcopy(n,dx,incx,dy,incy)
+    pure subroutine dcopy(n,dx,incx,dy,incy)
 
     implicit none
 
-    real(wp) :: dx(*) , dy(*)
-    integer :: i , incx , incy , ix , iy , m , mp1 , n
+    integer,intent(in)                :: n
+    real(wp),dimension(*),intent(in)  :: dx
+    integer,intent(in)                :: incx
+    real(wp),dimension(*),intent(out) :: dy
+    integer,intent(in)                :: incy
+
+    integer :: i , ix , iy , m , mp1
 
     if ( n<=0 ) return
     if ( incx==1 .and. incy==1 ) then
@@ -152,12 +163,18 @@
 !### Author
 !  jack dongarra, linpack, 3/11/78.
 
-    real(wp) function ddot(n,dx,incx,dy,incy)
+    pure real(wp) function ddot(n,dx,incx,dy,incy)
 
     implicit none
 
-    real(wp) :: dx(*) , dy(*) , dtemp
-    integer :: i , incx , incy , ix , iy , m , mp1 , n
+    integer,intent(in)               :: n
+    real(wp),dimension(*),intent(in) :: dx
+    integer,intent(in)               :: incx
+    real(wp),dimension(*),intent(in) :: dy
+    integer,intent(in)               :: incy
+
+    real(wp) :: dtemp
+    integer :: i , ix , iy , m , mp1
 
     ddot = zero
     dtemp = zero
@@ -221,15 +238,16 @@
 !@note Replaced original SLSQP routine with this one from
 !      [BLAS](http://netlib.sandia.gov/blas/dnrm2.f).
 
-    real(wp) function dnrm2(n,x,incx)
+    pure function dnrm2(n,x,incx) result(norm)
 
     implicit none
 
     integer,intent(in)               :: incx
     integer,intent(in)               :: n
     real(wp),dimension(*),intent(in) :: x
+    real(wp)                         :: norm
 
-    real(wp) :: absxi , norm , scale , ssq
+    real(wp) :: absxi , scale , ssq
     integer :: ix
 
     if ( n<1 .or. incx<1 ) then
@@ -256,8 +274,6 @@
         norm = scale*sqrt(ssq)
     end if
 
-    dnrm2 = norm
-
     end function dnrm2
 !*******************************************************************************
 
@@ -269,12 +285,16 @@
 !### Author
 !  jack dongarra, linpack, 3/11/78.
 
-    subroutine dscal(n,da,dx,incx)
+    pure subroutine dscal(n,da,dx,incx)
 
     implicit none
 
-    real(wp) :: da , dx(*)
-    integer :: i , incx , m , mp1 , n , nincx
+    integer,intent(in)                  :: n
+    real(wp),intent(in)                 :: da
+    real(wp),dimension(*),intent(inout) :: dx
+    integer,intent(in)                  :: incx
+
+    integer :: i , m , mp1 , nincx
 
     if ( n<=0 .or. incx<=0 ) return
     if ( incx==1 ) then

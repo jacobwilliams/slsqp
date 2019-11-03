@@ -607,8 +607,8 @@
 !>
 !  Check for convergence.
 
-    function check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,&
-                                converged,not_converged) result(mode)
+    pure function check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,&
+                                    converged,not_converged) result(mode)
 
     implicit none
 
