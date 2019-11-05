@@ -8,6 +8,7 @@
 
     use slsqp_kinds
     use slsqp_support
+    use bvls_module, only: bvls_wrapper
 
     implicit none
 
@@ -110,7 +111,7 @@
 !@note `f`, `c`, `g`, `a` must all be set by the user before each call.
 
     subroutine slsqp(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w,l_w, &
-                     sdat,ldat,alphamin,alphamax,tolf,toldf,toldx)
+                     sdat,ldat,alphamin,alphamax,tolf,toldf,toldx,max_iter_ls)
 
     implicit none
 
@@ -199,6 +200,7 @@
     real(wp),intent(in) :: tolf      !! stopping criterion if \( |f| < tolf \) then stop.
     real(wp),intent(in) :: toldf     !! stopping criterion if \( |f_{n+1} - f_n| < toldf \) then stop.
     real(wp),intent(in) :: toldx     !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop.
+    integer,intent(in)  :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
 
     integer :: il , im , ir , is , iu , iv , iw , ix , mineq, n1
 
@@ -242,7 +244,7 @@
                 sdat%t,sdat%f0,sdat%h1,sdat%h2,sdat%h3,sdat%h4,&
                 sdat%n1,sdat%n2,sdat%n3,sdat%t0,sdat%gs,sdat%tol,sdat%line,&
                 sdat%alpha,sdat%iexact,sdat%incons,sdat%ireset,sdat%itermx,&
-                ldat,alphamin,alphamax,tolf,toldf,toldx)
+                ldat,alphamin,alphamax,tolf,toldf,toldx,max_iter_ls)
 
     end subroutine slsqp
 !*******************************************************************************
@@ -257,7 +259,7 @@
                       r,l,x0,mu,s,u,v,w,&
                       t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
                       alpha,iexact,incons,ireset,itermx,ldat,&
-                      alphamin,alphamax,tolf,toldf,toldx)
+                      alphamin,alphamax,tolf,toldf,toldx,max_iter_ls)
     implicit none
 
     integer,intent(in)                  :: m
@@ -315,6 +317,7 @@
     real(wp),intent(in)                 :: tolf      !! stopping criterion if \( |f| < tolf \) then stop.
     real(wp),intent(in)                 :: toldf     !! stopping criterion if \( |f_{n+1} - f_n| < toldf \) then stop
     real(wp),intent(in)                 :: toldx     !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop
+    integer,intent(in)                  :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
 
     integer :: i, j, k
 
@@ -443,7 +446,7 @@
         call daxpy(n,-one,x,1,u,1)
         call daxpy(n,-one,x,1,v,1)
         h4 = one
-        call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode)
+        call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls)
 
         ! augmented problem for inconsistent linearization
 
@@ -468,7 +471,7 @@
             v(n1) = one
             incons = 0
             do
-                call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode)
+                call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls)
                 h4 = one - s(n1)
                 if ( mode==4 ) then
                     l(n3) = ten*l(n3)
@@ -689,7 +692,7 @@
 !  * coded dieter kraft, april 1987
 !  * revised march 1989
 
-    subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,mode)
+    subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,mode,max_iter_ls)
 
     implicit none
 
@@ -710,6 +713,7 @@
                                     !! * **5:** matrix `e` is not of full rank,
                                     !! * **6:** matrix `c` is not of full rank,
                                     !! * **7:** rank defect in [[hfti]]
+    integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
 
     real(wp),dimension(nl)   :: l
     real(wp),dimension(n)    :: g
@@ -831,7 +835,7 @@
       iw = iu + n
 
       call lsei(w(ic),w(id),w(ie),w(if),w(ig),w(ih),max(1,meq),meq,n,n, &
-                m1,m1,n,x,xnorm,w(iw),mode)
+                m1,m1,n,x,xnorm,w(iw),mode,max_iter_ls)
 
       if ( mode==1 ) then
          ! restore lagrange multipliers
@@ -880,7 +884,7 @@
 !  * 18.5.1981, dieter kraft, dfvlr oberpfaffenhofen
 !  * 20.3.1987, dieter kraft, dfvlr oberpfaffenhofen
 
-    subroutine lsei(c,d,e,f,g,h,lc,mc,le,me,lg,mg,n,x,xnrm,w,mode)
+    subroutine lsei(c,d,e,f,g,h,lc,mc,le,me,lg,mg,n,x,xnrm,w,mode,max_iter_ls)
 
     implicit none
 
@@ -910,6 +914,7 @@
                                                     !! * ***5:*** matrix `e` is not of full rank,
                                                     !! * ***6:*** matrix `c` is not of full rank,
                                                     !! * ***7:*** rank defect in [[hfti]]
+    integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
 
     integer :: i , ie, if , ig , iw , j , k , krank , l , mc1
     real(wp) :: t , dum(1)
@@ -966,7 +971,8 @@
                     h(i) = h(i) - ddot(mc,g(i,1),lg,x,1)
                 end do
                 call lsi(w(ie),w(if),w(ig),h,me,me,mg,mg,l,x(mc1),xnrm,  &
-                         w(mc1),mode)
+                         w(mc1),mode,max_iter_ls)
+
                 if ( mc==0 ) return
                 t = dnrm2(mc,x,1)
                 xnrm = sqrt(xnrm*xnrm+t*t)
@@ -1040,7 +1046,7 @@
 !  * 03.01.1980, dieter kraft: coded
 !  * 20.03.1987, dieter kraft: revised to fortran 77
 
-    subroutine lsi(e,f,g,h,le,me,lg,mg,n,x,xnorm,w,mode)
+    subroutine lsi(e,f,g,h,le,me,lg,mg,n,x,xnorm,w,mode,max_iter_ls)
 
     implicit none
 
@@ -1064,6 +1070,7 @@
                                                      !! * ***3:*** iteration count exceeded by [[nnls]],
                                                      !! * ***4:*** inequality constraints incompatible,
                                                      !! * ***5:*** matrix `e` is not of full rank.
+    integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
 
     integer :: i, j
     real(wp) :: t
@@ -1089,7 +1096,7 @@
 
     !  solve least distance problem
 
-    call ldp(g,lg,mg,n,h,x,xnorm,w,mode)
+    call ldp(g,lg,mg,n,h,x,xnorm,w,mode,max_iter_ls)
     if ( mode==1 ) then
 
         !  solution of original problem
@@ -1133,7 +1140,7 @@
 !@note The 1995 version of this routine may have some sort of problem.
 !      Using a refactored version of the original routine.
 
-    subroutine ldp(g,mg,m,n,h,x,xnorm,w,mode)
+    subroutine ldp(g,mg,m,n,h,x,xnorm,w,mode,max_iter_ls)
 
     implicit none
 
@@ -1158,6 +1165,7 @@
                                                   !! * ***2:*** error return because of wrong dimensions (`n<=0`),
                                                   !! * ***3:*** iteration count exceeded by [[nnls]],
                                                   !! * ***4:*** inequality constraints incompatible.
+    integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
 
     integer :: i , iw , iwdual , iy , iz , j , jf , n1
     real(wp) :: fac , rnorm
@@ -1191,7 +1199,9 @@
             iy=iz+n1
             iwdual=iy+m
             ! solve dual problem
-            call nnls (w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode)
+            !call nnls (w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode,max_iter_ls)        ! original
+            call bvls_wrapper(w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode,max_iter_ls)  ! new version
+
             if (mode==1) then
                 mode=4
                 if (rnorm>zero) then
@@ -1252,7 +1262,7 @@
 !### History
 !  * Jacob Williams, refactored into modern Fortran, Jan. 2016.
 
-    subroutine nnls(a,mda,m,n,b,x,rnorm,w,zz,mode)
+    subroutine nnls(a,mda,m,n,b,x,rnorm,w,zz,mode,max_iter)
 
     implicit none
 
@@ -1276,6 +1286,7 @@
                                                        !! * ***1*** the solution has been computed successfully.
                                                        !! * ***2*** the dimensions of the problem are bad. either `m<=0` or `n<=0`.
                                                        !! * ***3*** iteration count exceeded. more than `3*n` iterations.
+    integer,intent(in)                      :: max_iter !! maximum number of iterations (if <=0, then `3*n` is used)
 
     integer :: i,ii,ip,iter,itmax,iz,iz1,iz2,izmax,j,jj,jz,l,npp1,nsetp,rtnkey
     real(wp) :: alpha,asave,cc,sm,ss,t,temp,unorm,up,wmax,ztest
@@ -1297,7 +1308,12 @@
         return
     end if
     iter = 0
-    itmax = 3*n
+
+    if (max_iter<=0) then
+        itmax = 3*n
+    else
+        itmax = max_iter
+    end if
 
     ! initialize the arrays index(1:n) and x(1:n).
     x = zero
