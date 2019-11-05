@@ -58,3 +58,5 @@ A [FoBiS](https://github.com/szaghi/FoBiS) configuration file (`slsqp.fobis`) is
   Oberpfaffenhofen, July 1988.
 * D. Kraft, "[Algorithm 733: TOMP--Fortran modules for optimal control calculations](http://dl.acm.org/citation.cfm?id=192124),"
   ACM Transactions on Mathematical Software, Vol. 20, No. 3, p. 262-281 (1994).
+* C. L. Lawson, R. J. Hanson, "Solving Least Squares Problems", Prentice Hall, 1974. (Revised 1995 edition)
+
