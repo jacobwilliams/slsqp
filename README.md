@@ -4,6 +4,10 @@
 
 Modern Fortran Edition of the SLSQP Optimizer
 
+### Status
+
+![Build Status](https://github.com/jacobwilliams/slsqp/actions/workflows/CI.yml/badge.svg)
+
 ### Description
 
 This is an updated version of the SLSQP nonlinear constrained optimization code. It can be used to solve nonlinear programming problems that seek to minimize a scalar performance index subject to nonlinear equality and inequality constraints as well as bounds on the variables.
@@ -42,8 +46,6 @@ A [FoBiS](https://github.com/szaghi/FoBiS) configuration file (`slsqp.fobis`) is
 
 ### Development
 
-[![Build Status](https://img.shields.io/travis/jacobwilliams/slsqp/master.svg?style=plastic)](https://travis-ci.org/jacobwilliams/slsqp)
-
   * Development continues on [GitHub](https://github.com/jacobwilliams/slsqp).
 
 ### Documentation
@@ -53,7 +55,7 @@ A [FoBiS](https://github.com/szaghi/FoBiS) configuration file (`slsqp.fobis`) is
 ### References
 
 * [Original sourcecode at NETLIB](http://www.netlib.org/toms/733)
-* D. Kraft, "A software package for sequential quadratic programming",
+* D. Kraft, "[A software package for sequential quadratic programming](http://degenerateconic.com/wp-content/uploads/2018/03/DFVLR_FB_88_28.pdf)",
   Technical Report DFVLR-FB 88-28, Institut für Dynamik der Flugsysteme,
   Oberpfaffenhofen, July 1988.
 * D. Kraft, "[Algorithm 733: TOMP--Fortran modules for optimal control calculations](http://dl.acm.org/citation.cfm?id=192124),"

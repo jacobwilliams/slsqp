@@ -32,3 +32,6 @@ bin/
 lib/
 doc/
 tmp/
+
+# mac
+.DS_Store

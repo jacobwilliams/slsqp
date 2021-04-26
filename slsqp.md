@@ -19,7 +19,4 @@ exclude_dir: ./src/tests
 extra_mods: pyplot_module:https://github.com/jacobwilliams/pyplot-fortran
             iso_fortran_env:https://gcc.gnu.org/onlinedocs/gfortran/ISO_005fFORTRAN_005fENV.html
 
-Brief description
----------------
-
-This is a modern object-oriented Fortran implementation of the SLSQP Optimization Method.  It can be used to solve nonlinear programming problems that seek to minimize a scalar performance index subject to nonlinear equality and inequality constraints as well as bounds on the variables.
+{!README.md!}
