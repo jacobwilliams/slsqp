@@ -1,0 +1,27 @@
+name = "slsqp"
+version = "1.2.1"
+license = "BSD-3-Clause"
+author = "Jacob Williams"
+maintainer = "https://github.com/jacobwilliams"
+copyright = "Jacob Williams 2021"
+description = "Modern Fortran Edition of the SLSQP Optimizer"
+
+[[test]]
+name = "test_1"
+source-dir = "src/tests"
+main = "slsqp_test.f90"
+
+[[test]]
+name = "test_2"
+source-dir = "src/tests"
+main = "slsqp_test_2.f90"
+
+[[test]]
+name = "test_71"
+source-dir = "src/tests"
+main = "slsqp_test_71.f90"
+
+[[test]]
+name = "test_stopping_criterion"
+source-dir = "src/tests"
+main = "slsqp_test_stopping_criterion.f90"
