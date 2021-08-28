@@ -1,10 +1,13 @@
 name = "slsqp"
-version = "1.2.1"
+version = "1.2.2"
 license = "BSD-3-Clause"
 author = "Jacob Williams"
 maintainer = "https://github.com/jacobwilliams"
-copyright = "Jacob Williams 2021"
+copyright = "Copyright (c) 2016-2021, Jacob Williams"
+license = "BSD-3"
 description = "Modern Fortran Edition of the SLSQP Optimizer"
+homepage = "https://github.com/jacobwilliams/slsqp"
+keywords = ["optimization"]
 
 [[test]]
 name = "test_1"
