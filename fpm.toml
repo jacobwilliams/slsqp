@@ -1,5 +1,5 @@
 name = "slsqp"
-version = "1.2.2"
+version = "1.2.3"
 license = "BSD-3-Clause"
 author = "Jacob Williams"
 maintainer = "https://github.com/jacobwilliams"
