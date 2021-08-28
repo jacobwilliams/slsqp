@@ -25,7 +25,7 @@ Updates to the original code include:
 * Some new features were added to support printing error  messages and reporting iterations to the user.
 * The user can now specify the max and min `alpha` to use during the line search.
 * The user can supply a routine to compute the gradients of the objective function and constriants, or allow the code to estimate them using finite differences (backward, forward, or central).
-* The documentation strings in the code have been converted to [FORD](https://github.com/cmacmackin/ford) format, allowing for [nicely formatted documentation](http://jacobwilliams.github.io/slsqp/) to be auto-generated.
+* The documentation strings in the code have been converted to [FORD](https://github.com/Fortran-FOSS-Programmers/ford) format, allowing for [nicely formatted documentation](http://jacobwilliams.github.io/slsqp/) to be auto-generated.
 * A couple of bug fixes noted elsewhere have been applied.
 
 ### License
@@ -33,6 +33,23 @@ Updates to the original code include:
   * The original sourcecode and the modifications are released under a [permissive BSD-style license](https://github.com/jacobwilliams/slsqp/blob/master/LICENSE).
 
 ### Building SLSQP
+
+#### **Fortran Package Manager**
+
+The library can be built with the [Fortran Package Manager](https://github.com/fortran-lang/fpm) using the provided `fpm.toml` file like so:
+
+```bash
+fpm build --release
+```
+
+To use SLSQP within your fpm project, add the following to your `fpm.toml` file:
+
+```yml
+[dependencies]
+slsqp = { git="https://github.com/jacobwilliams/slsqp.git" }
+```
+
+#### **FoBiS**
 
 A [FoBiS](https://github.com/szaghi/FoBiS) configuration file (`slsqp.fobis`) is also provided that can also build the library and examples. Use the `mode` flag to indicate what to build. For example:
 
@@ -43,7 +60,7 @@ A [FoBiS](https://github.com/szaghi/FoBiS) configuration file (`slsqp.fobis`) is
 
   The full set of modes are: `static-gnu`, `static-gnu-debug`, `static-intel`, `static-intel-debug`, `shared-gnu`, `shared-gnu-debug`, `shared-intel`, `shared-intel-debug`, `tests-gnu`, `tests-gnu-debug`, `tests-intel`, `tests-intel-debug`
 
-  To generate the documentation using [ford](https://github.com/cmacmackin/ford), run: ```FoBis.py rule --execute makedoc -f slsqp.fobis```
+  To generate the documentation using [ford](https://github.com/Fortran-FOSS-Programmers/ford), run: ```FoBis.py rule --execute makedoc -f slsqp.fobis```
 
   To run the test programs, run: ```FoBis.py rule --execute tests -f slsqp.fobis```
 
@@ -53,7 +70,7 @@ A [FoBiS](https://github.com/szaghi/FoBiS) configuration file (`slsqp.fobis`) is
 
 ### Documentation
 
-  The latest API documentation can be found [here](http://jacobwilliams.github.io/slsqp/). This was generated from the source code using [FORD](https://github.com/cmacmackin/ford) (note that the included `build.sh` script will also generate these files).
+  The latest API documentation can be found [here](http://jacobwilliams.github.io/slsqp/). This was generated from the source code using [FORD](https://github.com/Fortran-FOSS-Programmers/ford) (note that the included `build.sh` script will also generate these files).
 
 ### References
 

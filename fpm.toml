@@ -4,10 +4,12 @@ license = "BSD-3-Clause"
 author = "Jacob Williams"
 maintainer = "https://github.com/jacobwilliams"
 copyright = "Copyright (c) 2016-2021, Jacob Williams"
-license = "BSD-3"
 description = "Modern Fortran Edition of the SLSQP Optimizer"
 homepage = "https://github.com/jacobwilliams/slsqp"
 keywords = ["optimization"]
+
+[library]
+source-dir = "src"
 
 [[test]]
 name = "test_1"
@@ -28,3 +30,11 @@ main = "slsqp_test_71.f90"
 name = "test_stopping_criterion"
 source-dir = "src/tests"
 main = "slsqp_test_stopping_criterion.f90"
+
+[install]
+library = true
+
+[build]
+auto-executables = false
+auto-examples = false
+auto-tests = false
