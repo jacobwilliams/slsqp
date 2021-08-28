@@ -437,8 +437,10 @@
                         call me%f(x-delta,fl,cvecl)
                     end select
                     !compute the gradients by first-order finite differences
-                    g(ig)   = (fr-fl)       / ( fact*delta(ig) )
-                    a(:,ig) = (cvecr-cvecl) / ( fact*delta(ig) )
+                    g(ig) = (fr-fl) / ( fact*delta(ig) )
+                    if (me%m>0) then
+                        a(:,ig) = (cvecr-cvecl) / ( fact*delta(ig) )
+                    end if
                 end do
             end select
             !this is an iteration:
