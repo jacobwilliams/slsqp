@@ -1,4 +1,7 @@
-# slsqp
+![slsqp](/media/logo.png)
+============
+SLSQP
+============
 
 [![GitHub release](https://img.shields.io/github/release/jacobwilliams/slsqp.svg?style=plastic)](https://github.com/jacobwilliams/slsqp/releases/latest)
 
