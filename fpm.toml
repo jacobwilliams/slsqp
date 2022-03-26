@@ -11,30 +11,10 @@ keywords = ["optimization"]
 [library]
 source-dir = "src"
 
-[[test]]
-name = "test_1"
-source-dir = "src/tests"
-main = "slsqp_test.f90"
-
-[[test]]
-name = "test_2"
-source-dir = "src/tests"
-main = "slsqp_test_2.f90"
-
-[[test]]
-name = "test_71"
-source-dir = "src/tests"
-main = "slsqp_test_71.f90"
-
-[[test]]
-name = "test_stopping_criterion"
-source-dir = "src/tests"
-main = "slsqp_test_stopping_criterion.f90"
-
 [install]
 library = true
 
 [build]
 auto-executables = false
 auto-examples = false
-auto-tests = false
+auto-tests = true
