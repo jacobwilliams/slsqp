@@ -6,9 +6,10 @@ Modern Fortran Edition of the SLSQP Optimizer
 
 ### Status
 
-[![GitHub release](https://img.shields.io/github/release/jacobwilliams/slsqp.svg?style=plastic)](https://github.com/jacobwilliams/slsqp/releases/latest)
-![CI Status](https://github.com/jacobwilliams/slsqp/actions/workflows/CI.yml/badge.svg)
-[![codecov](https://codecov.io/gh/jacobwilliams/slsqp/branch/master/graph/badge.svg?token=43HK33CSMY)](https://codecov.io/gh/jacobwilliams/slsqp)
+[![GitHub release](https://img.shields.io/github/release/jacobwilliams/slsqp.svg)](https://github.com/jacobwilliams/slsqp/releases/latest)
+[![Build Status](https://github.com/jacobwilliams/slsqp/actions/workflows/CI.yml/badge.svg)](https://github.com/jacobwilliams/slsqp/actions)
+[![codecov](https://codecov.io/gh/jacobwilliams/slsqp/branch/master/graph/badge.svg)](https://codecov.io/gh/jacobwilliams/slsqp)
+[![last-commit](https://img.shields.io/github/last-commit/jacobwilliams/slsqp)](https://github.com/jacobwilliams/slsqp/commits/master)
 
 ### Description
 
@@ -47,7 +48,6 @@ To use SLSQP within your fpm project, add the following to your `fpm.toml` file:
 [dependencies]
 slsqp = { git="https://github.com/jacobwilliams/slsqp.git" }
 ```
-
 
 ### Development
 
