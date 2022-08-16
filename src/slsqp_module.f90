@@ -31,7 +31,7 @@
         real(wp) :: tolf        = -one     !! accuracy tolerance over f:  if \( |f| < tolf \) then stop
         real(wp) :: toldf       = -one     !! accuracy tolerance over df: if \( |f_{n+1} - f_n| < toldf \) then stop.
                                            !! It's different from `acc` in the case of positive derivative
-        real(wp) :: toldx       = -one     !! accuracy tolerance over xf: if \( |x_{n+1} - x_n| < toldx \) then stop
+        real(wp) :: toldx       = -one     !! accuracy tolerance over dx: if \( |x_{n+1} - x_n| < toldx \) then stop
 
         integer  :: gradient_mode = 0      !! how the gradients are computed:
                                            !!
