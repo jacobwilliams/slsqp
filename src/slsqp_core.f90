@@ -516,7 +516,7 @@
     ! check convergence
 
     mode = 0
-    if ( h1<acc .and. h2<acc .and. ~ieee_is_nan(f)) return
+    if ( h1<acc .and. h2<acc .and. .not. ieee_is_nan(f)) return
     h1 = zero
     do j = 1 , m
         if ( j<=meq ) then
