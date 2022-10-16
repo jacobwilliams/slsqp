@@ -111,7 +111,8 @@
 !@note `f`, `c`, `g`, `a` must all be set by the user before each call.
 
     subroutine slsqp(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w,l_w, &
-                     sdat,ldat,alphamin,alphamax,tolf,toldf,toldx,max_iter_ls)
+                     sdat,ldat,alphamin,alphamax,tolf,toldf,toldx,&
+                     max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -201,6 +202,7 @@
     real(wp),intent(in) :: toldf     !! stopping criterion if \( |f_{n+1} - f_n| < toldf \) then stop.
     real(wp),intent(in) :: toldx     !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop.
     integer,intent(in)  :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in)  :: nnls_mode !! which NNLS method to use
 
     integer :: il , im , ir , is , iu , iv , iw , ix , mineq, n1
 
@@ -244,7 +246,8 @@
                 sdat%t,sdat%f0,sdat%h1,sdat%h2,sdat%h3,sdat%h4,&
                 sdat%n1,sdat%n2,sdat%n3,sdat%t0,sdat%gs,sdat%tol,sdat%line,&
                 sdat%alpha,sdat%iexact,sdat%incons,sdat%ireset,sdat%itermx,&
-                ldat,alphamin,alphamax,tolf,toldf,toldx,max_iter_ls)
+                ldat,alphamin,alphamax,tolf,toldf,toldx,&
+                max_iter_ls,nnls_mode)
 
     end subroutine slsqp
 !*******************************************************************************
@@ -259,7 +262,8 @@
                       r,l,x0,mu,s,u,v,w,&
                       t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
                       alpha,iexact,incons,ireset,itermx,ldat,&
-                      alphamin,alphamax,tolf,toldf,toldx,max_iter_ls)
+                      alphamin,alphamax,tolf,toldf,toldx,&
+                      max_iter_ls,nnls_mode)
     implicit none
 
     integer,intent(in)                  :: m
@@ -318,6 +322,7 @@
     real(wp),intent(in)                 :: toldf     !! stopping criterion if \( |f_{n+1} - f_n| < toldf \) then stop
     real(wp),intent(in)                 :: toldx     !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop
     integer,intent(in)                  :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in)                  :: nnls_mode !! which NNLS method to use
 
     integer :: i, j, k
 
@@ -446,7 +451,7 @@
         call daxpy(n,-one,x,1,u,1)
         call daxpy(n,-one,x,1,v,1)
         h4 = one
-        call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls)
+        call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls,nnls_mode)
 
         ! augmented problem for inconsistent linearization
 
@@ -471,7 +476,7 @@
             v(n1) = one
             incons = 0
             do
-                call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls)
+                call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls,nnls_mode)
                 h4 = one - s(n1)
                 if ( mode==4 ) then
                     l(n3) = ten*l(n3)
@@ -692,7 +697,7 @@
 !  * coded dieter kraft, april 1987
 !  * revised march 1989
 
-    subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,mode,max_iter_ls)
+    subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,mode,max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -714,6 +719,7 @@
                                     !! * **6:** matrix `c` is not of full rank,
                                     !! * **7:** rank defect in [[hfti]]
     integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in) :: nnls_mode !! which NNLS method to use
 
     real(wp),dimension(nl)   :: l
     real(wp),dimension(n)    :: g
@@ -835,7 +841,7 @@
       iw = iu + n
 
       call lsei(w(ic),w(id),w(ie),w(if),w(ig),w(ih),max(1,meq),meq,n,n, &
-                m1,m1,n,x,xnorm,w(iw),mode,max_iter_ls)
+                m1,m1,n,x,xnorm,w(iw),mode,max_iter_ls,nnls_mode)
 
       if ( mode==1 ) then
          ! restore lagrange multipliers
@@ -884,7 +890,8 @@
 !  * 18.5.1981, dieter kraft, dfvlr oberpfaffenhofen
 !  * 20.3.1987, dieter kraft, dfvlr oberpfaffenhofen
 
-    subroutine lsei(c,d,e,f,g,h,lc,mc,le,me,lg,mg,n,x,xnrm,w,mode,max_iter_ls)
+    subroutine lsei(c,d,e,f,g,h,lc,mc,le,me,lg,mg,n,x,xnrm,w,mode,&
+                    max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -915,6 +922,7 @@
                                                     !! * ***6:*** matrix `c` is not of full rank,
                                                     !! * ***7:*** rank defect in [[hfti]]
     integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in) :: nnls_mode !! which NNLS method to use
 
     integer :: i , ie, if , ig , iw , j , k , krank , l , mc1
     real(wp) :: t , dum(1)
@@ -971,7 +979,7 @@
                     h(i) = h(i) - ddot(mc,g(i,1),lg,x,1)
                 end do
                 call lsi(w(ie),w(if),w(ig),h,me,me,mg,mg,l,x(mc1),xnrm,  &
-                         w(mc1),mode,max_iter_ls)
+                         w(mc1),mode,max_iter_ls,nnls_mode)
 
                 if ( mc==0 ) return
                 t = dnrm2(mc,x,1)
@@ -1046,7 +1054,7 @@
 !  * 03.01.1980, dieter kraft: coded
 !  * 20.03.1987, dieter kraft: revised to fortran 77
 
-    subroutine lsi(e,f,g,h,le,me,lg,mg,n,x,xnorm,w,mode,max_iter_ls)
+    subroutine lsi(e,f,g,h,le,me,lg,mg,n,x,xnorm,w,mode,max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -1071,6 +1079,7 @@
                                                      !! * ***4:*** inequality constraints incompatible,
                                                      !! * ***5:*** matrix `e` is not of full rank.
     integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in) :: nnls_mode !! which NNLS method to use
 
     integer :: i, j
     real(wp) :: t
@@ -1096,7 +1105,7 @@
 
     !  solve least distance problem
 
-    call ldp(g,lg,mg,n,h,x,xnorm,w,mode,max_iter_ls)
+    call ldp(g,lg,mg,n,h,x,xnorm,w,mode,max_iter_ls,nnls_mode)
     if ( mode==1 ) then
 
         !  solution of original problem
@@ -1140,7 +1149,7 @@
 !@note The 1995 version of this routine may have some sort of problem.
 !      Using a refactored version of the original routine.
 
-    subroutine ldp(g,mg,m,n,h,x,xnorm,w,mode,max_iter_ls)
+    subroutine ldp(g,mg,m,n,h,x,xnorm,w,mode,max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -1166,6 +1175,7 @@
                                                   !! * ***3:*** iteration count exceeded by [[nnls]],
                                                   !! * ***4:*** inequality constraints incompatible.
     integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in) :: nnls_mode !! which NNLS method to use
 
     integer :: i , iw , iwdual , iy , iz , j , jf , n1
     real(wp) :: fac , rnorm
@@ -1199,8 +1209,14 @@
             iy=iz+n1
             iwdual=iy+m
             ! solve dual problem
-            !call nnls (w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode,max_iter_ls)        ! original
-            call bvls_wrapper(w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode,max_iter_ls)  ! new version
+            select case (nnls_mode)
+            case(1) ! original
+                call nnls (w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode,max_iter_ls)
+            case(2) ! new version
+                call bvls_wrapper(w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode,max_iter_ls)
+            case default
+                error stop 'invalid nnls_mode'
+            end select
 
             if (mode==1) then
                 mode=4
@@ -1244,6 +1260,7 @@
 
     end function diff
 !*******************************************************************************
+
 
 !*******************************************************************************
 !>
@@ -1325,259 +1342,117 @@
     npp1 = 1
 
     ! ******  main loop begins here  ******
-    main : do
-    
-        ! quit if all coefficients are already in the solution.
-        ! or if m cols of a have been triangularized.
-        if ( iz1<=iz2 .and. nsetp<m ) then
+    ! quit if all coefficients are already in the solution.
+    ! or if m cols of a have been triangularized.
 
-            ! compute components of the dual (negative gradient) vector w().
+100 if ( iz1<=iz2 .and. nsetp<m ) then
 
-            do iz = iz1 , iz2
-                j = index(iz)
-                sm = zero
-                do l = npp1 , m
-                    sm = sm + a(l,j)*b(l)
-                end do
-                w(j) = sm
+        ! compute components of the dual (negative gradient) vector w().
+
+        do iz = iz1 , iz2
+            j = index(iz)
+            sm = zero
+            do l = npp1 , m
+                sm = sm + a(l,j)*b(l)
             end do
+            w(j) = sm
+        end do
+        ! find largest positive w(j).
+150     wmax = zero
+        do iz = iz1 , iz2
+            j = index(iz)
+            if ( w(j)>wmax ) then
+                wmax = w(j)
+                izmax = iz
+            end if
+        end do
 
-            inner : do
+        ! if wmax <= 0. go to termination.
+        ! this indicates satisfaction of the kuhn-tucker conditions.
 
-                ! find largest positive w(j).
-                wmax = zero
-                do iz = iz1 , iz2
-                    j = index(iz)
-                    if ( w(j)>wmax ) then
-                        wmax = w(j)
-                        izmax = iz
-                    end if
+        if ( wmax>zero ) then
+            iz = izmax
+            j = index(iz)
+
+            ! the sign of w(j) is ok for j to be moved to set p.
+            ! begin the transformation and check new diagonal element to avoid
+            ! near linear dependence.
+
+            asave = a(npp1,j)
+            call h12(1,npp1,npp1+1,m,a(1,j),1,up,dummy,1,1,0)
+            unorm = zero
+            if ( nsetp/=0 ) then
+                do l = 1 , nsetp
+                    unorm = unorm + a(l,j)**2
                 end do
+            end if
+            unorm = sqrt(unorm)
+            if ( diff(unorm+abs(a(npp1,j))*factor,unorm)>zero ) then
 
-                ! if wmax <= 0. go to termination.
-                ! this indicates satisfaction of the kuhn-tucker conditions.
-                if ( wmax<=zero ) exit inner
+                ! col j is sufficiently independent.  copy b into zz, update zz
+                ! and solve for ztest ( = proposed new value for x(j) ).
 
-                iz = izmax
-                j = index(iz)
+                do l = 1 , m
+                    zz(l) = b(l)
+                end do
+                call h12(2,npp1,npp1+1,m,a(1,j),1,up,zz,1,1,1)
+                ztest = zz(npp1)/a(npp1,j)
 
-                ! the sign of w(j) is ok for j to be moved to set p.
-                ! begin the transformation and check new diagonal element to avoid
-                ! near linear dependence.
+                ! see if ztest is positive
+                if ( ztest>zero ) then
 
-                asave = a(npp1,j)
-                call h12(1,npp1,npp1+1,m,a(1,j),1,up,dummy,1,1,0)
-                unorm = zero
-                if ( nsetp/=0 ) then
-                    do l = 1 , nsetp
-                        unorm = unorm + a(l,j)**2
-                    end do
-                end if
-                unorm = sqrt(unorm)
-                if ( diff(unorm+abs(a(npp1,j))*factor,unorm)>zero ) then
-
-                    ! col j is sufficiently independent.  copy b into zz, update zz
-                    ! and solve for ztest ( = proposed new value for x(j) ).
+                    ! the index j=index(iz) has been selected to be moved from
+                    ! set z to set p. update b, update indices, apply householder
+                    ! transformations to cols in new set z, zero subdiagonal elts in
+                    ! col j, set w(j)=0.
 
                     do l = 1 , m
-                        zz(l) = b(l)
+                        b(l) = zz(l)
                     end do
-                    call h12(2,npp1,npp1+1,m,a(1,j),1,up,zz,1,1,1)
-                    ztest = zz(npp1)/a(npp1,j)
 
-                    ! see if ztest is positive
-                    if ( ztest>zero ) then
+                    index(iz) = index(iz1)
+                    index(iz1) = j
+                    iz1 = iz1 + 1
+                    nsetp = npp1
+                    npp1 = npp1 + 1
 
-                        ! the index j=index(iz) has been selected to be moved from
-                        ! set z to set p. update b, update indices, apply householder
-                        ! transformations to cols in new set z, zero subdiagonal elts in
-                        ! col j, set w(j)=0.
-
-                        do l = 1 , m
-                            b(l) = zz(l)
+                    if ( iz1<=iz2 ) then
+                        do jz = iz1 , iz2
+                            jj = index(jz)
+                            call h12(2,nsetp,npp1,m,a(1,j),1,up,a(1,jj),1,mda,1)
                         end do
-
-                        index(iz) = index(iz1)
-                        index(iz1) = j
-                        iz1 = iz1 + 1
-                        nsetp = npp1
-                        npp1 = npp1 + 1
-
-                        if ( iz1<=iz2 ) then
-                            do jz = iz1 , iz2
-                                jj = index(jz)
-                                call h12(2,nsetp,npp1,m,a(1,j),1,up,a(1,jj),1,mda,1)
-                            end do
-                        end if
-
-                        if ( nsetp/=m ) then
-                            do l = npp1 , m
-                                a(l,j) = zero
-                            end do
-                        end if
-
-                        w(j) = zero
-                        ! solve the triangular system.
-                        ! store the solution temporarily in zz().
-                        rtnkey = 1
-
-                        ! the following block of code is used as an internal subroutine
-                        ! to solve the triangular system, putting the solution in zz().
-
-                        triangular : do 
-
-                            do l = 1 , nsetp
-                                ip = nsetp + 1 - l
-                                if ( l/=1 ) then
-                                    do ii = 1 , ip
-                                        zz(ii) = zz(ii) - a(ii,jj)*zz(ip+1)
-                                    end do
-                                end if
-                                jj = index(ip)
-                                zz(ip) = zz(ip)/a(ip,jj)
-                            end do
-                            if (rtnkey/=1 .and. rtnkey/=2) return
-
-                            ! ******  secondary loop begins here ******
-
-                            ! iteration counter.
-
-                            iter = iter + 1
-                            if ( iter>itmax ) then
-                                mode = 3
-                                !write (*,'(/a)') ' nnls quitting on iteration count.'
-                                call termination()
-                                return
-                            end if
-
-                            ! see if all new constrained coeffs are feasible.
-                            ! if not compute alpha.
-
-                            alpha = two
-                            do ip = 1 , nsetp
-                                l = index(ip)
-                                if ( zz(ip)<=zero ) then
-                                    t = -x(l)/(zz(ip)-x(l))
-                                    if ( alpha>t ) then
-                                        alpha = t
-                                        jj = ip
-                                    end if
-                                end if
-                            end do
-
-                            ! if all new constrained coeffs are feasible then alpha will
-                            ! still = 2.    if so exit from secondary loop to main loop.
-
-                            if ( abs(alpha-two)<=zero ) then
-                                ! ******  end of secondary loop  ******
-
-                                do ip = 1 , nsetp
-                                    i = index(ip)
-                                    x(i) = zz(ip)
-                                end do
-                                ! all new coeffs are positive.  loop back to beginning.
-                                cycle main
-                            else
-
-                                ! otherwise use alpha which will be between 0. and 1. to
-                                ! interpolate between the old x and the new zz.
-
-                                do ip = 1 , nsetp
-                                    l = index(ip)
-                                    x(l) = x(l) + alpha*(zz(ip)-x(l))
-                                end do
-
-                                ! modify a and b and the index arrays to move coefficient i
-                                ! from set p to set z.
-
-                                i = index(jj)
-
-                                inner2 : do
-
-                                    x(i) = zero
-
-                                    if ( jj/=nsetp ) then
-                                        jj = jj + 1
-                                        do j = jj , nsetp
-                                            ii = index(j)
-                                            index(j-1) = ii
-                                            call g1(a(j-1,ii),a(j,ii),cc,ss,a(j-1,ii))
-                                            a(j,ii) = zero
-                                            do l = 1 , n
-                                                if ( l/=ii ) then
-                                                    ! apply procedure g2 (cc,ss,a(j-1,l),a(j,l))
-                                                    temp = a(j-1,l)
-                                                    a(j-1,l) = cc*temp + ss*a(j,l)
-                                                    a(j,l) = -ss*temp + cc*a(j,l)
-                                                end if
-                                            end do
-                                            ! apply procedure g2 (cc,ss,b(j-1),b(j))
-                                            temp = b(j-1)
-                                            b(j-1) = cc*temp + ss*b(j)
-                                            b(j) = -ss*temp + cc*b(j)
-                                        end do
-                                    end if
-
-                                    npp1 = nsetp
-                                    nsetp = nsetp - 1
-                                    iz1 = iz1 - 1
-                                    index(iz1) = i
-
-                                    ! see if the remaining coeffs in set p are feasible.  they should
-                                    ! be because of the way alpha was determined.
-                                    ! if any are infeasible it is due to round-off error.  any
-                                    ! that are nonpositive will be set to zero
-                                    ! and moved from set p to set z.
-
-                                    do jj = 1 , nsetp
-                                        i = index(jj)
-                                        if ( x(i)<=zero ) cycle inner2
-                                    end do
-
-                                    exit
-
-                                end do inner2
-
-                                ! copy b( ) into zz( ).  then solve again and loop back.
-                                do i = 1 , m
-                                    zz(i) = b(i)
-                                end do
-                                rtnkey = 2
-                                cycle triangular
-
-                            end if
-
-                        end do triangular 
-
                     end if
+
+                    if ( nsetp/=m ) then
+                        do l = npp1 , m
+                            a(l,j) = zero
+                        end do
+                    end if
+
+                    w(j) = zero
+                    ! solve the triangular system.
+                    ! store the solution temporarily in zz().
+                    rtnkey = 1
+                    goto 300
                 end if
+            end if
 
-                ! reject j as a candidate to be moved from set z to set p.
-                ! restore a(npp1,j), set w(j)=0., and loop back to test dual
-                ! coeffs again.
-                a(npp1,j) = asave
-                w(j) = zero
+            ! reject j as a candidate to be moved from set z to set p.
+            ! restore a(npp1,j), set w(j)=0., and loop back to test dual
+            ! coeffs again.
 
-            end do inner
-
-        else
-            exit
+            a(npp1,j) = asave
+            w(j) = zero
+            goto 150
         end if
+    end if
 
-    end do main
     ! ******  end of main loop  ******
 
-    call termination()
+    ! come to here for termination.
+    ! compute the norm of the final residual vector.
 
-    contains
-
-    subroutine termination()
-    !! come to here for termination.
-    !! compute the norm of the final residual vector.
-    
-    implicit none
-
-    sm = zero
+200 sm = zero
     if ( npp1<=m ) then
         do i = npp1 , m
             sm = sm + b(i)**2
@@ -1588,8 +1463,124 @@
         end do
     end if
     rnorm = sqrt(sm)
+    return
 
-    end subroutine termination
+    ! the following block of code is used as an internal subroutine
+    ! to solve the triangular system, putting the solution in zz().
+
+300 do l = 1 , nsetp
+        ip = nsetp + 1 - l
+        if ( l/=1 ) then
+            do ii = 1 , ip
+                zz(ii) = zz(ii) - a(ii,jj)*zz(ip+1)
+            end do
+        end if
+        jj = index(ip)
+        zz(ip) = zz(ip)/a(ip,jj)
+    end do
+    if (rtnkey/=1 .and. rtnkey/=2) return
+
+    ! ******  secondary loop begins here ******
+
+    ! iteration counter.
+
+    iter = iter + 1
+    if ( iter>itmax ) then
+        mode = 3
+        !write (*,'(/a)') ' nnls quitting on iteration count.'
+        goto 200
+    end if
+
+    ! see if all new constrained coeffs are feasible.
+    ! if not compute alpha.
+
+    alpha = two
+    do ip = 1 , nsetp
+        l = index(ip)
+        if ( zz(ip)<=zero ) then
+            t = -x(l)/(zz(ip)-x(l))
+            if ( alpha>t ) then
+                alpha = t
+                jj = ip
+            end if
+        end if
+    end do
+
+    ! if all new constrained coeffs are feasible then alpha will
+    ! still = 2.    if so exit from secondary loop to main loop.
+
+    if ( abs(alpha-two)<=zero ) then
+        ! ******  end of secondary loop  ******
+
+        do ip = 1 , nsetp
+            i = index(ip)
+            x(i) = zz(ip)
+        end do
+        ! all new coeffs are positive.  loop back to beginning.
+        goto 100
+    else
+
+        ! otherwise use alpha which will be between 0. and 1. to
+        ! interpolate between the old x and the new zz.
+
+        do ip = 1 , nsetp
+            l = index(ip)
+            x(l) = x(l) + alpha*(zz(ip)-x(l))
+        end do
+
+        ! modify a and b and the index arrays to move coefficient i
+        ! from set p to set z.
+
+        i = index(jj)
+350     x(i) = zero
+
+        if ( jj/=nsetp ) then
+            jj = jj + 1
+            do j = jj , nsetp
+                ii = index(j)
+                index(j-1) = ii
+                call g1(a(j-1,ii),a(j,ii),cc,ss,a(j-1,ii))
+                a(j,ii) = zero
+                do l = 1 , n
+                    if ( l/=ii ) then
+                        ! apply procedure g2 (cc,ss,a(j-1,l),a(j,l))
+                        temp = a(j-1,l)
+                        a(j-1,l) = cc*temp + ss*a(j,l)
+                        a(j,l) = -ss*temp + cc*a(j,l)
+                    end if
+                end do
+                ! apply procedure g2 (cc,ss,b(j-1),b(j))
+                temp = b(j-1)
+                b(j-1) = cc*temp + ss*b(j)
+                b(j) = -ss*temp + cc*b(j)
+            end do
+        end if
+
+        npp1 = nsetp
+        nsetp = nsetp - 1
+        iz1 = iz1 - 1
+        index(iz1) = i
+
+        ! see if the remaining coeffs in set p are feasible.  they should
+        ! be because of the way alpha was determined.
+        ! if any are infeasible it is due to round-off error.  any
+        ! that are nonpositive will be set to zero
+        ! and moved from set p to set z.
+
+        do jj = 1 , nsetp
+            i = index(jj)
+            if ( x(i)<=zero ) goto 350
+        end do
+
+        ! copy b( ) into zz( ).  then solve again and loop back.
+
+        do i = 1 , m
+            zz(i) = b(i)
+        end do
+        rtnkey = 2
+        goto 300
+
+    end if
 
     end subroutine nnls
 !*******************************************************************************
