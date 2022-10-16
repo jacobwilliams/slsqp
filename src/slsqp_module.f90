@@ -256,7 +256,6 @@
         if (present(nnls_mode)) then
             select case (nnls_mode)
             case(1:2)
-                write(*,*) 'nnls_mode=',nnls_mode
                 me%nnls_mode = nnls_mode
             case default
                 call me%report_message('error: invalid value for nnls_mode. defaulting to 1.')
