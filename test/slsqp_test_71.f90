@@ -40,24 +40,31 @@
     integer               :: istat       !! for solver status check
     logical               :: status_ok   !! for initialization status check
     integer               :: iterations  !! number of iterations by the solver
+    integer               :: nnls_mode   !! test both nnls modes
 
-    x = [1.0_wp, 5.0_wp, 5.0_wp, 1.0_wp, -24.0_wp] !initial guess
+    do nnls_mode = 1, 2
 
-    call solver%initialize(n,m,meq,max_iter,acc,func,grad,&
-                            xl,xu,linesearch_mode=linesearch_mode,&
-                            status_ok=status_ok,&
-                            report=report_iteration)
+        x = [1.0_wp, 5.0_wp, 5.0_wp, 1.0_wp, -24.0_wp] !initial guess
 
-    if (status_ok) then
-        call solver%optimize(x,istat,iterations)
-        write(*,*) ''
-        write(*,*) 'solution   :', x
-        write(*,*) 'istat      :', istat
-        write(*,*) 'iterations :', iterations
-        write(*,*) ''
-    else
-        error stop 'error calling slsqp.'
-    end if
+        call solver%initialize(n,m,meq,max_iter,acc,func,grad,&
+                                xl,xu,linesearch_mode=linesearch_mode,&
+                                status_ok=status_ok,&
+                                report=report_iteration,&
+                                nnls_mode=nnls_mode)
+
+        if (status_ok) then
+            call solver%optimize(x,istat,iterations)
+            write(*,*) ''
+            write(*,*) 'nnls_mode  :', nnls_mode
+            write(*,*) 'solution   :', x
+            write(*,*) 'istat      :', istat
+            write(*,*) 'iterations :', iterations
+            write(*,*) ''
+        else
+            error stop 'error calling slsqp.'
+        end if
+
+    end do
 
     contains
 
