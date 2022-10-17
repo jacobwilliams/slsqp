@@ -1261,7 +1261,6 @@
     end function diff
 !*******************************************************************************
 
-
 !*******************************************************************************
 !>
 !  Nonnegative least squares algorithm.
@@ -1335,252 +1334,275 @@
     ! initialize the arrays index(1:n) and x(1:n).
     x = zero
     index = [(i, i=1,n)]
-
     iz2 = n
     iz1 = 1
     nsetp = 0
     npp1 = 1
 
-    ! ******  main loop begins here  ******
-    ! quit if all coefficients are already in the solution.
-    ! or if m cols of a have been triangularized.
+    main : do
 
-100 if ( iz1<=iz2 .and. nsetp<m ) then
+        ! ******  main loop begins here  ******
+        ! quit if all coefficients are already in the solution.
+        ! or if m cols of a have been triangularized.
 
-        ! compute components of the dual (negative gradient) vector w().
+        if ( iz1<=iz2 .and. nsetp<m ) then
 
-        do iz = iz1 , iz2
-            j = index(iz)
-            sm = zero
-            do l = npp1 , m
-                sm = sm + a(l,j)*b(l)
+            ! compute components of the dual (negative gradient) vector w().
+
+            do iz = iz1 , iz2
+                j = index(iz)
+                sm = zero
+                do l = npp1 , m
+                    sm = sm + a(l,j)*b(l)
+                end do
+                w(j) = sm
             end do
-            w(j) = sm
-        end do
-        ! find largest positive w(j).
-150     wmax = zero
-        do iz = iz1 , iz2
-            j = index(iz)
-            if ( w(j)>wmax ) then
-                wmax = w(j)
-                izmax = iz
-            end if
-        end do
 
-        ! if wmax <= 0. go to termination.
-        ! this indicates satisfaction of the kuhn-tucker conditions.
-
-        if ( wmax>zero ) then
-            iz = izmax
-            j = index(iz)
-
-            ! the sign of w(j) is ok for j to be moved to set p.
-            ! begin the transformation and check new diagonal element to avoid
-            ! near linear dependence.
-
-            asave = a(npp1,j)
-            call h12(1,npp1,npp1+1,m,a(1,j),1,up,dummy,1,1,0)
-            unorm = zero
-            if ( nsetp/=0 ) then
-                do l = 1 , nsetp
-                    unorm = unorm + a(l,j)**2
+            do
+                ! find largest positive w(j).
+                wmax = zero
+                do iz = iz1 , iz2
+                    j = index(iz)
+                    if ( w(j)>wmax ) then
+                        wmax = w(j)
+                        izmax = iz
+                    end if
                 end do
-            end if
-            unorm = sqrt(unorm)
-            if ( diff(unorm+abs(a(npp1,j))*factor,unorm)>zero ) then
 
-                ! col j is sufficiently independent.  copy b into zz, update zz
-                ! and solve for ztest ( = proposed new value for x(j) ).
+                ! if wmax <= 0. go to termination.
+                ! this indicates satisfaction of the kuhn-tucker conditions.
 
-                do l = 1 , m
-                    zz(l) = b(l)
-                end do
-                call h12(2,npp1,npp1+1,m,a(1,j),1,up,zz,1,1,1)
-                ztest = zz(npp1)/a(npp1,j)
+                if ( wmax>zero ) then
+                    iz = izmax
+                    j = index(iz)
 
-                ! see if ztest is positive
-                if ( ztest>zero ) then
+                    ! the sign of w(j) is ok for j to be moved to set p.
+                    ! begin the transformation and check new diagonal element to avoid
+                    ! near linear dependence.
 
-                    ! the index j=index(iz) has been selected to be moved from
-                    ! set z to set p. update b, update indices, apply householder
-                    ! transformations to cols in new set z, zero subdiagonal elts in
-                    ! col j, set w(j)=0.
-
-                    do l = 1 , m
-                        b(l) = zz(l)
-                    end do
-
-                    index(iz) = index(iz1)
-                    index(iz1) = j
-                    iz1 = iz1 + 1
-                    nsetp = npp1
-                    npp1 = npp1 + 1
-
-                    if ( iz1<=iz2 ) then
-                        do jz = iz1 , iz2
-                            jj = index(jz)
-                            call h12(2,nsetp,npp1,m,a(1,j),1,up,a(1,jj),1,mda,1)
+                    asave = a(npp1,j)
+                    call h12(1,npp1,npp1+1,m,a(1,j),1,up,dummy,1,1,0)
+                    unorm = zero
+                    if ( nsetp/=0 ) then
+                        do l = 1 , nsetp
+                            unorm = unorm + a(l,j)**2
                         end do
                     end if
+                    unorm = sqrt(unorm)
+                    if ( diff(unorm+abs(a(npp1,j))*factor,unorm)>zero ) then
 
-                    if ( nsetp/=m ) then
-                        do l = npp1 , m
-                            a(l,j) = zero
+                        ! col j is sufficiently independent.  copy b into zz, update zz
+                        ! and solve for ztest ( = proposed new value for x(j) ).
+
+                        do l = 1 , m
+                            zz(l) = b(l)
                         end do
+                        call h12(2,npp1,npp1+1,m,a(1,j),1,up,zz,1,1,1)
+                        ztest = zz(npp1)/a(npp1,j)
+
+                        ! see if ztest is positive
+                        if ( ztest>zero ) then
+
+                            ! the index j=index(iz) has been selected to be moved from
+                            ! set z to set p. update b, update indices, apply householder
+                            ! transformations to cols in new set z, zero subdiagonal elts in
+                            ! col j, set w(j)=0.
+
+                            do l = 1 , m
+                                b(l) = zz(l)
+                            end do
+
+                            index(iz) = index(iz1)
+                            index(iz1) = j
+                            iz1 = iz1 + 1
+                            nsetp = npp1
+                            npp1 = npp1 + 1
+
+                            if ( iz1<=iz2 ) then
+                                do jz = iz1 , iz2
+                                    jj = index(jz)
+                                    call h12(2,nsetp,npp1,m,a(1,j),1,up,a(1,jj),1,mda,1)
+                                end do
+                            end if
+
+                            if ( nsetp/=m ) then
+                                do l = npp1 , m
+                                    a(l,j) = zero
+                                end do
+                            end if
+
+                            w(j) = zero
+                            ! solve the triangular system.
+                            ! store the solution temporarily in zz().
+                            rtnkey = 1
+                            exit
+                        end if
                     end if
 
+                    ! reject j as a candidate to be moved from set z to set p.
+                    ! restore a(npp1,j), set w(j)=0., and loop back to test dual
+                    ! coeffs again.
+
+                    a(npp1,j) = asave
                     w(j) = zero
-                    ! solve the triangular system.
-                    ! store the solution temporarily in zz().
-                    rtnkey = 1
-                    goto 300
+
+                else
+                    call termination()
+                    return
                 end if
-            end if
 
-            ! reject j as a candidate to be moved from set z to set p.
-            ! restore a(npp1,j), set w(j)=0., and loop back to test dual
-            ! coeffs again.
-
-            a(npp1,j) = asave
-            w(j) = zero
-            goto 150
-        end if
-    end if
-
-    ! ******  end of main loop  ******
-
-    ! come to here for termination.
-    ! compute the norm of the final residual vector.
-
-200 sm = zero
-    if ( npp1<=m ) then
-        do i = npp1 , m
-            sm = sm + b(i)**2
-        end do
-    else
-        do j = 1 , n
-            w(j) = zero
-        end do
-    end if
-    rnorm = sqrt(sm)
-    return
-
-    ! the following block of code is used as an internal subroutine
-    ! to solve the triangular system, putting the solution in zz().
-
-300 do l = 1 , nsetp
-        ip = nsetp + 1 - l
-        if ( l/=1 ) then
-            do ii = 1 , ip
-                zz(ii) = zz(ii) - a(ii,jj)*zz(ip+1)
             end do
+
+        else
+            call termination()
+            return
         end if
-        jj = index(ip)
-        zz(ip) = zz(ip)/a(ip,jj)
-    end do
-    if (rtnkey/=1 .and. rtnkey/=2) return
 
-    ! ******  secondary loop begins here ******
+        ! ******  end of main loop  ******
 
-    ! iteration counter.
+        secondary : do
 
-    iter = iter + 1
-    if ( iter>itmax ) then
-        mode = 3
-        !write (*,'(/a)') ' nnls quitting on iteration count.'
-        goto 200
-    end if
+            ! the following block of code is used as an internal subroutine
+            ! to solve the triangular system, putting the solution in zz().
+            do l = 1 , nsetp
+                ip = nsetp + 1 - l
+                if ( l/=1 ) then
+                    do ii = 1 , ip
+                        zz(ii) = zz(ii) - a(ii,jj)*zz(ip+1)
+                    end do
+                end if
+                jj = index(ip)
+                zz(ip) = zz(ip)/a(ip,jj)
+            end do
+            if (rtnkey/=1 .and. rtnkey/=2) return
 
-    ! see if all new constrained coeffs are feasible.
-    ! if not compute alpha.
+            ! ******  secondary loop begins here ******
 
-    alpha = two
-    do ip = 1 , nsetp
-        l = index(ip)
-        if ( zz(ip)<=zero ) then
-            t = -x(l)/(zz(ip)-x(l))
-            if ( alpha>t ) then
-                alpha = t
-                jj = ip
+            ! iteration counter.
+
+            iter = iter + 1
+            if ( iter>itmax ) then
+                mode = 3
+                !write (*,'(/a)') ' nnls quitting on iteration count.'
+                call termination()
+                return
             end if
-        end if
-    end do
 
-    ! if all new constrained coeffs are feasible then alpha will
-    ! still = 2.    if so exit from secondary loop to main loop.
+            ! see if all new constrained coeffs are feasible.
+            ! if not compute alpha.
 
-    if ( abs(alpha-two)<=zero ) then
-        ! ******  end of secondary loop  ******
-
-        do ip = 1 , nsetp
-            i = index(ip)
-            x(i) = zz(ip)
-        end do
-        ! all new coeffs are positive.  loop back to beginning.
-        goto 100
-    else
-
-        ! otherwise use alpha which will be between 0. and 1. to
-        ! interpolate between the old x and the new zz.
-
-        do ip = 1 , nsetp
-            l = index(ip)
-            x(l) = x(l) + alpha*(zz(ip)-x(l))
-        end do
-
-        ! modify a and b and the index arrays to move coefficient i
-        ! from set p to set z.
-
-        i = index(jj)
-350     x(i) = zero
-
-        if ( jj/=nsetp ) then
-            jj = jj + 1
-            do j = jj , nsetp
-                ii = index(j)
-                index(j-1) = ii
-                call g1(a(j-1,ii),a(j,ii),cc,ss,a(j-1,ii))
-                a(j,ii) = zero
-                do l = 1 , n
-                    if ( l/=ii ) then
-                        ! apply procedure g2 (cc,ss,a(j-1,l),a(j,l))
-                        temp = a(j-1,l)
-                        a(j-1,l) = cc*temp + ss*a(j,l)
-                        a(j,l) = -ss*temp + cc*a(j,l)
+            alpha = two
+            do ip = 1 , nsetp
+                l = index(ip)
+                if ( zz(ip)<=zero ) then
+                    t = -x(l)/(zz(ip)-x(l))
+                    if ( alpha>t ) then
+                        alpha = t
+                        jj = ip
                     end if
+                end if
+            end do
+
+            ! if all new constrained coeffs are feasible then alpha will
+            ! still = 2.    if so exit from secondary loop to main loop.
+
+            if ( abs(alpha-two)<=zero ) then
+                ! ******  end of secondary loop  ******
+
+                do ip = 1 , nsetp
+                    i = index(ip)
+                    x(i) = zz(ip)
                 end do
-                ! apply procedure g2 (cc,ss,b(j-1),b(j))
-                temp = b(j-1)
-                b(j-1) = cc*temp + ss*b(j)
-                b(j) = -ss*temp + cc*b(j)
+                ! all new coeffs are positive.  loop back to beginning.
+                cycle main
+            end if
+
+            ! otherwise use alpha which will be between 0. and 1. to
+            ! interpolate between the old x and the new zz.
+
+            do ip = 1 , nsetp
+                l = index(ip)
+                x(l) = x(l) + alpha*(zz(ip)-x(l))
+            end do
+
+            ! modify a and b and the index arrays to move coefficient i
+            ! from set p to set z.
+
+            i = index(jj)
+
+            move_p : do
+                x(i) = zero
+
+                if ( jj/=nsetp ) then
+                    jj = jj + 1
+                    do j = jj , nsetp
+                        ii = index(j)
+                        index(j-1) = ii
+                        call g1(a(j-1,ii),a(j,ii),cc,ss,a(j-1,ii))
+                        a(j,ii) = zero
+                        do l = 1 , n
+                            if ( l/=ii ) then
+                                ! apply procedure g2 (cc,ss,a(j-1,l),a(j,l))
+                                temp = a(j-1,l)
+                                a(j-1,l) = cc*temp + ss*a(j,l)
+                                a(j,l) = -ss*temp + cc*a(j,l)
+                            end if
+                        end do
+                        ! apply procedure g2 (cc,ss,b(j-1),b(j))
+                        temp = b(j-1)
+                        b(j-1) = cc*temp + ss*b(j)
+                        b(j) = -ss*temp + cc*b(j)
+                    end do
+                end if
+
+                npp1 = nsetp
+                nsetp = nsetp - 1
+                iz1 = iz1 - 1
+                index(iz1) = i
+
+                ! see if the remaining coeffs in set p are feasible.  they should
+                ! be because of the way alpha was determined.
+                ! if any are infeasible it is due to round-off error.  any
+                ! that are nonpositive will be set to zero
+                ! and moved from set p to set z.
+
+                do jj = 1 , nsetp
+                    i = index(jj)
+                    if ( x(i)<=zero ) cycle move_p
+                end do
+                exit move_p
+
+            end do move_p
+
+            ! copy b( ) into zz( ).  then solve again and loop back.
+
+            do i = 1 , m
+                zz(i) = b(i)
+            end do
+            rtnkey = 2
+
+        end do secondary
+
+    end do main
+
+    contains
+
+    subroutine termination()
+        !! come to here for termination.
+        !! compute the norm of the final residual vector.
+
+        sm = zero
+        if ( npp1<=m ) then
+            do i = npp1 , m
+                sm = sm + b(i)**2
+            end do
+        else
+            do j = 1 , n
+                w(j) = zero
             end do
         end if
-
-        npp1 = nsetp
-        nsetp = nsetp - 1
-        iz1 = iz1 - 1
-        index(iz1) = i
-
-        ! see if the remaining coeffs in set p are feasible.  they should
-        ! be because of the way alpha was determined.
-        ! if any are infeasible it is due to round-off error.  any
-        ! that are nonpositive will be set to zero
-        ! and moved from set p to set z.
-
-        do jj = 1 , nsetp
-            i = index(jj)
-            if ( x(i)<=zero ) goto 350
-        end do
-
-        ! copy b( ) into zz( ).  then solve again and loop back.
-
-        do i = 1 , m
-            zz(i) = b(i)
-        end do
-        rtnkey = 2
-        goto 300
-
-    end if
+        rnorm = sqrt(sm)
+    end subroutine termination
 
     end subroutine nnls
 !*******************************************************************************
