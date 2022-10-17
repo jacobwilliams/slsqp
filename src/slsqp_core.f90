@@ -5,7 +5,7 @@
 !  These are refactoried versions of the original routines.
 
     module slsqp_core
-    use ieee_arithmetic
+
     use slsqp_kinds
     use slsqp_support
 
@@ -516,7 +516,7 @@
     ! check convergence
 
     mode = 0
-    if ( h1<acc .and. h2<acc .and. .not. ieee_is_nan(f)) return
+    if ( h1<acc .and. h2<acc ) return
     h1 = zero
     do j = 1 , m
         if ( j<=meq ) then
