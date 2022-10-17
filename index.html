@@ -121,9 +121,45 @@
 <div class="codehilite"><pre><span></span><code>fpm build --release
 </code></pre></div>
 
+<p>By default, the library is built with double precision (<code>real64</code>) real values. Explicitly specifying the real kind can be done using the following processor flags:</p>
+<table>
+<thead>
+<tr>
+<th>Preprocessor flag</th>
+<th>Kind</th>
+<th>Number of bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REAL32</code></td>
+<td><code>real(kind=real32)</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>REAL64</code></td>
+<td><code>real(kind=real64)</code></td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>REAL128</code></td>
+<td><code>real(kind=real128)</code></td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p>For example, to build a single precision version of the library, use:</p>
+<div class="codehilite"><pre><span></span><code>fpm build --profile release --flag &quot;-DREAL32&quot;
+</code></pre></div>
+
 <p>To use SLSQP within your fpm project, add the following to your <code>fpm.toml</code> file:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span><span class="w"></span>
-<span class="na">slsqp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">{ git=&quot;https://github.com/jacobwilliams/slsqp.git&quot; }</span><span class="w"></span>
+<span class="n">slsqp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="o">=</span><span class="s">&quot;https://github.com/jacobwilliams/slsqp.git&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>or, to use a specific version:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span><span class="w"></span>
+<span class="n">slsqp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="o">=</span><span class="s">&quot;https://github.com/jacobwilliams/slsqp.git&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1.2.3&quot;</span><span class="w">  </span><span class="p">}</span><span class="w"></span>
 </code></pre></div>
 
 <h3>Development</h3>
@@ -135,7 +171,7 @@
 <h3>References</h3>
 <ul>
 <li><a href="http://www.netlib.org/toms/733">Original sourcecode at NETLIB</a></li>
-<li>D. Kraft, "<a href="http://degenerateconic.com/wp-content/uploads/2018/03/DFVLR_FB_88_28.pdf">A software package for sequential quadratic programming</a>",
+<li>D. Kraft, "<a href="https://degenerateconic.com/uploads/2018/03/DFVLR_FB_88_28.pdf">A software package for sequential quadratic programming</a>",
   Technical Report DFVLR-FB 88-28, Institut für Dynamik der Flugsysteme,
   Oberpfaffenhofen, July 1988.</li>
 <li>D. Kraft, "<a href="http://dl.acm.org/citation.cfm?id=192124">Algorithm 733: TOMP--Fortran modules for optimal control calculations</a>,"
