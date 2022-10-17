@@ -42,11 +42,31 @@ The library can be built with the [Fortran Package Manager](https://github.com/f
 fpm build --release
 ```
 
+By default, the library is built with double precision (`real64`) real values. Explicitly specifying the real kind can be done using the following processor flags:
+
+Preprocessor flag | Kind  | Number of bytes
+----------------- | ----- | ---------------
+`REAL32`  | `real(kind=real32)`  | 4
+`REAL64`  | `real(kind=real64)`  | 8
+`REAL128` | `real(kind=real128)` | 16
+
+For example, to build a single precision version of the library, use:
+
+```
+fpm build --profile release --flag "-DREAL32"
+```
+
 To use SLSQP within your fpm project, add the following to your `fpm.toml` file:
 
-```yml
+```toml
 [dependencies]
 slsqp = { git="https://github.com/jacobwilliams/slsqp.git" }
+```
+
+or, to use a specific version:
+```toml
+[dependencies]
+slsqp = { git="https://github.com/jacobwilliams/slsqp.git", tag = "1.2.3"  }
 ```
 
 ### Development
@@ -60,7 +80,7 @@ slsqp = { git="https://github.com/jacobwilliams/slsqp.git" }
 ### References
 
 * [Original sourcecode at NETLIB](http://www.netlib.org/toms/733)
-* D. Kraft, "[A software package for sequential quadratic programming](http://degenerateconic.com/wp-content/uploads/2018/03/DFVLR_FB_88_28.pdf)",
+* D. Kraft, "[A software package for sequential quadratic programming](https://degenerateconic.com/uploads/2018/03/DFVLR_FB_88_28.pdf)",
   Technical Report DFVLR-FB 88-28, Institut für Dynamik der Flugsysteme,
   Oberpfaffenhofen, July 1988.
 * D. Kraft, "[Algorithm 733: TOMP--Fortran modules for optimal control calculations](http://dl.acm.org/citation.cfm?id=192124),"
