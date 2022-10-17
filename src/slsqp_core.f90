@@ -1371,85 +1371,83 @@
 
                 ! if wmax <= 0. go to termination.
                 ! this indicates satisfaction of the kuhn-tucker conditions.
-
-                if ( wmax>zero ) then
-                    iz = izmax
-                    j = index(iz)
-
-                    ! the sign of w(j) is ok for j to be moved to set p.
-                    ! begin the transformation and check new diagonal element to avoid
-                    ! near linear dependence.
-
-                    asave = a(npp1,j)
-                    call h12(1,npp1,npp1+1,m,a(1,j),1,up,dummy,1,1,0)
-                    unorm = zero
-                    if ( nsetp/=0 ) then
-                        do l = 1 , nsetp
-                            unorm = unorm + a(l,j)**2
-                        end do
-                    end if
-                    unorm = sqrt(unorm)
-                    if ( diff(unorm+abs(a(npp1,j))*factor,unorm)>zero ) then
-
-                        ! col j is sufficiently independent.  copy b into zz, update zz
-                        ! and solve for ztest ( = proposed new value for x(j) ).
-
-                        do l = 1 , m
-                            zz(l) = b(l)
-                        end do
-                        call h12(2,npp1,npp1+1,m,a(1,j),1,up,zz,1,1,1)
-                        ztest = zz(npp1)/a(npp1,j)
-
-                        ! see if ztest is positive
-                        if ( ztest>zero ) then
-
-                            ! the index j=index(iz) has been selected to be moved from
-                            ! set z to set p. update b, update indices, apply householder
-                            ! transformations to cols in new set z, zero subdiagonal elts in
-                            ! col j, set w(j)=0.
-
-                            do l = 1 , m
-                                b(l) = zz(l)
-                            end do
-
-                            index(iz) = index(iz1)
-                            index(iz1) = j
-                            iz1 = iz1 + 1
-                            nsetp = npp1
-                            npp1 = npp1 + 1
-
-                            if ( iz1<=iz2 ) then
-                                do jz = iz1 , iz2
-                                    jj = index(jz)
-                                    call h12(2,nsetp,npp1,m,a(1,j),1,up,a(1,jj),1,mda,1)
-                                end do
-                            end if
-
-                            if ( nsetp/=m ) then
-                                do l = npp1 , m
-                                    a(l,j) = zero
-                                end do
-                            end if
-
-                            w(j) = zero
-                            ! solve the triangular system.
-                            ! store the solution temporarily in zz().
-                            rtnkey = 1
-                            exit
-                        end if
-                    end if
-
-                    ! reject j as a candidate to be moved from set z to set p.
-                    ! restore a(npp1,j), set w(j)=0., and loop back to test dual
-                    ! coeffs again.
-
-                    a(npp1,j) = asave
-                    w(j) = zero
-
-                else
+                if ( wmax<=zero ) then
                     call termination()
                     return
                 end if
+
+                iz = izmax
+                j = index(iz)
+
+                ! the sign of w(j) is ok for j to be moved to set p.
+                ! begin the transformation and check new diagonal element to avoid
+                ! near linear dependence.
+
+                asave = a(npp1,j)
+                call h12(1,npp1,npp1+1,m,a(1,j),1,up,dummy,1,1,0)
+                unorm = zero
+                if ( nsetp/=0 ) then
+                    do l = 1 , nsetp
+                        unorm = unorm + a(l,j)**2
+                    end do
+                end if
+                unorm = sqrt(unorm)
+                if ( diff(unorm+abs(a(npp1,j))*factor,unorm)>zero ) then
+
+                    ! col j is sufficiently independent.  copy b into zz, update zz
+                    ! and solve for ztest ( = proposed new value for x(j) ).
+
+                    do l = 1 , m
+                        zz(l) = b(l)
+                    end do
+                    call h12(2,npp1,npp1+1,m,a(1,j),1,up,zz,1,1,1)
+                    ztest = zz(npp1)/a(npp1,j)
+
+                    ! see if ztest is positive
+                    if ( ztest>zero ) then
+
+                        ! the index j=index(iz) has been selected to be moved from
+                        ! set z to set p. update b, update indices, apply householder
+                        ! transformations to cols in new set z, zero subdiagonal elts in
+                        ! col j, set w(j)=0.
+
+                        do l = 1 , m
+                            b(l) = zz(l)
+                        end do
+
+                        index(iz) = index(iz1)
+                        index(iz1) = j
+                        iz1 = iz1 + 1
+                        nsetp = npp1
+                        npp1 = npp1 + 1
+
+                        if ( iz1<=iz2 ) then
+                            do jz = iz1 , iz2
+                                jj = index(jz)
+                                call h12(2,nsetp,npp1,m,a(1,j),1,up,a(1,jj),1,mda,1)
+                            end do
+                        end if
+
+                        if ( nsetp/=m ) then
+                            do l = npp1 , m
+                                a(l,j) = zero
+                            end do
+                        end if
+
+                        w(j) = zero
+                        ! solve the triangular system.
+                        ! store the solution temporarily in zz().
+                        rtnkey = 1
+                        exit
+                    end if
+                end if
+
+                ! reject j as a candidate to be moved from set z to set p.
+                ! restore a(npp1,j), set w(j)=0., and loop back to test dual
+                ! coeffs again.
+
+                a(npp1,j) = asave
+                w(j) = zero
 
             end do
 
