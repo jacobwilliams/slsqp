@@ -88,7 +88,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="<p>43.6% of total for derived types.</p>Including implementation: 323 statements, 86.1% of total for derived types.">34 statements</a>
+    title="<p>45.0% of total for derived types.</p>Including implementation: 337 statements, 86.6% of total for derived types.">36 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/slsqp_module.f90"> Source File</a></li>
   </ul>
@@ -140,6 +140,8 @@
       <a class="list-group-item" href="../type/slsqp_solver.html#variable-linesearch_mode">linesearch_mode</a>
       <a class="list-group-item" href="../type/slsqp_solver.html#variable-linmin">linmin</a>
       <a class="list-group-item" href="../type/slsqp_solver.html#variable-slsqpb">slsqpb</a>
+      <a class="list-group-item" href="../type/slsqp_solver.html#variable-nnls_mode">nnls_mode</a>
+      <a class="list-group-item" href="../type/slsqp_solver.html#variable-max_iter_ls">max_iter_ls</a>
       <a class="list-group-item" href="../type/slsqp_solver.html#variable-user_triggered_stop">user_triggered_stop</a>
     </div>
   </div>
@@ -295,6 +297,8 @@
       <a class="list-group-item" href="../type/slsqp_solver.html#variable-linesearch_mode">linesearch_mode</a>
       <a class="list-group-item" href="../type/slsqp_solver.html#variable-linmin">linmin</a>
       <a class="list-group-item" href="../type/slsqp_solver.html#variable-slsqpb">slsqpb</a>
+      <a class="list-group-item" href="../type/slsqp_solver.html#variable-nnls_mode">nnls_mode</a>
+      <a class="list-group-item" href="../type/slsqp_solver.html#variable-max_iter_ls">max_iter_ls</a>
       <a class="list-group-item" href="../type/slsqp_solver.html#variable-user_triggered_stop">user_triggered_stop</a>
     </div>
   </div>
@@ -328,48 +332,48 @@
 <tbody>
 <tr>
   <td><span class="anchor" id="variable-n"></span>integer,</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>n</strong></td><td> =</td><td>0</td><td><p>number of optimization variables (<script type="math/tex"> n > 0 </script>)</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-m"></span>integer,</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>m</strong></td><td> =</td><td>0</td><td><p>number of constraints (<script type="math/tex"> m \ge 0 </script>)</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-meq"></span>integer,</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>meq</strong></td><td> =</td><td>0</td><td><p>number of equality constraints (<script type="math/tex"> m \ge m_{eq} \ge 0 </script>)</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-max_iter"></span>integer,</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>max_iter</strong></td><td> =</td><td>0</td><td><p>maximum number of iterations</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-acc"></span>real(kind=wp),</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>acc</strong></td><td> =</td><td>zero</td><td><p>accuracy tolerance</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-tolf"></span>real(kind=wp),</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>tolf</strong></td><td> =</td><td>-one</td><td><p>accuracy tolerance over f:  if <script type="math/tex"> |f| < tolf </script> then stop</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-toldf"></span>real(kind=wp),</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>toldf</strong></td><td> =</td><td>-one</td><td><p>accuracy tolerance over df: if <script type="math/tex"> |f_{n+1} - f_n| < toldf </script> then stop.
 It's different from <code>acc</code> in the case of positive derivative</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-toldx"></span>real(kind=wp),</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>toldx</strong></td><td> =</td><td>-one</td><td><p>accuracy tolerance over xf: if <script type="math/tex"> |x_{n+1} - x_n| < toldx </script> then stop</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-gradient_mode"></span>integer,</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>gradient_mode</strong></td><td> =</td><td>0</td><td><p>how the gradients are computed:</p>
 <ul>
 <li>0 - use the user-supplied <code>g</code> subroutine. [default]</li>
@@ -380,65 +384,65 @@ It's different from <code>acc</code> in the case of positive derivative</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-gradient_delta"></span>real(kind=wp),</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>gradient_delta</strong></td><td> =</td><td>1.0e8_wp</td><td><p>perturbation step size to approximate gradients
 by finite differences (<code>gradient_mode</code> 1-3).</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-alphamin"></span>real(kind=wp),</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>alphamin</strong></td><td> =</td><td>0.1_wp</td><td><p>min <script type="math/tex"> \alpha </script> for line search <script type="math/tex"> 0 < \alpha_{min} < \alpha_{max} \le 1 </script>
 </p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-alphamax"></span>real(kind=wp),</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>alphamax</strong></td><td> =</td><td>1.0_wp</td><td><p>max <script type="math/tex"> \alpha </script> for line search <script type="math/tex"> 0 < \alpha_{min} < \alpha_{max} \le 1 </script>
 </p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-iprint"></span>integer,</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>iprint</strong></td><td> =</td><td>output_unit</td><td><p>unit number of status printing (0 for no printing)</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-xl"></span>real(kind=wp),</td>
-<td>public,</td>  <td>dimension(:), allocatable</td><td>::</td>
+<td>private,</td>  <td>dimension(:), allocatable</td><td>::</td>
   <td><strong>xl</strong></td><td></td><td></td><td><p>lower bound on x</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-xu"></span>real(kind=wp),</td>
-<td>public,</td>  <td>dimension(:), allocatable</td><td>::</td>
+<td>private,</td>  <td>dimension(:), allocatable</td><td>::</td>
   <td><strong>xu</strong></td><td></td><td></td><td><p>upper bound on x</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-l_w"></span>integer,</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>l_w</strong></td><td> =</td><td>0</td><td><p>size of <code>w</code></p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-w"></span>real(kind=wp),</td>
-<td>public,</td>  <td>dimension(:), allocatable</td><td>::</td>
+<td>private,</td>  <td>dimension(:), allocatable</td><td>::</td>
   <td><strong>w</strong></td><td></td><td></td><td><p>real work array</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-f"></span>procedure(<a href='../interface/func.html'>func</a>),</td>
-<td>public,</td>  <td>pointer</td><td>::</td>
+<td>private,</td>  <td>pointer</td><td>::</td>
   <td><strong>f</strong></td><td>=> </td><td>null()</td><td><p>problem function subroutine</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-g"></span>procedure(<a href='../interface/grad.html'>grad</a>),</td>
-<td>public,</td>  <td>pointer</td><td>::</td>
+<td>private,</td>  <td>pointer</td><td>::</td>
   <td><strong>g</strong></td><td>=> </td><td>null()</td><td><p>gradient subroutine</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-report"></span>procedure(<a href='../interface/iterfunc.html'>iterfunc</a>),</td>
-<td>public,</td>  <td>pointer</td><td>::</td>
+<td>private,</td>  <td>pointer</td><td>::</td>
   <td><strong>report</strong></td><td>=> </td><td>null()</td><td><p>for reporting an iteration</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-linesearch_mode"></span>integer,</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>linesearch_mode</strong></td><td> =</td><td>1</td><td><p>linesearch mode:</p>
 <ul>
 <li><code>1</code> = inexact (Armijo) linesearch,</li>
@@ -447,18 +451,34 @@ by finite differences (<code>gradient_mode</code> 1-3).</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-linmin"></span>type(<a href='../type/linmin_data.html'>linmin_data</a>),</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>linmin</strong></td><td></td><td></td><td><p>data formerly within <a href="../proc/linmin.html">linmin</a>.
 Only used when <code>linesearch_mode=2</code></p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-slsqpb"></span>type(<a href='../type/slsqpb_data.html'>slsqpb_data</a>),</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>slsqpb</strong></td><td></td><td></td><td><p>data formerly within <a href="../proc/slsqpb.html">slsqpb</a>.</p></td>
 </tr>
 <tr>
+  <td><span class="anchor" id="variable-nnls_mode"></span>integer,</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>nnls_mode</strong></td><td> =</td><td>1</td><td><p>Which NNLS method to use:</p>
+<ol>
+<li>Use the original <a href="../proc/nnls.html">nnls</a></li>
+<li>Use the newer <a href="../proc/bvls.html">bvls</a></li>
+</ol></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-max_iter_ls"></span>integer,</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>max_iter_ls</strong></td><td> =</td><td>0</td><td><p>max iterations in the least squares problem.
+if <code>&lt;=0</code>, defaults to <code>3*n</code>.
+(use by either <a href="../proc/nnls.html">nnls</a> or <a href="../proc/bvls.html">bvls</a>)</p></td>
+</tr>
+<tr>
   <td><span class="anchor" id="variable-user_triggered_stop"></span>logical,</td>
-<td>public</td>  <td></td><td>::</td>
+<td>private</td>  <td></td><td>::</td>
   <td><strong>user_triggered_stop</strong></td><td> =</td><td>.false.</td><td><p>if the <code>abort</code> method has been called
 to stop the iterations</p></td>
 </tr>
@@ -477,10 +497,15 @@ to stop the iterations</p></td>
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-initialize"></span><h3>procedure, public :: <strong>initialize</strong>  => <a href='../proc/initialize_slsqp.html'>initialize_slsqp</a>   </h3></div>
   <ul class="list-group">
       <li class="list-group-item">
-          <h3>private subroutine <a href='../proc/initialize_slsqp.html'>initialize_slsqp</a>(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx)</h3>
-<p>initialize the <a href="../type/slsqp_solver.html">slsqp_solver</a> class.  see <a href="../proc/slsqp.html">slsqp</a> for more details.</p>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
+                <h3>
+        private subroutine <a href='../proc/initialize_slsqp.html'>initialize_slsqp</a>(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx, max_iter_ls, nnls_mode)</h3>
+      
+    <p>initialize the <a href="../type/slsqp_solver.html">slsqp_solver</a> class.  see <a href="../proc/slsqp.html">slsqp</a> for more details.</p>
+
+    <h4>
+    Arguments
+    </h4>
+      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
 <tr>
@@ -622,6 +647,22 @@ the <code>xl</code> or <code>xu</code> variable bounds.</p></td>
   <td>optional</td>  <td></td><td>::</td>
   <td><strong>toldx</strong></td><td><p>stopping criterion if <script type="math/tex"> ||x_{n+1} - x_n|| < toldx </script> then stop</p></td>
 </tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>max_iter_ls</strong></td><td><p>maximum number of iterations in the <a href="../proc/nnls.html">nnls</a> problem</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>integer,</td>
+<td>intent(in),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>nnls_mode</strong></td><td><p>Which NNLS method to use:</p>
+<ol>
+<li>Use the original <a href="../proc/nnls.html">nnls</a></li>
+<li>Use the newer <a href="../proc/bvls.html">bvls</a></li>
+</ol></td>
+</tr>
 </tbody>
 </table>
 
@@ -634,10 +675,15 @@ the <code>xl</code> or <code>xu</code> variable bounds.</p></td>
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-destroy~3"></span><h3>procedure, public :: <strong>destroy</strong>  => <a href='../proc/destroy_slsqp.html'>destroy_slsqp</a>   </h3></div>
   <ul class="list-group">
       <li class="list-group-item">
-          <h3>private subroutine <a href='../proc/destroy_slsqp.html'>destroy_slsqp</a>(me)</h3>
-<p>destructor for <a href="../type/slsqp_solver.html">slsqp_solver</a>.</p>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
+                <h3>
+        private subroutine <a href='../proc/destroy_slsqp.html'>destroy_slsqp</a>(me)</h3>
+      
+    <p>destructor for <a href="../type/slsqp_solver.html">slsqp_solver</a>.</p>
+
+    <h4>
+    Arguments
+    </h4>
+      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
 <tr>
@@ -658,10 +704,15 @@ the <code>xl</code> or <code>xu</code> variable bounds.</p></td>
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-optimize"></span><h3>procedure, public :: <strong>optimize</strong>  => <a href='../proc/slsqp_wrapper.html'>slsqp_wrapper</a>   </h3></div>
   <ul class="list-group">
       <li class="list-group-item">
-          <h3>private subroutine <a href='../proc/slsqp_wrapper.html'>slsqp_wrapper</a>(me, x, istat, iterations, status_message)</h3>
-<p>main routine for calling <a href="../proc/slsqp.html">slsqp</a>.</p>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
+                <h3>
+        private subroutine <a href='../proc/slsqp_wrapper.html'>slsqp_wrapper</a>(me, x, istat, iterations, status_message)</h3>
+      
+    <p>main routine for calling <a href="../proc/slsqp.html">slsqp</a>.</p>
+
+    <h4>
+    Arguments
+    </h4>
+      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
 <tr>
@@ -708,12 +759,17 @@ corresponding to <code>istat</code></p></td>
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-abort"></span><h3>procedure, public :: <strong>abort</strong>  => <a href='../proc/stop_iterations.html'>stop_iterations</a>   </h3></div>
   <ul class="list-group">
       <li class="list-group-item">
-          <h3>private subroutine <a href='../proc/stop_iterations.html'>stop_iterations</a>(me)</h3>
-<p>A method that the user can call to stop the iterations.
+                <h3>
+        private subroutine <a href='../proc/stop_iterations.html'>stop_iterations</a>(me)</h3>
+      
+    <p>A method that the user can call to stop the iterations.
 (it can be called in any of the functions).
 SLSQP will stop at the end of the next iteration.</p>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
+
+    <h4>
+    Arguments
+    </h4>
+      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
 <tr>
@@ -731,19 +787,24 @@ SLSQP will stop at the end of the next iteration.</p>
 </div>
 
      <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-report_message"></span><h3>procedure, public :: <strong>report_message</strong>    </h3></div>
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-report_message"></span><h3>procedure, private :: <strong>report_message</strong>    </h3></div>
   <div class="panel-body">
     
     <p>for reporting messages to the user</p>
   </div>
   <ul class="list-group">
       <li class="list-group-item">
-          <h3>private subroutine <a href='../proc/report_message.html'>report_message</a>(me, str, ival, rval, fatal)</h3>
-<p>Report a message from an <a href="../type/slsqp_solver.html">slsqp_solver</a> class. This uses the <code>iprint</code>
+                <h3>
+        private subroutine <a href='../proc/report_message.html'>report_message</a>(me, str, ival, rval, fatal)</h3>
+      
+    <p>Report a message from an <a href="../type/slsqp_solver.html">slsqp_solver</a> class. This uses the <code>iprint</code>
 variable in the class as the unit number for printing. Note: for fatal errors,
 if no unit is specified, the <code>error_unit</code> is used.</p>
-    
-<h4>Arguments</h4>      <table class="table table-striped varlist">
+
+    <h4>
+    Arguments
+    </h4>
+      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
 <tr>
@@ -834,8 +895,18 @@ if no unit is specified, the <code>error_unit</code> is used.</p>
 <span class="w">                                        </span><span class="c">!! * `1` = inexact (Armijo) linesearch,</span>
 <span class="w">                                        </span><span class="c">!! * `2` = exact linesearch.</span>
 <span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">linmin_data</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">linmin</span><span class="w"> </span><span class="c">!! data formerly within [[linmin]].</span>
-<span class="w">                                                </span><span class="c">!! Only used when `linesearch_mode=2`</span>
+<span class="w">                                    </span><span class="c">!! Only used when `linesearch_mode=2`</span>
 <span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">slsqpb_data</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">slsqpb</span><span class="w">  </span><span class="c">!! data formerly within [[slsqpb]].</span>
+
+<span class="w">        </span><span class="c">! note: the following two maybe should be combined into a separate type</span>
+<span class="w">        </span><span class="c">! along with the two methods...</span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nnls_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c">!! Which NNLS method to use:</span>
+<span class="w">                                 </span><span class="c">!!</span>
+<span class="w">                                 </span><span class="c">!! 1. Use the original [[nnls]]</span>
+<span class="w">                                 </span><span class="c">!! 2. Use the newer [[bvls]]</span>
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">max_iter_ls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="c">!! max iterations in the least squares problem.</span>
+<span class="w">                                    </span><span class="c">!! if `&lt;=0`, defaults to `3*n`.</span>
+<span class="w">                                    </span><span class="c">!! (use by either [[nnls]] or [[bvls]])</span>
 
 <span class="w">        </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">user_triggered_stop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w">    </span><span class="c">!! if the `abort` method has been called</span>
 <span class="w">                                                    </span><span class="c">!! to stop the iterations</span>

@@ -88,7 +88,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 1.7% of total for procedures.">28 statements</a>
+    title=" 1.4% of total for procedures.">31 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/slsqp_support.f90"> Source File</a></li>
   </ul>
@@ -125,7 +125,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public subroutine dscal(n, da, dx, incx)</h2>
+    <h2>public pure subroutine dscal(n, da, dx, incx)</h2>
     
 
     <p>scales a vector by a constant.
@@ -138,26 +138,26 @@
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
 <tr>
-  <td><span class="anchor" id="variable-n~6"></span>integer</td>
-<td></td>
+  <td><span class="anchor" id="variable-n~17"></span>integer,</td>
+<td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>n</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-da~2"></span>real(kind=wp)</td>
-<td></td>
+  <td><span class="anchor" id="variable-da~2"></span>real(kind=wp),</td>
+<td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>da</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dx~4"></span>real(kind=wp)</td>
-<td></td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>dx</strong>(*)</td><td></td>
+  <td><span class="anchor" id="variable-dx~4"></span>real(kind=wp),</td>
+<td>intent(inout),</td>
+  <td></td>  <td>dimension(*)</td><td>::</td>
+  <td><strong>dx</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-incx~5"></span>integer</td>
-<td></td>
+  <td><span class="anchor" id="variable-incx~5"></span>integer,</td>
+<td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>incx</strong></td><td></td>
 </tr>
@@ -197,7 +197,7 @@
 </g>
 </g>
 <!-- proc~slsqpb&#45;&gt;proc~dscal -->
-<g id="proc~~dscal~~CalledByGraph_edge2" class="edge">
+<g id="proc~~dscal~~CalledByGraph_edge1" class="edge">
 <title>proc~slsqpb&#45;&gt;proc~dscal</title>
 <path fill="none" stroke="#000000" d="M269.24,-32.52C280.28,-32.71 293.27,-32.91 305,-33 329,-33.19 335,-33.19 359,-33 367.25,-32.93 376.12,-32.82 384.49,-32.69"/>
 <polygon fill="#000000" stroke="#000000" points="384.81,-36.18 394.76,-32.52 384.7,-29.18 384.81,-36.18"/>
@@ -218,7 +218,7 @@
 <polygon fill="#000000" stroke="#000000" points="295.94,-23.56 304.92,-17.93 294.39,-16.73 295.94,-23.56"/>
 </g>
 <!-- proc~lsq&#45;&gt;proc~dscal -->
-<g id="proc~~dscal~~CalledByGraph_edge1" class="edge">
+<g id="proc~~dscal~~CalledByGraph_edge2" class="edge">
 <title>proc~lsq&#45;&gt;proc~dscal</title>
 <path fill="none" stroke="#000000" d="M359.4,-18C367.48,-19.84 376.51,-21.89 385.1,-23.84"/>
 <polygon fill="#000000" stroke="#000000" points="384.39,-27.27 394.92,-26.07 385.94,-20.44 384.39,-27.27"/>
@@ -342,12 +342,16 @@
     
     <section>
     <h2><span class="anchor" id="src"></span>Source Code</h2>
-    <div class="highlight"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">dscal</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">da</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">incx</span><span class="p">)</span><span class="w"></span>
+    <div class="highlight"><pre><span></span><span class="w">    </span><span class="k">pure subroutine </span><span class="n">dscal</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">da</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">incx</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 
-<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">da</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">dx</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">incx</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">mp1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">nincx</span><span class="w"></span>
+<span class="k">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">                  </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="w"></span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">                 </span><span class="kd">::</span><span class="w"> </span><span class="n">da</span><span class="w"></span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="o">*</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dx</span><span class="w"></span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">                  </span><span class="kd">::</span><span class="w"> </span><span class="n">incx</span><span class="w"></span>
+
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">mp1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">nincx</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;=</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">incx</span><span class="o">&lt;=</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
 <span class="k">    if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">incx</span><span class="o">==</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"></span>

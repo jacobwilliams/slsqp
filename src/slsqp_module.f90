@@ -63,8 +63,18 @@
                                         !! * `1` = inexact (Armijo) linesearch,
                                         !! * `2` = exact linesearch.
         type(linmin_data) :: linmin !! data formerly within [[linmin]].
-                                                !! Only used when `linesearch_mode=2`
+                                    !! Only used when `linesearch_mode=2`
         type(slsqpb_data) :: slsqpb  !! data formerly within [[slsqpb]].
+
+        ! note: the following two maybe should be combined into a separate type
+        ! along with the two methods...
+        integer :: nnls_mode = 1 !! Which NNLS method to use:
+                                 !!
+                                 !! 1. Use the original [[nnls]]
+                                 !! 2. Use the newer [[bvls]]
+        integer :: max_iter_ls = 0  !! max iterations in the least squares problem.
+                                    !! if `<=0`, defaults to `3*n`.
+                                    !! (use by either [[nnls]] or [[bvls]])
 
         logical :: user_triggered_stop = .false.    !! if the `abort` method has been called
                                                     !! to stop the iterations
@@ -138,7 +148,8 @@
 
     subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok,&
                                 linesearch_mode,iprint,report,alphamin,alphamax,&
-                                gradient_mode,gradient_delta,tolf,toldf,toldx)
+                                gradient_mode,gradient_delta,tolf,toldf,toldx,&
+                                max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -172,6 +183,11 @@
     real(wp),intent(in),optional      :: tolf            !! stopping criterion if \( |f| < tolf \) then stop.
     real(wp),intent(in),optional      :: toldf           !! stopping criterion if \( |f_{n+1} - f_n| < toldf \) then stop
     real(wp),intent(in),optional      :: toldx           !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop
+    integer,intent(in),optional       :: max_iter_ls     !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in),optional       :: nnls_mode       !! Which NNLS method to use:
+                                                         !!
+                                                         !! 1. Use the original [[nnls]]
+                                                         !! 2. Use the newer [[bvls]]
 
     integer :: n1,mineq,i
 
@@ -232,9 +248,20 @@
 
         end if
 
-        if (present(tolf))  me%tolf     = tolf
-        if (present(toldf)) me%toldf    = toldf
-        if (present(toldx)) me%toldx    = toldx
+        if (present(tolf))  me%tolf  = tolf
+        if (present(toldf)) me%toldf = toldf
+        if (present(toldx)) me%toldx = toldx
+
+        if (present(max_iter_ls)) me%max_iter_ls = max_iter_ls
+        if (present(nnls_mode)) then
+            select case (nnls_mode)
+            case(1:2)
+                me%nnls_mode = nnls_mode
+            case default
+                call me%report_message('error: invalid value for nnls_mode. defaulting to 1.')
+                me%nnls_mode = 1
+            end select
+        end if
 
         status_ok = .true.
         me%n = n
@@ -444,10 +471,11 @@
 
         !main routine:
         call slsqp(me%m,me%meq,la,me%n,x,me%xl,me%xu,&
-                    f,c,g,a,acc,iter,mode,&
-                    me%w,me%l_w,&
-                    me%slsqpb,me%linmin,me%alphamin,me%alphamax,&
-                    me%tolf,me%toldf,me%toldx)
+                   f,c,g,a,acc,iter,mode,&
+                   me%w,me%l_w, &
+                   me%slsqpb,me%linmin,me%alphamin,me%alphamax,&
+                   me%tolf,me%toldf,me%toldx,&
+                   me%max_iter_ls,me%nnls_mode)
 
         if (mode==1 .or. mode==-1) then
             !continue to next call

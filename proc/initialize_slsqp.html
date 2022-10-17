@@ -88,7 +88,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 5.7% of total for procedures.">96 statements</a>
+    title=" 5.0% of total for procedures.">108 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/slsqp_module.f90"> Source File</a></li>
   </ul>
@@ -125,7 +125,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private subroutine initialize_slsqp(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx)</h2>
+    <h2>private subroutine initialize_slsqp(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx, max_iter_ls, nnls_mode)</h2>
     
 
     <p>initialize the <a href="../type/slsqp_solver.html">slsqp_solver</a> class.  see <a href="../proc/slsqp.html">slsqp</a> for more details.</p>
@@ -141,7 +141,7 @@
   <td><strong>me</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-n~17"></span>integer,</td>
+  <td><span class="anchor" id="variable-n~12"></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>n</strong></td><td><p>the number of variables, <script type="math/tex"> n \ge 1 </script>
@@ -162,7 +162,7 @@
 </p></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-max_iter~2"></span>integer,</td>
+  <td><span class="anchor" id="variable-max_iter~3"></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>max_iter</strong></td><td><p>maximum number of iterations</p></td>
@@ -273,6 +273,22 @@ the <code>xl</code> or <code>xu</code> variable bounds.</p></td>
   <td>optional</td>  <td></td><td>::</td>
   <td><strong>toldx</strong></td><td><p>stopping criterion if <script type="math/tex"> ||x_{n+1} - x_n|| < toldx </script> then stop</p></td>
 </tr>
+<tr>
+  <td><span class="anchor" id="variable-max_iter_ls~8"></span>integer,</td>
+<td>intent(in),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>max_iter_ls</strong></td><td><p>maximum number of iterations in the <a href="../proc/nnls.html">nnls</a> problem</p></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-nnls_mode~8"></span>integer,</td>
+<td>intent(in),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>nnls_mode</strong></td><td><p>Which NNLS method to use:</p>
+<ol>
+<li>Use the original <a href="../proc/nnls.html">nnls</a></li>
+<li>Use the newer <a href="../proc/bvls.html">bvls</a></li>
+</ol></td>
+</tr>
 </tbody>
 </table>
 
@@ -304,7 +320,8 @@ the <code>xl</code> or <code>xu</code> variable bounds.</p></td>
     <h2><span class="anchor" id="src"></span>Source Code</h2>
     <div class="highlight"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">initialize_slsqp</span><span class="p">(</span><span class="n">me</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">meq</span><span class="p">,</span><span class="n">max_iter</span><span class="p">,</span><span class="n">acc</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">xl</span><span class="p">,</span><span class="n">xu</span><span class="p">,</span><span class="n">status_ok</span><span class="p">,&amp;</span><span class="w"></span>
 <span class="w">                                </span><span class="n">linesearch_mode</span><span class="p">,</span><span class="n">iprint</span><span class="p">,</span><span class="n">report</span><span class="p">,</span><span class="n">alphamin</span><span class="p">,</span><span class="n">alphamax</span><span class="p">,&amp;</span><span class="w"></span>
-<span class="w">                                </span><span class="n">gradient_mode</span><span class="p">,</span><span class="n">gradient_delta</span><span class="p">,</span><span class="n">tolf</span><span class="p">,</span><span class="n">toldf</span><span class="p">,</span><span class="n">toldx</span><span class="p">)</span><span class="w"></span>
+<span class="w">                                </span><span class="n">gradient_mode</span><span class="p">,</span><span class="n">gradient_delta</span><span class="p">,</span><span class="n">tolf</span><span class="p">,</span><span class="n">toldf</span><span class="p">,</span><span class="n">toldx</span><span class="p">,&amp;</span><span class="w"></span>
+<span class="w">                                </span><span class="n">max_iter_ls</span><span class="p">,</span><span class="n">nnls_mode</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 
@@ -338,6 +355,11 @@ the <code>xl</code> or <code>xu</code> variable bounds.</p></td>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">      </span><span class="kd">::</span><span class="w"> </span><span class="n">tolf</span><span class="w">            </span><span class="c">!! stopping criterion if \( |f| &lt; tolf \) then stop.</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">      </span><span class="kd">::</span><span class="w"> </span><span class="n">toldf</span><span class="w">           </span><span class="c">!! stopping criterion if \( |f_{n+1} - f_n| &lt; toldf \) then stop</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">      </span><span class="kd">::</span><span class="w"> </span><span class="n">toldx</span><span class="w">           </span><span class="c">!! stopping criterion if \( ||x_{n+1} - x_n|| &lt; toldx \) then stop</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">       </span><span class="kd">::</span><span class="w"> </span><span class="n">max_iter_ls</span><span class="w">     </span><span class="c">!! maximum number of iterations in the [[nnls]] problem</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">       </span><span class="kd">::</span><span class="w"> </span><span class="n">nnls_mode</span><span class="w">       </span><span class="c">!! Which NNLS method to use:</span>
+<span class="w">                                                         </span><span class="c">!!</span>
+<span class="w">                                                         </span><span class="c">!! 1. Use the original [[nnls]]</span>
+<span class="w">                                                         </span><span class="c">!! 2. Use the newer [[bvls]]</span>
 
 <span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n1</span><span class="p">,</span><span class="n">mineq</span><span class="p">,</span><span class="n">i</span><span class="w"></span>
 
@@ -398,11 +420,22 @@ the <code>xl</code> or <code>xu</code> variable bounds.</p></td>
 
 <span class="k">        end if</span>
 
-<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">tolf</span><span class="p">))</span><span class="w">  </span><span class="n">me</span><span class="p">%</span><span class="n">tolf</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">tolf</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">toldf</span><span class="p">))</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">toldf</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">toldf</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">toldx</span><span class="p">))</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">toldx</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">toldx</span><span class="w"></span>
+<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">tolf</span><span class="p">))</span><span class="w">  </span><span class="n">me</span><span class="p">%</span><span class="n">tolf</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">tolf</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">toldf</span><span class="p">))</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">toldf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">toldf</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">toldx</span><span class="p">))</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">toldx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">toldx</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">status_ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">true</span><span class="p">.</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">max_iter_ls</span><span class="p">))</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">max_iter_ls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max_iter_ls</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">nnls_mode</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            select case</span><span class="w"> </span><span class="p">(</span><span class="n">nnls_mode</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">case</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="n">me</span><span class="p">%</span><span class="n">nnls_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nnls_mode</span><span class="w"></span>
+<span class="w">            </span><span class="k">case </span><span class="n">default</span><span class="w"></span>
+<span class="w">                </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="s1">&#39;error: invalid value for nnls_mode. defaulting to 1.&#39;</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="n">me</span><span class="p">%</span><span class="n">nnls_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">            </span><span class="k">end select</span>
+<span class="k">        end if</span>
+
+<span class="k">        </span><span class="n">status_ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">true</span><span class="p">.</span><span class="w"></span>
 <span class="w">        </span><span class="n">me</span><span class="p">%</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"></span>
 <span class="w">        </span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"></span>
 <span class="w">        </span><span class="n">me</span><span class="p">%</span><span class="n">meq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meq</span><span class="w"></span>

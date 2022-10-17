@@ -8,6 +8,7 @@
 
     use slsqp_kinds
     use slsqp_support
+    use bvls_module, only: bvls_wrapper
 
     implicit none
 
@@ -110,7 +111,8 @@
 !@note `f`, `c`, `g`, `a` must all be set by the user before each call.
 
     subroutine slsqp(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w,l_w, &
-                     sdat,ldat,alphamin,alphamax,tolf,toldf,toldx)
+                     sdat,ldat,alphamin,alphamax,tolf,toldf,toldx,&
+                     max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -199,6 +201,8 @@
     real(wp),intent(in) :: tolf      !! stopping criterion if \( |f| < tolf \) then stop.
     real(wp),intent(in) :: toldf     !! stopping criterion if \( |f_{n+1} - f_n| < toldf \) then stop.
     real(wp),intent(in) :: toldx     !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop.
+    integer,intent(in)  :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in)  :: nnls_mode !! which NNLS method to use
 
     integer :: il , im , ir , is , iu , iv , iw , ix , mineq, n1
 
@@ -242,7 +246,8 @@
                 sdat%t,sdat%f0,sdat%h1,sdat%h2,sdat%h3,sdat%h4,&
                 sdat%n1,sdat%n2,sdat%n3,sdat%t0,sdat%gs,sdat%tol,sdat%line,&
                 sdat%alpha,sdat%iexact,sdat%incons,sdat%ireset,sdat%itermx,&
-                ldat,alphamin,alphamax,tolf,toldf,toldx)
+                ldat,alphamin,alphamax,tolf,toldf,toldx,&
+                max_iter_ls,nnls_mode)
 
     end subroutine slsqp
 !*******************************************************************************
@@ -257,7 +262,8 @@
                       r,l,x0,mu,s,u,v,w,&
                       t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
                       alpha,iexact,incons,ireset,itermx,ldat,&
-                      alphamin,alphamax,tolf,toldf,toldx)
+                      alphamin,alphamax,tolf,toldf,toldx,&
+                      max_iter_ls,nnls_mode)
     implicit none
 
     integer,intent(in)                  :: m
@@ -315,6 +321,8 @@
     real(wp),intent(in)                 :: tolf      !! stopping criterion if \( |f| < tolf \) then stop.
     real(wp),intent(in)                 :: toldf     !! stopping criterion if \( |f_{n+1} - f_n| < toldf \) then stop
     real(wp),intent(in)                 :: toldx     !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop
+    integer,intent(in)                  :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in)                  :: nnls_mode !! which NNLS method to use
 
     integer :: i, j, k
 
@@ -375,8 +383,6 @@
 
         ! end of main iteration
 
-        goto 200
-
     else if ( mode==0 ) then
 
         itermx = iter
@@ -397,6 +403,9 @@
         call dcopy(n,s(1),0,s,1)
         call dcopy(m,mu(1),0,mu,1)
 
+        call reset_bfgs_matrix()
+        if ( ireset>5 ) return
+
     else
 
         ! call functions at current x
@@ -411,171 +420,193 @@
             t = t + mu(j)*max(-c(j),h1)
         end do
         h1 = t - t0
-        if ( iexact+1==1 ) then
-            if ( h1<=h3/ten .or. line>10 ) goto 500
-            alpha = min(max(h3/(two*(h3-h1)),alphamin),alphamax)
-            goto 300
-        else if ( iexact+1==2 ) then
-            goto 400
-        else
-            goto 500
-        end if
-
-    end if
-
-    ! reset bfgs matrix
-
-100 ireset = ireset + 1
-    if ( ireset>5 ) then
-        ! check relaxed convergence in case of positive directional derivative
-        mode = check_convergence(n,f,f0,x,x0,s,h3,tol,tolf,toldf,toldx,0,8)
-        return
-    else
-        l(1) = zero
-        call dcopy(n2,l(1),0,l,1)
-        j = 1
-        do i = 1 , n
-            l(j) = one
-            j = j + n1 - i
-        end do
-    end if
-
-    ! main iteration : search direction, steplength, ldl'-update
-
-200 iter = iter + 1
-    mode = 9
-    if ( iter>itermx ) return
-
-    ! search direction as solution of qp - subproblem
-
-    call dcopy(n,xl,1,u,1)
-    call dcopy(n,xu,1,v,1)
-    call daxpy(n,-one,x,1,u,1)
-    call daxpy(n,-one,x,1,v,1)
-    h4 = one
-    call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode)
-
-    ! augmented problem for inconsistent linearization
-
-    if ( mode==6 ) then
-        if ( n==meq ) mode = 4
-    end if
-    if ( mode==4 ) then
-        do j = 1 , m
-            if ( j<=meq ) then
-                a(j,n1) = -c(j)
+        select case (iexact)
+        case(0)
+            if ( h1<=h3/ten .or. line>10 ) then
+                call convergence_check()
             else
-                a(j,n1) = max(-c(j),zero)
+                alpha = min(max(h3/(two*(h3-h1)),alphamin),alphamax)
+                call inexact_linesearch()
             end if
-        end do
-        s(1) = zero
-        call dcopy(n,s(1),0,s,1)
-        h3 = zero
-        g(n1) = zero
-        l(n3) = hun
-        s(n1) = one
-        u(n1) = zero
-        v(n1) = one
-        incons = 0
-250     call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode)
-        h4 = one - s(n1)
+        case(1)
+            call exact_linesearch()
+            if ( line==3 ) call convergence_check()
+        end select
+
+        return
+
+    end if
+
+    do
+        ! main iteration : search direction, steplength, ldl'-update
+
+        iter = iter + 1
+        mode = 9
+        if ( iter>itermx ) return
+
+        ! search direction as solution of qp - subproblem
+
+        call dcopy(n,xl,1,u,1)
+        call dcopy(n,xu,1,v,1)
+        call daxpy(n,-one,x,1,u,1)
+        call daxpy(n,-one,x,1,v,1)
+        h4 = one
+        call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls,nnls_mode)
+
+        ! augmented problem for inconsistent linearization
+
+        if ( mode==6 ) then
+            if ( n==meq ) mode = 4
+        end if
         if ( mode==4 ) then
-            l(n3) = ten*l(n3)
-            incons = incons + 1
-            if ( incons<=5 ) goto 250
-            return
+            do j = 1 , m
+                if ( j<=meq ) then
+                    a(j,n1) = -c(j)
+                else
+                    a(j,n1) = max(-c(j),zero)
+                end if
+            end do
+            s(1) = zero
+            call dcopy(n,s(1),0,s,1)
+            h3 = zero
+            g(n1) = zero
+            l(n3) = hun
+            s(n1) = one
+            u(n1) = zero
+            v(n1) = one
+            incons = 0
+            do
+                call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls,nnls_mode)
+                h4 = one - s(n1)
+                if ( mode==4 ) then
+                    l(n3) = ten*l(n3)
+                    incons = incons + 1
+                    if ( incons<=5 ) cycle
+                    return
+                else if ( mode/=1 ) then
+                    return
+                else
+                    exit
+                end if
+            end do
+
         else if ( mode/=1 ) then
             return
         end if
-    else if ( mode/=1 ) then
-        return
-    end if
 
-    ! update multipliers for l1-test
+        ! update multipliers for l1-test
 
-    do i = 1 , n
-        v(i) = g(i) - ddot(m,a(1,i),1,r,1)
-    end do
-    f0 = f
-    call dcopy(n,x,1,x0,1)
-    gs = ddot(n,g,1,s,1)
-    h1 = abs(gs)
-    h2 = zero
-    do j = 1 , m
-        if ( j<=meq ) then
-            h3 = c(j)
+        do i = 1 , n
+            v(i) = g(i) - ddot(m,a(1,i),1,r,1)
+        end do
+        f0 = f
+        call dcopy(n,x,1,x0,1)
+        gs = ddot(n,g,1,s,1)
+        h1 = abs(gs)
+        h2 = zero
+        do j = 1 , m
+            if ( j<=meq ) then
+                h3 = c(j)
+            else
+                h3 = zero
+            end if
+            h2 = h2 + max(-c(j),h3)
+            h3 = abs(r(j))
+            mu(j) = max(h3,(mu(j)+h3)/two)
+            h1 = h1 + h3*abs(c(j))
+        end do
+
+        ! check convergence
+
+        mode = 0
+        if ( h1<acc .and. h2<acc ) return
+        h1 = zero
+        do j = 1 , m
+            if ( j<=meq ) then
+                h3 = c(j)
+            else
+                h3 = zero
+            end if
+            h1 = h1 + mu(j)*max(-c(j),h3)
+        end do
+        t0 = f + h1
+        h3 = gs - h1*h4
+        mode = 8
+        if ( h3>=zero ) then
+            call reset_bfgs_matrix()
+            if ( ireset>5 ) return
         else
-            h3 = zero
+            exit
         end if
-        h2 = h2 + max(-c(j),h3)
-        h3 = abs(r(j))
-        mu(j) = max(h3,(mu(j)+h3)/two)
-        h1 = h1 + h3*abs(c(j))
-    end do
 
-    ! check convergence
-
-    mode = 0
-    if ( h1<acc .and. h2<acc ) return
-    h1 = zero
-    do j = 1 , m
-        if ( j<=meq ) then
-            h3 = c(j)
-        else
-            h3 = zero
-        end if
-        h1 = h1 + mu(j)*max(-c(j),h3)
     end do
-    t0 = f + h1
-    h3 = gs - h1*h4
-    mode = 8
-    if ( h3>=zero ) goto 100
 
     ! line search with an l1-testfunction
 
     line = 0
     alpha = alphamax
-    if ( iexact==1 ) goto 400
-
-    ! inexact linesearch
-
-300 line = line + 1
-    h3 = alpha*h3
-    call dscal(n,alpha,s,1)
-    call dcopy(n,x0,1,x,1)
-    call daxpy(n,one,s,1,x,1)
-
-    call enforce_bounds(x,xl,xu)  ! ensure that x doesn't violate bounds
-
-    mode = 1
-    return
-
-    ! exact linesearch
-
-400 if ( line/=3 ) then
-        alpha = linmin(line,alphamin,alphamax,t,tol, &
-        ldat%a, ldat%b, ldat%d, ldat%e, ldat%p,   ldat%q,   &
-        ldat%r, ldat%u, ldat%v, ldat%w, ldat%x,   ldat%m,   &
-        ldat%fu,ldat%fv,ldat%fw,ldat%fx,ldat%tol1,ldat%tol2 )
-        call dcopy(n,x0,1,x,1)
-        call daxpy(n,alpha,s,1,x,1)
-        mode = 1
-        return
+    if ( iexact==1 ) then
+        call exact_linesearch()
+        if ( line==3 ) call convergence_check()
+    else
+        call inexact_linesearch()
     end if
-    call dscal(n,alpha,s,1)
 
-    ! check convergence
+    contains
 
-500 h3 = zero
-    do j = 1 , m
-        if ( j<=meq ) then
-            h1 = c(j)
-        else
-            h1 = zero
-        end if
-        h3 = h3 + max(-c(j),h1)
-    end do
-    mode = check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,0,-1)
+        subroutine reset_bfgs_matrix()  ! 100
+            ireset = ireset + 1
+            if ( ireset>5 ) then
+                ! check relaxed convergence in case of positive directional derivative
+                mode = check_convergence(n,f,f0,x,x0,s,h3,tol,tolf,toldf,toldx,0,8)
+                return
+            else
+                l(1) = zero
+                call dcopy(n2,l(1),0,l,1)
+                j = 1
+                do i = 1 , n
+                    l(j) = one
+                    j = j + n1 - i
+                end do
+            end if
+        end subroutine reset_bfgs_matrix
+
+        subroutine inexact_linesearch()  ! 300
+            line = line + 1
+            h3 = alpha*h3
+            call dscal(n,alpha,s,1)
+            call dcopy(n,x0,1,x,1)
+            call daxpy(n,one,s,1,x,1)
+            call enforce_bounds(x,xl,xu)  ! ensure that x doesn't violate bounds
+            mode = 1
+        end subroutine inexact_linesearch
+
+        subroutine exact_linesearch() ! 400
+            if ( line/=3 ) then
+                alpha = linmin(line,alphamin,alphamax,t,tol, &
+                               ldat%a, ldat%b, ldat%d, ldat%e, ldat%p,   ldat%q,   &
+                               ldat%r, ldat%u, ldat%v, ldat%w, ldat%x,   ldat%m,   &
+                               ldat%fu,ldat%fv,ldat%fw,ldat%fx,ldat%tol1,ldat%tol2 )
+                call dcopy(n,x0,1,x,1)
+                call daxpy(n,alpha,s,1,x,1)
+                mode = 1
+            else
+                call dscal(n,alpha,s,1)
+            end if
+        end subroutine exact_linesearch
+
+        subroutine convergence_check()  ! 500
+            h3 = zero
+            do j = 1 , m
+                if ( j<=meq ) then
+                    h1 = c(j)
+                else
+                    h1 = zero
+                end if
+                h3 = h3 + max(-c(j),h1)
+            end do
+            mode = check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,0,-1)
+        end subroutine convergence_check
 
     end subroutine slsqpb
 !*******************************************************************************
@@ -584,8 +615,8 @@
 !>
 !  Check for convergence.
 
-    function check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,&
-                                converged,not_converged) result(mode)
+    pure function check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,&
+                                    converged,not_converged) result(mode)
 
     implicit none
 
@@ -666,7 +697,7 @@
 !  * coded dieter kraft, april 1987
 !  * revised march 1989
 
-    subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,mode)
+    subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,mode,max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -687,6 +718,8 @@
                                     !! * **5:** matrix `e` is not of full rank,
                                     !! * **6:** matrix `c` is not of full rank,
                                     !! * **7:** rank defect in [[hfti]]
+    integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in) :: nnls_mode !! which NNLS method to use
 
     real(wp),dimension(nl)   :: l
     real(wp),dimension(n)    :: g
@@ -808,7 +841,7 @@
       iw = iu + n
 
       call lsei(w(ic),w(id),w(ie),w(if),w(ig),w(ih),max(1,meq),meq,n,n, &
-                m1,m1,n,x,xnorm,w(iw),mode)
+                m1,m1,n,x,xnorm,w(iw),mode,max_iter_ls,nnls_mode)
 
       if ( mode==1 ) then
          ! restore lagrange multipliers
@@ -857,7 +890,8 @@
 !  * 18.5.1981, dieter kraft, dfvlr oberpfaffenhofen
 !  * 20.3.1987, dieter kraft, dfvlr oberpfaffenhofen
 
-    subroutine lsei(c,d,e,f,g,h,lc,mc,le,me,lg,mg,n,x,xnrm,w,mode)
+    subroutine lsei(c,d,e,f,g,h,lc,mc,le,me,lg,mg,n,x,xnrm,w,mode,&
+                    max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -887,6 +921,8 @@
                                                     !! * ***5:*** matrix `e` is not of full rank,
                                                     !! * ***6:*** matrix `c` is not of full rank,
                                                     !! * ***7:*** rank defect in [[hfti]]
+    integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in) :: nnls_mode !! which NNLS method to use
 
     integer :: i , ie, if , ig , iw , j , k , krank , l , mc1
     real(wp) :: t , dum(1)
@@ -943,7 +979,8 @@
                     h(i) = h(i) - ddot(mc,g(i,1),lg,x,1)
                 end do
                 call lsi(w(ie),w(if),w(ig),h,me,me,mg,mg,l,x(mc1),xnrm,  &
-                         w(mc1),mode)
+                         w(mc1),mode,max_iter_ls,nnls_mode)
+
                 if ( mc==0 ) return
                 t = dnrm2(mc,x,1)
                 xnrm = sqrt(xnrm*xnrm+t*t)
@@ -1017,7 +1054,7 @@
 !  * 03.01.1980, dieter kraft: coded
 !  * 20.03.1987, dieter kraft: revised to fortran 77
 
-    subroutine lsi(e,f,g,h,le,me,lg,mg,n,x,xnorm,w,mode)
+    subroutine lsi(e,f,g,h,le,me,lg,mg,n,x,xnorm,w,mode,max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -1041,6 +1078,8 @@
                                                      !! * ***3:*** iteration count exceeded by [[nnls]],
                                                      !! * ***4:*** inequality constraints incompatible,
                                                      !! * ***5:*** matrix `e` is not of full rank.
+    integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in) :: nnls_mode !! which NNLS method to use
 
     integer :: i, j
     real(wp) :: t
@@ -1066,7 +1105,7 @@
 
     !  solve least distance problem
 
-    call ldp(g,lg,mg,n,h,x,xnorm,w,mode)
+    call ldp(g,lg,mg,n,h,x,xnorm,w,mode,max_iter_ls,nnls_mode)
     if ( mode==1 ) then
 
         !  solution of original problem
@@ -1110,7 +1149,7 @@
 !@note The 1995 version of this routine may have some sort of problem.
 !      Using a refactored version of the original routine.
 
-    subroutine ldp(g,mg,m,n,h,x,xnorm,w,mode)
+    subroutine ldp(g,mg,m,n,h,x,xnorm,w,mode,max_iter_ls,nnls_mode)
 
     implicit none
 
@@ -1135,6 +1174,8 @@
                                                   !! * ***2:*** error return because of wrong dimensions (`n<=0`),
                                                   !! * ***3:*** iteration count exceeded by [[nnls]],
                                                   !! * ***4:*** inequality constraints incompatible.
+    integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
+    integer,intent(in) :: nnls_mode !! which NNLS method to use
 
     integer :: i , iw , iwdual , iy , iz , j , jf , n1
     real(wp) :: fac , rnorm
@@ -1168,7 +1209,15 @@
             iy=iz+n1
             iwdual=iy+m
             ! solve dual problem
-            call nnls (w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode)
+            select case (nnls_mode)
+            case(1) ! original
+                call nnls (w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode,max_iter_ls)
+            case(2) ! new version
+                call bvls_wrapper(w,n1,n1,m,w(jf),w(iy),rnorm,w(iwdual),w(iz),mode,max_iter_ls)
+            case default
+                error stop 'invalid nnls_mode'
+            end select
+
             if (mode==1) then
                 mode=4
                 if (rnorm>zero) then
@@ -1229,7 +1278,7 @@
 !### History
 !  * Jacob Williams, refactored into modern Fortran, Jan. 2016.
 
-    subroutine nnls(a,mda,m,n,b,x,rnorm,w,zz,mode)
+    subroutine nnls(a,mda,m,n,b,x,rnorm,w,zz,mode,max_iter)
 
     implicit none
 
@@ -1253,6 +1302,7 @@
                                                        !! * ***1*** the solution has been computed successfully.
                                                        !! * ***2*** the dimensions of the problem are bad. either `m<=0` or `n<=0`.
                                                        !! * ***3*** iteration count exceeded. more than `3*n` iterations.
+    integer,intent(in)                      :: max_iter !! maximum number of iterations (if <=0, then `3*n` is used)
 
     integer :: i,ii,ip,iter,itmax,iz,iz1,iz2,izmax,j,jj,jz,l,npp1,nsetp,rtnkey
     real(wp) :: alpha,asave,cc,sm,ss,t,temp,unorm,up,wmax,ztest
@@ -1274,257 +1324,283 @@
         return
     end if
     iter = 0
-    itmax = 3*n
+
+    if (max_iter<=0) then
+        itmax = 3*n
+    else
+        itmax = max_iter
+    end if
 
     ! initialize the arrays index(1:n) and x(1:n).
     x = zero
     index = [(i, i=1,n)]
-
     iz2 = n
     iz1 = 1
     nsetp = 0
     npp1 = 1
 
-    ! ******  main loop begins here  ******
-    ! quit if all coefficients are already in the solution.
-    ! or if m cols of a have been triangularized.
+    main : do
 
-100 if ( iz1<=iz2 .and. nsetp<m ) then
+        ! ******  main loop begins here  ******
+        ! quit if all coefficients are already in the solution.
+        ! or if m cols of a have been triangularized.
 
-        ! compute components of the dual (negative gradient) vector w().
+        if ( iz1<=iz2 .and. nsetp<m ) then
 
-        do iz = iz1 , iz2
-            j = index(iz)
-            sm = zero
-            do l = npp1 , m
-                sm = sm + a(l,j)*b(l)
+            ! compute components of the dual (negative gradient) vector w().
+
+            do iz = iz1 , iz2
+                j = index(iz)
+                sm = zero
+                do l = npp1 , m
+                    sm = sm + a(l,j)*b(l)
+                end do
+                w(j) = sm
             end do
-            w(j) = sm
-        end do
-        ! find largest positive w(j).
-150     wmax = zero
-        do iz = iz1 , iz2
-            j = index(iz)
-            if ( w(j)>wmax ) then
-                wmax = w(j)
-                izmax = iz
-            end if
-        end do
 
-        ! if wmax <= 0. go to termination.
-        ! this indicates satisfaction of the kuhn-tucker conditions.
-
-        if ( wmax>zero ) then
-            iz = izmax
-            j = index(iz)
-
-            ! the sign of w(j) is ok for j to be moved to set p.
-            ! begin the transformation and check new diagonal element to avoid
-            ! near linear dependence.
-
-            asave = a(npp1,j)
-            call h12(1,npp1,npp1+1,m,a(1,j),1,up,dummy,1,1,0)
-            unorm = zero
-            if ( nsetp/=0 ) then
-                do l = 1 , nsetp
-                    unorm = unorm + a(l,j)**2
+            do
+                ! find largest positive w(j).
+                wmax = zero
+                do iz = iz1 , iz2
+                    j = index(iz)
+                    if ( w(j)>wmax ) then
+                        wmax = w(j)
+                        izmax = iz
+                    end if
                 end do
-            end if
-            unorm = sqrt(unorm)
-            if ( diff(unorm+abs(a(npp1,j))*factor,unorm)>zero ) then
 
-                ! col j is sufficiently independent.  copy b into zz, update zz
-                ! and solve for ztest ( = proposed new value for x(j) ).
+                ! if wmax <= 0. go to termination.
+                ! this indicates satisfaction of the kuhn-tucker conditions.
+                if ( wmax<=zero ) then
+                    call termination()
+                    return
+                end if
 
-                do l = 1 , m
-                    zz(l) = b(l)
-                end do
-                call h12(2,npp1,npp1+1,m,a(1,j),1,up,zz,1,1,1)
-                ztest = zz(npp1)/a(npp1,j)
+                iz = izmax
+                j = index(iz)
 
-                ! see if ztest is positive
-                if ( ztest>zero ) then
+                ! the sign of w(j) is ok for j to be moved to set p.
+                ! begin the transformation and check new diagonal element to avoid
+                ! near linear dependence.
 
-                    ! the index j=index(iz) has been selected to be moved from
-                    ! set z to set p. update b, update indices, apply householder
-                    ! transformations to cols in new set z, zero subdiagonal elts in
-                    ! col j, set w(j)=0.
+                asave = a(npp1,j)
+                call h12(1,npp1,npp1+1,m,a(1,j),1,up,dummy,1,1,0)
+                unorm = zero
+                if ( nsetp/=0 ) then
+                    do l = 1 , nsetp
+                        unorm = unorm + a(l,j)**2
+                    end do
+                end if
+                unorm = sqrt(unorm)
+                if ( diff(unorm+abs(a(npp1,j))*factor,unorm)>zero ) then
+
+                    ! col j is sufficiently independent.  copy b into zz, update zz
+                    ! and solve for ztest ( = proposed new value for x(j) ).
 
                     do l = 1 , m
-                        b(l) = zz(l)
+                        zz(l) = b(l)
                     end do
+                    call h12(2,npp1,npp1+1,m,a(1,j),1,up,zz,1,1,1)
+                    ztest = zz(npp1)/a(npp1,j)
 
-                    index(iz) = index(iz1)
-                    index(iz1) = j
-                    iz1 = iz1 + 1
-                    nsetp = npp1
-                    npp1 = npp1 + 1
+                    ! see if ztest is positive
+                    if ( ztest>zero ) then
 
-                    if ( iz1<=iz2 ) then
-                        do jz = iz1 , iz2
-                            jj = index(jz)
-                            call h12(2,nsetp,npp1,m,a(1,j),1,up,a(1,jj),1,mda,1)
+                        ! the index j=index(iz) has been selected to be moved from
+                        ! set z to set p. update b, update indices, apply householder
+                        ! transformations to cols in new set z, zero subdiagonal elts in
+                        ! col j, set w(j)=0.
+
+                        do l = 1 , m
+                            b(l) = zz(l)
                         end do
-                    end if
 
-                    if ( nsetp/=m ) then
-                        do l = npp1 , m
-                            a(l,j) = zero
-                        end do
-                    end if
+                        index(iz) = index(iz1)
+                        index(iz1) = j
+                        iz1 = iz1 + 1
+                        nsetp = npp1
+                        npp1 = npp1 + 1
 
-                    w(j) = zero
-                    ! solve the triangular system.
-                    ! store the solution temporarily in zz().
-                    rtnkey = 1
-                    goto 300
+                        if ( iz1<=iz2 ) then
+                            do jz = iz1 , iz2
+                                jj = index(jz)
+                                call h12(2,nsetp,npp1,m,a(1,j),1,up,a(1,jj),1,mda,1)
+                            end do
+                        end if
+
+                        if ( nsetp/=m ) then
+                            do l = npp1 , m
+                                a(l,j) = zero
+                            end do
+                        end if
+
+                        w(j) = zero
+                        ! solve the triangular system.
+                        ! store the solution temporarily in zz().
+                        rtnkey = 1
+                        exit
+                    end if
                 end if
-            end if
 
-            ! reject j as a candidate to be moved from set z to set p.
-            ! restore a(npp1,j), set w(j)=0., and loop back to test dual
-            ! coeffs again.
+                ! reject j as a candidate to be moved from set z to set p.
+                ! restore a(npp1,j), set w(j)=0., and loop back to test dual
+                ! coeffs again.
 
-            a(npp1,j) = asave
-            w(j) = zero
-            goto 150
-        end if
-    end if
+                a(npp1,j) = asave
+                w(j) = zero
 
-    ! ******  end of main loop  ******
-
-    ! come to here for termination.
-    ! compute the norm of the final residual vector.
-
-200 sm = zero
-    if ( npp1<=m ) then
-        do i = npp1 , m
-            sm = sm + b(i)**2
-        end do
-    else
-        do j = 1 , n
-            w(j) = zero
-        end do
-    end if
-    rnorm = sqrt(sm)
-    return
-
-    ! the following block of code is used as an internal subroutine
-    ! to solve the triangular system, putting the solution in zz().
-
-300 do l = 1 , nsetp
-        ip = nsetp + 1 - l
-        if ( l/=1 ) then
-            do ii = 1 , ip
-                zz(ii) = zz(ii) - a(ii,jj)*zz(ip+1)
             end do
+
+        else
+            call termination()
+            return
         end if
-        jj = index(ip)
-        zz(ip) = zz(ip)/a(ip,jj)
-    end do
-    if (rtnkey/=1 .and. rtnkey/=2) return
 
-    ! ******  secondary loop begins here ******
+        ! ******  end of main loop  ******
 
-    ! iteration counter.
+        secondary : do
 
-    iter = iter + 1
-    if ( iter>itmax ) then
-        mode = 3
-        !write (*,'(/a)') ' nnls quitting on iteration count.'
-        goto 200
-    end if
+            ! the following block of code is used as an internal subroutine
+            ! to solve the triangular system, putting the solution in zz().
+            do l = 1 , nsetp
+                ip = nsetp + 1 - l
+                if ( l/=1 ) then
+                    do ii = 1 , ip
+                        zz(ii) = zz(ii) - a(ii,jj)*zz(ip+1)
+                    end do
+                end if
+                jj = index(ip)
+                zz(ip) = zz(ip)/a(ip,jj)
+            end do
+            if (rtnkey/=1 .and. rtnkey/=2) return
 
-    ! see if all new constrained coeffs are feasible.
-    ! if not compute alpha.
+            ! ******  secondary loop begins here ******
 
-    alpha = two
-    do ip = 1 , nsetp
-        l = index(ip)
-        if ( zz(ip)<=zero ) then
-            t = -x(l)/(zz(ip)-x(l))
-            if ( alpha>t ) then
-                alpha = t
-                jj = ip
+            ! iteration counter.
+
+            iter = iter + 1
+            if ( iter>itmax ) then
+                mode = 3
+                !write (*,'(/a)') ' nnls quitting on iteration count.'
+                call termination()
+                return
             end if
-        end if
-    end do
 
-    ! if all new constrained coeffs are feasible then alpha will
-    ! still = 2.    if so exit from secondary loop to main loop.
+            ! see if all new constrained coeffs are feasible.
+            ! if not compute alpha.
 
-    if ( abs(alpha-two)<=zero ) then
-        ! ******  end of secondary loop  ******
-
-        do ip = 1 , nsetp
-            i = index(ip)
-            x(i) = zz(ip)
-        end do
-        ! all new coeffs are positive.  loop back to beginning.
-        goto 100
-    else
-
-        ! otherwise use alpha which will be between 0. and 1. to
-        ! interpolate between the old x and the new zz.
-
-        do ip = 1 , nsetp
-            l = index(ip)
-            x(l) = x(l) + alpha*(zz(ip)-x(l))
-        end do
-
-        ! modify a and b and the index arrays to move coefficient i
-        ! from set p to set z.
-
-        i = index(jj)
-350     x(i) = zero
-
-        if ( jj/=nsetp ) then
-            jj = jj + 1
-            do j = jj , nsetp
-                ii = index(j)
-                index(j-1) = ii
-                call g1(a(j-1,ii),a(j,ii),cc,ss,a(j-1,ii))
-                a(j,ii) = zero
-                do l = 1 , n
-                    if ( l/=ii ) then
-                        ! apply procedure g2 (cc,ss,a(j-1,l),a(j,l))
-                        temp = a(j-1,l)
-                        a(j-1,l) = cc*temp + ss*a(j,l)
-                        a(j,l) = -ss*temp + cc*a(j,l)
+            alpha = two
+            do ip = 1 , nsetp
+                l = index(ip)
+                if ( zz(ip)<=zero ) then
+                    t = -x(l)/(zz(ip)-x(l))
+                    if ( alpha>t ) then
+                        alpha = t
+                        jj = ip
                     end if
+                end if
+            end do
+
+            ! if all new constrained coeffs are feasible then alpha will
+            ! still = 2.    if so exit from secondary loop to main loop.
+
+            if ( abs(alpha-two)<=zero ) then
+                ! ******  end of secondary loop  ******
+
+                do ip = 1 , nsetp
+                    i = index(ip)
+                    x(i) = zz(ip)
                 end do
-                ! apply procedure g2 (cc,ss,b(j-1),b(j))
-                temp = b(j-1)
-                b(j-1) = cc*temp + ss*b(j)
-                b(j) = -ss*temp + cc*b(j)
+                ! all new coeffs are positive.  loop back to beginning.
+                cycle main
+            end if
+
+            ! otherwise use alpha which will be between 0. and 1. to
+            ! interpolate between the old x and the new zz.
+
+            do ip = 1 , nsetp
+                l = index(ip)
+                x(l) = x(l) + alpha*(zz(ip)-x(l))
+            end do
+
+            ! modify a and b and the index arrays to move coefficient i
+            ! from set p to set z.
+
+            i = index(jj)
+
+            move_p : do
+                x(i) = zero
+
+                if ( jj/=nsetp ) then
+                    jj = jj + 1
+                    do j = jj , nsetp
+                        ii = index(j)
+                        index(j-1) = ii
+                        call g1(a(j-1,ii),a(j,ii),cc,ss,a(j-1,ii))
+                        a(j,ii) = zero
+                        do l = 1 , n
+                            if ( l/=ii ) then
+                                ! apply procedure g2 (cc,ss,a(j-1,l),a(j,l))
+                                temp = a(j-1,l)
+                                a(j-1,l) = cc*temp + ss*a(j,l)
+                                a(j,l) = -ss*temp + cc*a(j,l)
+                            end if
+                        end do
+                        ! apply procedure g2 (cc,ss,b(j-1),b(j))
+                        temp = b(j-1)
+                        b(j-1) = cc*temp + ss*b(j)
+                        b(j) = -ss*temp + cc*b(j)
+                    end do
+                end if
+
+                npp1 = nsetp
+                nsetp = nsetp - 1
+                iz1 = iz1 - 1
+                index(iz1) = i
+
+                ! see if the remaining coeffs in set p are feasible.  they should
+                ! be because of the way alpha was determined.
+                ! if any are infeasible it is due to round-off error.  any
+                ! that are nonpositive will be set to zero
+                ! and moved from set p to set z.
+
+                do jj = 1 , nsetp
+                    i = index(jj)
+                    if ( x(i)<=zero ) cycle move_p
+                end do
+                exit move_p
+
+            end do move_p
+
+            ! copy b( ) into zz( ).  then solve again and loop back.
+
+            do i = 1 , m
+                zz(i) = b(i)
+            end do
+            rtnkey = 2
+
+        end do secondary
+
+    end do main
+
+    contains
+
+    subroutine termination()
+        !! come to here for termination.
+        !! compute the norm of the final residual vector.
+
+        sm = zero
+        if ( npp1<=m ) then
+            do i = npp1 , m
+                sm = sm + b(i)**2
+            end do
+        else
+            do j = 1 , n
+                w(j) = zero
             end do
         end if
-
-        npp1 = nsetp
-        nsetp = nsetp - 1
-        iz1 = iz1 - 1
-        index(iz1) = i
-
-        ! see if the remaining coeffs in set p are feasible.  they should
-        ! be because of the way alpha was determined.
-        ! if any are infeasible it is due to round-off error.  any
-        ! that are nonpositive will be set to zero
-        ! and moved from set p to set z.
-
-        do jj = 1 , nsetp
-            i = index(jj)
-            if ( x(i)<=zero ) goto 350
-        end do
-
-        ! copy b( ) into zz( ).  then solve again and loop back.
-
-        do i = 1 , m
-            zz(i) = b(i)
-        end do
-        rtnkey = 2
-        goto 300
-
-    end if
+        rnorm = sqrt(sm)
+    end subroutine termination
 
     end subroutine nnls
 !*******************************************************************************
@@ -2137,7 +2213,7 @@
 !>
 !  enforce the bound constraints on x.
 
-    subroutine enforce_bounds(x,xl,xu)
+    pure subroutine enforce_bounds(x,xl,xu)
 
     implicit none
 
