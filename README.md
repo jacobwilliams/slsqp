@@ -66,7 +66,7 @@ slsqp = { git="https://github.com/jacobwilliams/slsqp.git" }
 or, to use a specific version:
 ```toml
 [dependencies]
-slsqp = { git="https://github.com/jacobwilliams/slsqp.git", tag = "1.2.3"  }
+slsqp = { git="https://github.com/jacobwilliams/slsqp.git", tag = "1.3.0" }
 ```
 
 ### Development
