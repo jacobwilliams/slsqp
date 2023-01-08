@@ -1,6 +1,5 @@
-![slsqp](/media/logo.png)
+![slsqp](media/logo.png)
 ============
-
 
 Modern Fortran Edition of the SLSQP Optimizer
 
