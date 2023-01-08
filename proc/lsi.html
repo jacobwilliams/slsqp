@@ -80,52 +80,78 @@
   <div class="row">
     <h1>lsi
       <small>Subroutine</small>
+      
     </h1>
-    <div class="row">
-  <div class="col-lg-12">
-<div class="well well-sm">
-  <ul class="list-inline" style="margin-bottom:0px;display:inline">
-     <li><i class="fa fa-list-ol"></i>
-       <a data-toggle="tooltip"
-    data-placement="bottom" data-html="true"
-    title=" 2.0% of total for procedures.">44 statements</a>
-     </li> 
-    <li><i class="fa fa-code"></i><a href="../src/slsqp_core.f90"> Source File</a></li>
-  </ul>
-  <ol class="breadcrumb in-well text-right">
-     <li><a href='../sourcefile/slsqp_core.f90.html'>slsqp_core.f90</a></li>
-     <li><a href='../module/slsqp_core.html'>slsqp_core</a></li>
-     <li class="active">lsi</li>
-  </ol>
-</div>
-</div>
-</div>
-<script>
-  $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-  })
-</script>
+      <div class="row" id="info-bar">
+    <div class="col-lg-12">
+      <div class="well well-sm">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+          <li id="statements"><i class="fa fa-list-ol"></i>
+            <a data-toggle="tooltip"
+               data-placement="bottom" data-html="true"
+               title=" 2.0% of total for procedures.">44 statements</a>
+          </li>
+
+            <li id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/slsqp_core.f90"> Source File</a>
+            </li>
+        </ul>
+        <ol class="breadcrumb in-well text-right">
+              <li><a href='../sourcefile/slsqp_core.f90.html'>slsqp_core.f90</a></li>
+              <li><a href='../module/slsqp_core.html'>slsqp_core</a></li>
+          <li class="active">lsi</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+    })
+  </script>
 
   </div>
   
   <div class="row">
     <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
-    <div id="sidebar">
-  <h3>Contents</h3>
- 
-<div class="panel panel-primary">
-  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
-  <div class="list-group">
-    <a class="list-group-item" href="../proc/lsi.html#src">lsi</a>
-  </div>
-</div>
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="panel panel-primary">
+      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/lsi.html#src">lsi</a>
+      </div>
+    </div>
 
-</div>
+
+  </div>
 
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private subroutine lsi(e, f, g, h, le, me, lg, mg, n, x, xnorm, w, mode, max_iter_ls, nnls_mode)</h2>
+    <h2>private  subroutine lsi(e, f, g, h, le, me, lg, mg, n, x, xnorm, w, mode, max_iter_ls, nnls_mode)  
+</h2>
     
 
     <p>for <code>mode=1</code>, the subroutine returns the solution <code>x</code> of
@@ -158,109 +184,251 @@
 </ul>
 
     <h3>Arguments</h3>
-      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
-<tr>
-  <td><span class="anchor" id="variable-e~4"></span>real(kind=wp),</td>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th>Type</th>
+<th>Intent</th><th>Optional</th>        <th>Attributes</th>
+        <th></th>
+        <th>Name</th>
+        <th></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-e~4"></span>
+              real(kind=wp),
+            </td>
 <td>intent(inout),</td>
-  <td></td>  <td>dimension(le,n)</td><td>::</td>
-  <td><strong>e</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-f~9"></span>real(kind=wp),</td>
+              <td></td>            <td>
+              dimension(le,n)
+            </td>
+            <td>::</td>
+            <td><strong>e</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~11"></span>
+              real(kind=wp),
+            </td>
 <td>intent(inout),</td>
-  <td></td>  <td>dimension(le)</td><td>::</td>
-  <td><strong>f</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-g~7"></span>real(kind=wp),</td>
+              <td></td>            <td>
+              dimension(le)
+            </td>
+            <td>::</td>
+            <td><strong>f</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g~11"></span>
+              real(kind=wp),
+            </td>
 <td>intent(inout),</td>
-  <td></td>  <td>dimension(lg,n)</td><td>::</td>
-  <td><strong>g</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-h~2"></span>real(kind=wp),</td>
+              <td></td>            <td>
+              dimension(lg,n)
+            </td>
+            <td>::</td>
+            <td><strong>g</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-h~4"></span>
+              real(kind=wp),
+            </td>
 <td>intent(inout),</td>
-  <td></td>  <td>dimension(lg)</td><td>::</td>
-  <td><strong>h</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-le~2"></span>integer,</td>
+              <td></td>            <td>
+              dimension(lg)
+            </td>
+            <td>::</td>
+            <td><strong>h</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-le~2"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>le</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-me~5"></span>integer,</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>le</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~12"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>me</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-lg~2"></span>integer,</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lg~2"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>lg</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-mg~2"></span>integer,</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lg</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mg~2"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>mg</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-n~7"></span>integer,</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>mg</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~14"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-x~11"></span>real(kind=wp),</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~8"></span>
+              real(kind=wp),
+            </td>
 <td>intent(out),</td>
-  <td></td>  <td>dimension(n)</td><td>::</td>
-  <td><strong>x</strong></td><td><p>stores the solution vector</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-xnorm"></span>real(kind=wp),</td>
+              <td></td>            <td>
+              dimension(n)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p>stores the solution vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xnorm"></span>
+              real(kind=wp),
+            </td>
 <td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>xnorm</strong></td><td><p>stores the residuum of the solution in euclidian norm</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-w~8"></span>real(kind=wp),</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>xnorm</strong></td>
+            <td>
+                <p>stores the residuum of the solution in euclidian norm</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w~5"></span>
+              real(kind=wp),
+            </td>
 <td>intent(inout),</td>
-  <td></td>  <td>dimension(*)</td><td>::</td>
-  <td><strong>w</strong></td><td><p>stores the vector of lagrange multipliers in its first
-<code>mg</code> elements</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-mode~7"></span>integer,</td>
+              <td></td>            <td>
+              dimension(*)
+            </td>
+            <td>::</td>
+            <td><strong>w</strong></td>
+            <td>
+                <p>stores the vector of lagrange multipliers in its first
+<code>mg</code> elements</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mode~6"></span>
+              integer,
+            </td>
 <td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>mode</strong></td><td><p>is a success-failure flag with the following meanings:</p>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>mode</strong></td>
+            <td>
+                <p>is a success-failure flag with the following meanings:</p>
 <ul>
 <li><strong><em>1:</em></strong> successful computation,</li>
 <li><strong><em>2:</em></strong> error return because of wrong dimensions (<code>n&lt;1</code>),</li>
 <li><strong><em>3:</em></strong> iteration count exceeded by <a href="../proc/nnls.html">nnls</a>,</li>
 <li><strong><em>4:</em></strong> inequality constraints incompatible,</li>
 <li><strong><em>5:</em></strong> matrix <code>e</code> is not of full rank.</li>
-</ul></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-max_iter_ls~6"></span>integer,</td>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iter_ls~7"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>max_iter_ls</strong></td><td><p>maximum number of iterations in the <a href="../proc/nnls.html">nnls</a> problem</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-nnls_mode~6"></span>integer,</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iter_ls</strong></td>
+            <td>
+                <p>maximum number of iterations in the <a href="../proc/nnls.html">nnls</a> problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nnls_mode~7"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>nnls_mode</strong></td><td><p>which NNLS method to use</p></td>
-</tr>
-</tbody>
-</table>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nnls_mode</strong></td>
+            <td>
+                <p>which NNLS method to use</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
 
     <br>
     <div class="panel panel-default">
@@ -275,210 +443,210 @@
  -->
 <!-- Title: proc~~lsi~~CallsGraph Pages: 1 -->
 <svg id="proclsiCallsGraph" width="361pt" height="301pt"
- viewBox="0.00 0.00 361.00 301.28" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~lsi~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 297.28)">
+ viewBox="0.00 0.00 361.00 301.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~lsi~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 297)">
 <title>proc~~lsi~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-297.28 357,-297.28 357,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-297 357,-297 357,4 -4,4"/>
 <!-- proc~lsi -->
 <g id="proc~~lsi~~CallsGraph_node1" class="node">
 <title>proc~lsi</title>
-<polygon fill="none" stroke="black" points="54,-171.28 0,-171.28 0,-147.28 54,-147.28 54,-171.28"/>
-<text text-anchor="middle" x="27" y="-156.88" font-family="Helvetica,sans-Serif" font-size="10.50">lsi</text>
-</g>
-<!-- proc~ldp -->
-<g id="proc~~lsi~~CallsGraph_node2" class="node">
-<title>proc~ldp</title>
-<g id="a_proc~~lsi~~CallsGraph_node2"><a xlink:href=".././proc/ldp.html" xlink:title="ldp">
-<polygon fill="#d9534f" stroke="#d9534f" points="144,-171.28 90,-171.28 90,-147.28 144,-147.28 144,-171.28"/>
-<text text-anchor="middle" x="117" y="-156.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ldp</text>
-</a>
-</g>
-</g>
-<!-- proc~lsi&#45;&gt;proc~ldp -->
-<g id="proc~~lsi~~CallsGraph_edge1" class="edge">
-<title>proc~lsi&#45;&gt;proc~ldp</title>
-<path fill="none" stroke="#000000" d="M54.4,-159.28C62.39,-159.28 71.31,-159.28 79.82,-159.28"/>
-<polygon fill="#000000" stroke="#000000" points="79.92,-162.78 89.92,-159.28 79.92,-155.78 79.92,-162.78"/>
-</g>
-<!-- proc~daxpy -->
-<g id="proc~~lsi~~CallsGraph_node3" class="node">
-<title>proc~daxpy</title>
-<g id="a_proc~~lsi~~CallsGraph_node3"><a xlink:href=".././proc/daxpy.html" xlink:title="daxpy">
-<polygon fill="#d9534f" stroke="#d9534f" points="248.5,-293.28 194.5,-293.28 194.5,-269.28 248.5,-269.28 248.5,-293.28"/>
-<text text-anchor="middle" x="221.5" y="-278.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daxpy</text>
-</a>
-</g>
-</g>
-<!-- proc~lsi&#45;&gt;proc~daxpy -->
-<g id="proc~~lsi~~CallsGraph_edge2" class="edge">
-<title>proc~lsi&#45;&gt;proc~daxpy</title>
-<path fill="none" stroke="#000000" d="M41.78,-171.48C54.02,-182.05 72.62,-197.46 90,-209.28 128.02,-235.13 139.59,-238.36 180,-260.28 182.55,-261.66 185.19,-263.07 187.85,-264.49"/>
-<polygon fill="#000000" stroke="#000000" points="186.38,-267.67 196.86,-269.21 189.63,-261.47 186.38,-267.67"/>
+<polygon fill="none" stroke="black" points="54,-150 0,-150 0,-126 54,-126 54,-150"/>
+<text text-anchor="middle" x="27" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50">lsi</text>
 </g>
 <!-- proc~h12 -->
-<g id="proc~~lsi~~CallsGraph_node4" class="node">
+<g id="proc~~lsi~~CallsGraph_node2" class="node">
 <title>proc~h12</title>
-<g id="a_proc~~lsi~~CallsGraph_node4"><a xlink:href=".././proc/h12.html" xlink:title="h12">
-<polygon fill="#d9534f" stroke="#d9534f" points="353,-128.28 299,-128.28 299,-104.28 353,-104.28 353,-128.28"/>
-<text text-anchor="middle" x="326" y="-113.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">h12</text>
+<g id="a_proc~~lsi~~CallsGraph_node2"><a xlink:href=".././proc/h12.html" xlink:title="h12">
+<polygon fill="#d9534f" stroke="#d9534f" points="353,-293 299,-293 299,-269 353,-269 353,-293"/>
+<text text-anchor="middle" x="326" y="-278.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">h12</text>
 </a>
 </g>
 </g>
 <!-- proc~lsi&#45;&gt;proc~h12 -->
-<g id="proc~~lsi~~CallsGraph_edge3" class="edge">
+<g id="proc~~lsi~~CallsGraph_edge1" class="edge">
 <title>proc~lsi&#45;&gt;proc~h12</title>
-<path fill="none" stroke="#000000" d="M34.87,-147.22C53.37,-116.24 107.79,-34.74 180,-12.28 215.22,-1.32 232.16,7.96 263,-12.28 296.62,-34.34 274.66,-63.28 299,-95.28 299.46,-95.89 299.94,-96.48 300.44,-97.08"/>
-<polygon fill="#000000" stroke="#000000" points="298.1,-99.68 307.66,-104.25 303.04,-94.72 298.1,-99.68"/>
+<path fill="none" stroke="#000000" d="M35.59,-150.4C55.01,-180.65 109.92,-257.5 180,-281 215.55,-292.92 258.81,-290.97 288.78,-287.25"/>
+<polygon fill="#000000" stroke="#000000" points="289.36,-290.71 298.8,-285.89 288.41,-283.77 289.36,-290.71"/>
 </g>
 <!-- proc~ddot -->
-<g id="proc~~lsi~~CallsGraph_node5" class="node">
+<g id="proc~~lsi~~CallsGraph_node3" class="node">
 <title>proc~ddot</title>
-<g id="a_proc~~lsi~~CallsGraph_node5"><a xlink:href=".././proc/ddot.html" xlink:title="ddot">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="248.5,-251.28 194.5,-251.28 194.5,-227.28 248.5,-227.28 248.5,-251.28"/>
-<text text-anchor="middle" x="221.5" y="-236.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ddot</text>
+<g id="a_proc~~lsi~~CallsGraph_node3"><a xlink:href=".././proc/ddot.html" xlink:title="ddot">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="248.5,-272 194.5,-272 194.5,-248 248.5,-248 248.5,-272"/>
+<text text-anchor="middle" x="221.5" y="-257.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ddot</text>
 </a>
 </g>
 </g>
 <!-- proc~lsi&#45;&gt;proc~ddot -->
-<g id="proc~~lsi~~CallsGraph_edge4" class="edge">
+<g id="proc~~lsi~~CallsGraph_edge2" class="edge">
 <title>proc~lsi&#45;&gt;proc~ddot</title>
-<path fill="none" stroke="#000000" d="M54.36,-170.24C88.2,-184.3 147.05,-208.75 184.86,-224.47"/>
-<polygon fill="#000000" stroke="#000000" points="183.88,-227.85 194.46,-228.46 186.56,-221.39 183.88,-227.85"/>
+<path fill="none" stroke="#000000" d="M44.94,-150.13C72.61,-169.75 129.5,-209.25 180,-239 182.35,-240.38 184.8,-241.78 187.28,-243.15"/>
+<polygon fill="#000000" stroke="#000000" points="185.82,-246.33 196.28,-247.99 189.13,-240.17 185.82,-246.33"/>
+</g>
+<!-- proc~daxpy -->
+<g id="proc~~lsi~~CallsGraph_node4" class="node">
+<title>proc~daxpy</title>
+<g id="a_proc~~lsi~~CallsGraph_node4"><a xlink:href=".././proc/daxpy.html" xlink:title="daxpy">
+<polygon fill="#d9534f" stroke="#d9534f" points="248.5,-66 194.5,-66 194.5,-42 248.5,-42 248.5,-66"/>
+<text text-anchor="middle" x="221.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daxpy</text>
+</a>
+</g>
+</g>
+<!-- proc~lsi&#45;&gt;proc~daxpy -->
+<g id="proc~~lsi~~CallsGraph_edge5" class="edge">
+<title>proc~lsi&#45;&gt;proc~daxpy</title>
+<path fill="none" stroke="#000000" d="M54.36,-126.5C88.2,-111.73 147.05,-86.05 184.86,-69.55"/>
+<polygon fill="#000000" stroke="#000000" points="186.69,-72.57 194.46,-65.36 183.89,-66.16 186.69,-72.57"/>
+</g>
+<!-- proc~ldp -->
+<g id="proc~~lsi~~CallsGraph_node5" class="node">
+<title>proc~ldp</title>
+<g id="a_proc~~lsi~~CallsGraph_node5"><a xlink:href=".././proc/ldp.html" xlink:title="ldp">
+<polygon fill="#d9534f" stroke="#d9534f" points="144,-150 90,-150 90,-126 144,-126 144,-150"/>
+<text text-anchor="middle" x="117" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~lsi&#45;&gt;proc~ldp -->
+<g id="proc~~lsi~~CallsGraph_edge4" class="edge">
+<title>proc~lsi&#45;&gt;proc~ldp</title>
+<path fill="none" stroke="#000000" d="M54.4,-138C62.39,-138 71.31,-138 79.82,-138"/>
+<polygon fill="#000000" stroke="#000000" points="79.92,-141.5 89.92,-138 79.92,-134.5 79.92,-141.5"/>
 </g>
 <!-- proc~dnrm2 -->
 <g id="proc~~lsi~~CallsGraph_node6" class="node">
 <title>proc~dnrm2</title>
 <g id="a_proc~~lsi~~CallsGraph_node6"><a xlink:href=".././proc/dnrm2.html" xlink:title="dnrm2">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="248.5,-45.28 194.5,-45.28 194.5,-21.28 248.5,-21.28 248.5,-45.28"/>
-<text text-anchor="middle" x="221.5" y="-30.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dnrm2</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="248.5,-24 194.5,-24 194.5,0 248.5,0 248.5,-24"/>
+<text text-anchor="middle" x="221.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dnrm2</text>
 </a>
 </g>
 </g>
 <!-- proc~lsi&#45;&gt;proc~dnrm2 -->
-<g id="proc~~lsi~~CallsGraph_edge5" class="edge">
+<g id="proc~~lsi~~CallsGraph_edge3" class="edge">
 <title>proc~lsi&#45;&gt;proc~dnrm2</title>
-<path fill="none" stroke="#000000" d="M43.97,-147.24C71.19,-126.97 128.6,-85.19 180,-54.28 182.2,-52.96 184.49,-51.63 186.81,-50.33"/>
-<polygon fill="#000000" stroke="#000000" points="188.69,-53.29 195.81,-45.45 185.35,-47.14 188.69,-53.29"/>
-</g>
-<!-- proc~ldp&#45;&gt;proc~daxpy -->
-<g id="proc~~lsi~~CallsGraph_edge9" class="edge">
-<title>proc~ldp&#45;&gt;proc~daxpy</title>
-<path fill="none" stroke="#000000" d="M122.8,-171.3C131.52,-191.81 151.68,-233.93 180,-260.28 181.7,-261.86 183.53,-263.35 185.46,-264.75"/>
-<polygon fill="#000000" stroke="#000000" points="183.96,-267.95 194.28,-270.35 187.71,-262.04 183.96,-267.95"/>
+<path fill="none" stroke="#000000" d="M40.67,-125.61C52.78,-114.1 71.83,-96.87 90,-84 127.52,-57.43 139.59,-54.92 180,-33 182.55,-31.62 185.19,-30.2 187.85,-28.79"/>
+<polygon fill="#000000" stroke="#000000" points="189.63,-31.81 196.86,-24.07 186.38,-25.61 189.63,-31.81"/>
 </g>
 <!-- proc~ldp&#45;&gt;proc~ddot -->
-<g id="proc~~lsi~~CallsGraph_edge10" class="edge">
+<g id="proc~~lsi~~CallsGraph_edge8" class="edge">
 <title>proc~ldp&#45;&gt;proc~ddot</title>
-<path fill="none" stroke="#000000" d="M130.84,-171.44C143.06,-182.79 162.19,-199.92 180,-213.28 183.71,-216.06 187.71,-218.86 191.71,-221.54"/>
-<polygon fill="#000000" stroke="#000000" points="190.04,-224.63 200.33,-227.15 193.86,-218.76 190.04,-224.63"/>
+<path fill="none" stroke="#000000" d="M122.8,-150.02C131.52,-170.53 151.68,-212.65 180,-239 181.7,-240.58 183.53,-242.07 185.46,-243.47"/>
+<polygon fill="#000000" stroke="#000000" points="183.96,-246.67 194.28,-249.07 187.71,-240.76 183.96,-246.67"/>
+</g>
+<!-- proc~ldp&#45;&gt;proc~daxpy -->
+<g id="proc~~lsi~~CallsGraph_edge12" class="edge">
+<title>proc~ldp&#45;&gt;proc~daxpy</title>
+<path fill="none" stroke="#000000" d="M128,-125.72C139.52,-112.13 159.5,-90.13 180,-75 181.81,-73.66 183.72,-72.36 185.68,-71.11"/>
+<polygon fill="#000000" stroke="#000000" points="187.64,-74.02 194.49,-65.93 184.1,-67.98 187.64,-74.02"/>
 </g>
 <!-- proc~ldp&#45;&gt;proc~dnrm2 -->
-<g id="proc~~lsi~~CallsGraph_edge12" class="edge">
+<g id="proc~~lsi~~CallsGraph_edge9" class="edge">
 <title>proc~ldp&#45;&gt;proc~dnrm2</title>
-<path fill="none" stroke="#000000" d="M122.55,-147.12C131,-125.91 150.94,-81.78 180,-54.28 181.68,-52.69 183.51,-51.18 185.43,-49.77"/>
-<polygon fill="#000000" stroke="#000000" points="187.68,-52.48 194.23,-44.16 183.91,-46.58 187.68,-52.48"/>
-</g>
-<!-- proc~nnls -->
-<g id="proc~~lsi~~CallsGraph_node7" class="node">
-<title>proc~nnls</title>
-<g id="a_proc~~lsi~~CallsGraph_node7"><a xlink:href=".././proc/nnls.html" xlink:title="nnls">
-<polygon fill="#d9534f" stroke="#d9534f" points="248.5,-171.28 194.5,-171.28 194.5,-147.28 248.5,-147.28 248.5,-171.28"/>
-<text text-anchor="middle" x="221.5" y="-156.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">nnls</text>
-</a>
-</g>
-</g>
-<!-- proc~ldp&#45;&gt;proc~nnls -->
-<g id="proc~~lsi~~CallsGraph_edge6" class="edge">
-<title>proc~ldp&#45;&gt;proc~nnls</title>
-<path fill="none" stroke="#000000" d="M144.13,-159.28C156.3,-159.28 170.98,-159.28 184.2,-159.28"/>
-<polygon fill="#000000" stroke="#000000" points="184.42,-162.78 194.42,-159.28 184.42,-155.78 184.42,-162.78"/>
+<path fill="none" stroke="#000000" d="M122.55,-125.84C131,-104.63 150.94,-60.5 180,-33 181.68,-31.41 183.51,-29.9 185.43,-28.49"/>
+<polygon fill="#000000" stroke="#000000" points="187.68,-31.21 194.23,-22.88 183.91,-25.3 187.68,-31.21"/>
 </g>
 <!-- proc~bvls_wrapper -->
-<g id="proc~~lsi~~CallsGraph_node8" class="node">
+<g id="proc~~lsi~~CallsGraph_node7" class="node">
 <title>proc~bvls_wrapper</title>
-<g id="a_proc~~lsi~~CallsGraph_node8"><a xlink:href=".././proc/bvls_wrapper.html" xlink:title="bvls_wrapper">
-<polygon fill="#d9534f" stroke="#d9534f" points="263,-87.28 180,-87.28 180,-63.28 263,-63.28 263,-87.28"/>
-<text text-anchor="middle" x="221.5" y="-72.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_wrapper</text>
+<g id="a_proc~~lsi~~CallsGraph_node7"><a xlink:href=".././proc/bvls_wrapper.html" xlink:title="bvls_wrapper">
+<polygon fill="#d9534f" stroke="#d9534f" points="263,-150 180,-150 180,-126 263,-126 263,-150"/>
+<text text-anchor="middle" x="221.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_wrapper</text>
 </a>
 </g>
 </g>
 <!-- proc~ldp&#45;&gt;proc~bvls_wrapper -->
-<g id="proc~~lsi~~CallsGraph_edge11" class="edge">
+<g id="proc~~lsi~~CallsGraph_edge6" class="edge">
 <title>proc~ldp&#45;&gt;proc~bvls_wrapper</title>
-<path fill="none" stroke="#000000" d="M128,-147C139.52,-133.41 159.5,-111.41 180,-96.28 181.62,-95.08 183.33,-93.91 185.08,-92.78"/>
-<polygon fill="#000000" stroke="#000000" points="187.25,-95.56 194.07,-87.45 183.68,-89.54 187.25,-95.56"/>
+<path fill="none" stroke="#000000" d="M144.13,-138C151.89,-138 160.67,-138 169.44,-138"/>
+<polygon fill="#000000" stroke="#000000" points="169.67,-141.5 179.67,-138 169.67,-134.5 169.67,-141.5"/>
 </g>
 <!-- proc~diff -->
-<g id="proc~~lsi~~CallsGraph_node9" class="node">
+<g id="proc~~lsi~~CallsGraph_node8" class="node">
 <title>proc~diff</title>
-<g id="a_proc~~lsi~~CallsGraph_node9"><a xlink:href=".././proc/diff.html" xlink:title="diff">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="353,-212.28 299,-212.28 299,-188.28 353,-188.28 353,-212.28"/>
-<text text-anchor="middle" x="326" y="-197.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">diff</text>
+<g id="a_proc~~lsi~~CallsGraph_node8"><a xlink:href=".././proc/diff.html" xlink:title="diff">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="353,-191 299,-191 299,-167 353,-167 353,-191"/>
+<text text-anchor="middle" x="326" y="-176.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">diff</text>
 </a>
 </g>
 </g>
 <!-- proc~ldp&#45;&gt;proc~diff -->
-<g id="proc~~lsi~~CallsGraph_edge7" class="edge">
+<g id="proc~~lsi~~CallsGraph_edge10" class="edge">
 <title>proc~ldp&#45;&gt;proc~diff</title>
-<path fill="none" stroke="#000000" d="M144.23,-169.39C155.15,-173.28 168.05,-177.46 180,-180.28 216.45,-188.89 259,-194.21 288.54,-197.18"/>
-<polygon fill="#000000" stroke="#000000" points="288.51,-200.69 298.79,-198.17 289.18,-193.73 288.51,-200.69"/>
+<path fill="none" stroke="#000000" d="M144.23,-148.11C155.15,-152 168.05,-156.18 180,-159 216.45,-167.61 259,-172.93 288.54,-175.9"/>
+<polygon fill="#000000" stroke="#000000" points="288.51,-179.42 298.79,-176.89 289.18,-172.45 288.51,-179.42"/>
+</g>
+<!-- proc~nnls -->
+<g id="proc~~lsi~~CallsGraph_node9" class="node">
+<title>proc~nnls</title>
+<g id="a_proc~~lsi~~CallsGraph_node9"><a xlink:href=".././proc/nnls.html" xlink:title="nnls">
+<polygon fill="#d9534f" stroke="#d9534f" points="248.5,-230 194.5,-230 194.5,-206 248.5,-206 248.5,-230"/>
+<text text-anchor="middle" x="221.5" y="-215.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">nnls</text>
+</a>
+</g>
+</g>
+<!-- proc~ldp&#45;&gt;proc~nnls -->
+<g id="proc~~lsi~~CallsGraph_edge7" class="edge">
+<title>proc~ldp&#45;&gt;proc~nnls</title>
+<path fill="none" stroke="#000000" d="M130.84,-150.16C143.06,-161.51 162.19,-178.64 180,-192 183.71,-194.78 187.71,-197.58 191.71,-200.26"/>
+<polygon fill="#000000" stroke="#000000" points="190.04,-203.35 200.33,-205.87 193.86,-197.48 190.04,-203.35"/>
 </g>
 <!-- proc~dcopy -->
 <g id="proc~~lsi~~CallsGraph_node10" class="node">
 <title>proc~dcopy</title>
 <g id="a_proc~~lsi~~CallsGraph_node10"><a xlink:href=".././proc/dcopy.html" xlink:title="dcopy">
-<polygon fill="#d9534f" stroke="#d9534f" points="248.5,-129.28 194.5,-129.28 194.5,-105.28 248.5,-105.28 248.5,-129.28"/>
-<text text-anchor="middle" x="221.5" y="-114.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dcopy</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="248.5,-108 194.5,-108 194.5,-84 248.5,-84 248.5,-108"/>
+<text text-anchor="middle" x="221.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dcopy</text>
 </a>
 </g>
 </g>
 <!-- proc~ldp&#45;&gt;proc~dcopy -->
-<g id="proc~~lsi~~CallsGraph_edge8" class="edge">
+<g id="proc~~lsi~~CallsGraph_edge11" class="edge">
 <title>proc~ldp&#45;&gt;proc~dcopy</title>
-<path fill="none" stroke="#000000" d="M144.13,-148.57C156.54,-143.49 171.56,-137.33 184.98,-131.83"/>
-<polygon fill="#000000" stroke="#000000" points="186.49,-135 194.42,-127.97 183.84,-128.52 186.49,-135"/>
-</g>
-<!-- proc~nnls&#45;&gt;proc~h12 -->
-<g id="proc~~lsi~~CallsGraph_edge13" class="edge">
-<title>proc~nnls&#45;&gt;proc~h12</title>
-<path fill="none" stroke="#000000" d="M248.63,-148.32C261.04,-143.11 276.06,-136.81 289.48,-131.18"/>
-<polygon fill="#000000" stroke="#000000" points="291.05,-134.32 298.92,-127.22 288.34,-127.86 291.05,-134.32"/>
-</g>
-<!-- proc~nnls&#45;&gt;proc~diff -->
-<g id="proc~~lsi~~CallsGraph_edge15" class="edge">
-<title>proc~nnls&#45;&gt;proc~diff</title>
-<path fill="none" stroke="#000000" d="M248.63,-169.73C261.04,-174.7 276.06,-180.7 289.48,-186.07"/>
-<polygon fill="#000000" stroke="#000000" points="288.33,-189.38 298.92,-189.85 290.93,-182.88 288.33,-189.38"/>
-</g>
-<!-- proc~g1 -->
-<g id="proc~~lsi~~CallsGraph_node11" class="node">
-<title>proc~g1</title>
-<g id="a_proc~~lsi~~CallsGraph_node11"><a xlink:href=".././proc/g1.html" xlink:title="g1">
-<polygon fill="#d9534f" stroke="#d9534f" points="353,-170.28 299,-170.28 299,-146.28 353,-146.28 353,-170.28"/>
-<text text-anchor="middle" x="326" y="-155.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">g1</text>
-</a>
-</g>
-</g>
-<!-- proc~nnls&#45;&gt;proc~g1 -->
-<g id="proc~~lsi~~CallsGraph_edge14" class="edge">
-<title>proc~nnls&#45;&gt;proc~g1</title>
-<path fill="none" stroke="#000000" d="M248.63,-159.02C260.8,-158.91 275.48,-158.76 288.7,-158.63"/>
-<polygon fill="#000000" stroke="#000000" points="288.95,-162.13 298.92,-158.53 288.88,-155.13 288.95,-162.13"/>
+<path fill="none" stroke="#000000" d="M144.13,-127.29C156.54,-122.21 171.56,-116.05 184.98,-110.55"/>
+<polygon fill="#000000" stroke="#000000" points="186.49,-113.72 194.42,-106.69 183.84,-107.24 186.49,-113.72"/>
 </g>
 <!-- proc~bvls -->
-<g id="proc~~lsi~~CallsGraph_node12" class="node">
+<g id="proc~~lsi~~CallsGraph_node11" class="node">
 <title>proc~bvls</title>
-<g id="a_proc~~lsi~~CallsGraph_node12"><a xlink:href=".././proc/bvls.html" xlink:title="bvls">
-<polygon fill="#d9534f" stroke="#d9534f" points="353,-86.28 299,-86.28 299,-62.28 353,-62.28 353,-86.28"/>
-<text text-anchor="middle" x="326" y="-71.88" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls</text>
+<g id="a_proc~~lsi~~CallsGraph_node11"><a xlink:href=".././proc/bvls.html" xlink:title="bvls">
+<polygon fill="#d9534f" stroke="#d9534f" points="353,-149 299,-149 299,-125 353,-125 353,-149"/>
+<text text-anchor="middle" x="326" y="-134.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls</text>
 </a>
 </g>
 </g>
 <!-- proc~bvls_wrapper&#45;&gt;proc~bvls -->
-<g id="proc~~lsi~~CallsGraph_edge16" class="edge">
+<g id="proc~~lsi~~CallsGraph_edge13" class="edge">
 <title>proc~bvls_wrapper&#45;&gt;proc~bvls</title>
-<path fill="none" stroke="#000000" d="M263.01,-74.88C271.51,-74.8 280.42,-74.71 288.75,-74.63"/>
-<polygon fill="#000000" stroke="#000000" points="288.95,-78.13 298.92,-74.53 288.89,-71.13 288.95,-78.13"/>
+<path fill="none" stroke="#000000" d="M263.01,-137.6C271.51,-137.52 280.42,-137.43 288.75,-137.35"/>
+<polygon fill="#000000" stroke="#000000" points="288.95,-140.85 298.92,-137.25 288.89,-133.85 288.95,-140.85"/>
+</g>
+<!-- proc~nnls&#45;&gt;proc~h12 -->
+<g id="proc~~lsi~~CallsGraph_edge14" class="edge">
+<title>proc~nnls&#45;&gt;proc~h12</title>
+<path fill="none" stroke="#000000" d="M247.17,-230.21C252.45,-232.98 257.96,-236 263,-239 275.43,-246.4 288.77,-255.3 299.87,-263"/>
+<polygon fill="#000000" stroke="#000000" points="298.05,-265.99 308.24,-268.86 302.06,-260.26 298.05,-265.99"/>
+</g>
+<!-- proc~nnls&#45;&gt;proc~diff -->
+<g id="proc~~lsi~~CallsGraph_edge15" class="edge">
+<title>proc~nnls&#45;&gt;proc~diff</title>
+<path fill="none" stroke="#000000" d="M248.63,-208.06C261.04,-203.34 276.06,-197.62 289.48,-192.51"/>
+<polygon fill="#000000" stroke="#000000" points="290.82,-195.75 298.92,-188.92 288.33,-189.21 290.82,-195.75"/>
+</g>
+<!-- proc~g1 -->
+<g id="proc~~lsi~~CallsGraph_node12" class="node">
+<title>proc~g1</title>
+<g id="a_proc~~lsi~~CallsGraph_node12"><a xlink:href=".././proc/g1.html" xlink:title="g1">
+<polygon fill="#d9534f" stroke="#d9534f" points="353,-233 299,-233 299,-209 353,-209 353,-233"/>
+<text text-anchor="middle" x="326" y="-218.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">g1</text>
+</a>
+</g>
+</g>
+<!-- proc~nnls&#45;&gt;proc~g1 -->
+<g id="proc~~lsi~~CallsGraph_edge16" class="edge">
+<title>proc~nnls&#45;&gt;proc~g1</title>
+<path fill="none" stroke="#000000" d="M248.63,-218.76C260.8,-219.12 275.48,-219.55 288.7,-219.94"/>
+<polygon fill="#000000" stroke="#000000" points="288.82,-223.44 298.92,-220.24 289.02,-216.45 288.82,-223.44"/>
 </g>
 </g>
 </svg>
@@ -706,14 +874,33 @@
     <br>
 
     <section class="visible-xs visible-sm hidden-md">
-      <h3>Contents</h3>
- 
-<div class="panel panel-primary">
-  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
-  <div class="list-group">
-    <a class="list-group-item" href="../proc/lsi.html#src">lsi</a>
-  </div>
-</div>
+        <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="panel panel-primary">
+      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/lsi.html#src">lsi</a>
+      </div>
+    </div>
+
 
     </section>
     <br class="visible-xs visible-sm hidden-md">
@@ -809,7 +996,7 @@
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>slsqp was developed by Jacob Williams<br>&copy; 2022 
+        <div class="col-xs-6 col-md-6"><p>slsqp was developed by Jacob Williams<br>&copy; 2023 
 </p>
         </div>
         <div class="col-xs-6 col-md-6">

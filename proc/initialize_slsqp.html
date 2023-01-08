@@ -80,229 +80,488 @@
   <div class="row">
     <h1>initialize_slsqp
       <small>Subroutine</small>
+      
     </h1>
-    <div class="row">
-  <div class="col-lg-12">
-<div class="well well-sm">
-  <ul class="list-inline" style="margin-bottom:0px;display:inline">
-     <li><i class="fa fa-list-ol"></i>
-       <a data-toggle="tooltip"
-    data-placement="bottom" data-html="true"
-    title=" 5.0% of total for procedures.">108 statements</a>
-     </li> 
-    <li><i class="fa fa-code"></i><a href="../src/slsqp_module.f90"> Source File</a></li>
-  </ul>
-  <ol class="breadcrumb in-well text-right">
-     <li><a href='../sourcefile/slsqp_module.f90.html'>slsqp_module.f90</a></li>
-     <li><a href='../module/slsqp_module.html'>slsqp_module</a></li>
-     <li class="active">initialize_slsqp</li>
-  </ol>
-</div>
-</div>
-</div>
-<script>
-  $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-  })
-</script>
+      <div class="row" id="info-bar">
+    <div class="col-lg-12">
+      <div class="well well-sm">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+          <li id="statements"><i class="fa fa-list-ol"></i>
+            <a data-toggle="tooltip"
+               data-placement="bottom" data-html="true"
+               title=" 5.0% of total for procedures.">108 statements</a>
+          </li>
+
+            <li id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/slsqp_module.f90"> Source File</a>
+            </li>
+        </ul>
+        <ol class="breadcrumb in-well text-right">
+              <li><a href='../sourcefile/slsqp_module.f90.html'>slsqp_module.f90</a></li>
+              <li><a href='../module/slsqp_module.html'>slsqp_module</a></li>
+          <li class="active">initialize_slsqp</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+    })
+  </script>
 
   </div>
   
   <div class="row">
     <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
-    <div id="sidebar">
-  <h3>Contents</h3>
- 
-<div class="panel panel-primary">
-  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
-  <div class="list-group">
-    <a class="list-group-item" href="../proc/initialize_slsqp.html#src">initialize_slsqp</a>
-  </div>
-</div>
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="panel panel-primary">
+      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/initialize_slsqp.html#src">initialize_slsqp</a>
+      </div>
+    </div>
 
-</div>
+
+  </div>
 
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private subroutine initialize_slsqp(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx, max_iter_ls, nnls_mode)</h2>
+    <h2>private  subroutine initialize_slsqp(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx, max_iter_ls, nnls_mode)  
+</h2>
     
 
     <p>initialize the <a href="../type/slsqp_solver.html">slsqp_solver</a> class.  see <a href="../proc/slsqp.html">slsqp</a> for more details.</p>
 
     <h3>Arguments</h3>
-      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
-<tr>
-  <td><span class="anchor" id="variable-me~9"></span>class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),</td>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th>Type</th>
+<th>Intent</th><th>Optional</th>        <th>Attributes</th>
+        <th></th>
+        <th>Name</th>
+        <th></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
 <td>intent(inout)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>me</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-n~12"></span>integer,</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong></td><td><p>the number of variables, <script type="math/tex"> n \ge 1 </script>
-</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-m~11"></span>integer,</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+                <p>the number of variables, <script type="math/tex"> n \ge 1 </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>m</strong></td><td><p>total number of constraints, <script type="math/tex"> m \ge 0 </script>
-</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-meq~5"></span>integer,</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong></td>
+            <td>
+                <p>total number of constraints, <script type="math/tex"> m \ge 0 </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-meq"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>meq</strong></td><td><p>number of equality constraints, <script type="math/tex"> m_{eq} \ge 0 </script>
-</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-max_iter~3"></span>integer,</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>meq</strong></td>
+            <td>
+                <p>number of equality constraints, <script type="math/tex"> m_{eq} \ge 0 </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iter"></span>
+              integer,
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>max_iter</strong></td><td><p>maximum number of iterations</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-acc~5"></span>real(kind=wp),</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iter</strong></td>
+            <td>
+                <p>maximum number of iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-acc"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>acc</strong></td><td><p>accuracy</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-f~10"></span>procedure(<a href='../interface/func.html'>func</a>)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>acc</strong></td>
+            <td>
+                <p>accuracy</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~3"></span>
+              procedure(<a href='../interface/func.html'>func</a>)
+            </td>
 <td></td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>f</strong></td><td><p>problem function</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-g~10"></span>procedure(<a href='../interface/grad.html'>grad</a>)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f</strong></td>
+            <td>
+                <p>problem function</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g~2"></span>
+              procedure(<a href='../interface/grad.html'>grad</a>)
+            </td>
 <td></td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>g</strong></td><td><p>function to compute gradients (must be
-associated if <code>gradient_mode=0</code>)</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-xl~6"></span>real(kind=wp),</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>g</strong></td>
+            <td>
+                <p>function to compute gradients (must be
+associated if <code>gradient_mode=0</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xl"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in),</td>
-  <td></td>  <td>dimension(n)</td><td>::</td>
-  <td><strong>xl</strong></td><td><p>lower bounds on <code>x</code></p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-xu~6"></span>real(kind=wp),</td>
+              <td></td>            <td>
+              dimension(n)
+            </td>
+            <td>::</td>
+            <td><strong>xl</strong></td>
+            <td>
+                <p>lower bounds on <code>x</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xu"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in),</td>
-  <td></td>  <td>dimension(n)</td><td>::</td>
-  <td><strong>xu</strong></td><td><p>upper bounds on <code>x</code></p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-status_ok"></span>logical,</td>
+              <td></td>            <td>
+              dimension(n)
+            </td>
+            <td>::</td>
+            <td><strong>xu</strong></td>
+            <td>
+                <p>upper bounds on <code>x</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-status_ok"></span>
+              logical,
+            </td>
 <td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>status_ok</strong></td><td><p>will be false if there were errors</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-linesearch_mode~2"></span>integer,</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>status_ok</strong></td>
+            <td>
+                <p>will be false if there were errors</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-linesearch_mode"></span>
+              integer,
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>linesearch_mode</strong></td><td><p>1 = inexact (default), 2 = exact</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-iprint~2"></span>integer,</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>linesearch_mode</strong></td>
+            <td>
+                <p>1 = inexact (default), 2 = exact</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iprint"></span>
+              integer,
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>iprint</strong></td><td><p>unit number of status messages (default=output_unit)</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-report~2"></span>procedure(<a href='../interface/iterfunc.html'>iterfunc</a>),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iprint</strong></td>
+            <td>
+                <p>unit number of status messages (default=output_unit)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-report"></span>
+              procedure(<a href='../interface/iterfunc.html'>iterfunc</a>),
+            </td>
 <td></td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>report</strong></td><td><p>user-defined procedure that will be called once per iteration</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-alphamin~4"></span>real(kind=wp),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>report</strong></td>
+            <td>
+                <p>user-defined procedure that will be called once per iteration</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alphamin"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>alphamin</strong></td><td><p>minimum alpha for linesearch [default 0.1]</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-alphamax~4"></span>real(kind=wp),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alphamin</strong></td>
+            <td>
+                <p>minimum alpha for linesearch [default 0.1]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alphamax"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>alphamax</strong></td><td><p>maximum alpha for linesearch [default 1.0]</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-gradient_mode~2"></span>integer,</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alphamax</strong></td>
+            <td>
+                <p>maximum alpha for linesearch [default 1.0]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gradient_mode"></span>
+              integer,
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>gradient_mode</strong></td><td><p>how the gradients are to be computed:</p>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>gradient_mode</strong></td>
+            <td>
+                <p>how the gradients are to be computed:</p>
 <ul>
 <li>0 - use the user-supplied <code>g</code> subroutine. [default]</li>
 <li>1 - approximate by basic backward differences</li>
 <li>2 - approximate by basic forward differences</li>
 <li>3 - approximate by basic central differences</li>
-</ul></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-gradient_delta~2"></span>real(kind=wp),</td>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gradient_delta"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>gradient_delta</strong></td><td><p>perturbation step size (&gt;epsilon) to compute the approximated
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>gradient_delta</strong></td>
+            <td>
+                <p>perturbation step size (&gt;epsilon) to compute the approximated
 gradient by finite differences (<code>gradient_mode</code> 1-3).
 note that this is an absolute step that does not respect
-the <code>xl</code> or <code>xu</code> variable bounds.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-tolf~5"></span>real(kind=wp),</td>
+the <code>xl</code> or <code>xu</code> variable bounds.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tolf"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>tolf</strong></td><td><p>stopping criterion if <script type="math/tex"> |f| < tolf </script> then stop.</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-toldf~5"></span>real(kind=wp),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tolf</strong></td>
+            <td>
+                <p>stopping criterion if <script type="math/tex"> |f| < tolf </script> then stop.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-toldf"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>toldf</strong></td><td><p>stopping criterion if <script type="math/tex"> |f_{n+1} - f_n| < toldf </script> then stop</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-toldx~5"></span>real(kind=wp),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>toldf</strong></td>
+            <td>
+                <p>stopping criterion if <script type="math/tex"> |f_{n+1} - f_n| < toldf </script> then stop</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-toldx"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>toldx</strong></td><td><p>stopping criterion if <script type="math/tex"> ||x_{n+1} - x_n|| < toldx </script> then stop</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-max_iter_ls~8"></span>integer,</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>toldx</strong></td>
+            <td>
+                <p>stopping criterion if <script type="math/tex"> ||x_{n+1} - x_n|| < toldx </script> then stop</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iter_ls"></span>
+              integer,
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>max_iter_ls</strong></td><td><p>maximum number of iterations in the <a href="../proc/nnls.html">nnls</a> problem</p></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-nnls_mode~8"></span>integer,</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iter_ls</strong></td>
+            <td>
+                <p>maximum number of iterations in the <a href="../proc/nnls.html">nnls</a> problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nnls_mode"></span>
+              integer,
+            </td>
 <td>intent(in),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>nnls_mode</strong></td><td><p>Which NNLS method to use:</p>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nnls_mode</strong></td>
+            <td>
+                <p>Which NNLS method to use:</p>
 <ol>
 <li>Use the original <a href="../proc/nnls.html">nnls</a></li>
 <li>Use the newer <a href="../proc/bvls.html">bvls</a></li>
-</ol></td>
-</tr>
-</tbody>
-</table>
+</ol>
+            </td>
+        </tr>
+    </tbody>
+  </table>
 
     <br>
 
     <section class="visible-xs visible-sm hidden-md">
-      <h3>Contents</h3>
- 
-<div class="panel panel-primary">
-  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
-  <div class="list-group">
-    <a class="list-group-item" href="../proc/initialize_slsqp.html#src">initialize_slsqp</a>
-  </div>
-</div>
+        <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="panel panel-primary">
+      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/initialize_slsqp.html#src">initialize_slsqp</a>
+      </div>
+    </div>
+
 
     </section>
     <br class="visible-xs visible-sm hidden-md">
@@ -482,7 +741,7 @@ the <code>xl</code> or <code>xu</code> variable bounds.</p></td>
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>slsqp was developed by Jacob Williams<br>&copy; 2022 
+        <div class="col-xs-6 col-md-6"><p>slsqp was developed by Jacob Williams<br>&copy; 2023 
 </p>
         </div>
         <div class="col-xs-6 col-md-6">

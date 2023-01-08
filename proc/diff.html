@@ -80,78 +80,134 @@
   <div class="row">
     <h1>diff
       <small>Function</small>
+      
     </h1>
-    <div class="row">
-  <div class="col-lg-12">
-<div class="well well-sm">
-  <ul class="list-inline" style="margin-bottom:0px;display:inline">
-     <li><i class="fa fa-list-ol"></i>
-       <a data-toggle="tooltip"
-    data-placement="bottom" data-html="true"
-    title=" 0.3% of total for procedures.">7 statements</a>
-     </li> 
-    <li><i class="fa fa-code"></i><a href="../src/slsqp_core.f90"> Source File</a></li>
-  </ul>
-  <ol class="breadcrumb in-well text-right">
-     <li><a href='../sourcefile/slsqp_core.f90.html'>slsqp_core.f90</a></li>
-     <li><a href='../module/slsqp_core.html'>slsqp_core</a></li>
-     <li class="active">diff</li>
-  </ol>
-</div>
-</div>
-</div>
-<script>
-  $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-  })
-</script>
+      <div class="row" id="info-bar">
+    <div class="col-lg-12">
+      <div class="well well-sm">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+          <li id="statements"><i class="fa fa-list-ol"></i>
+            <a data-toggle="tooltip"
+               data-placement="bottom" data-html="true"
+               title=" 0.3% of total for procedures.">7 statements</a>
+          </li>
+
+            <li id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/slsqp_core.f90"> Source File</a>
+            </li>
+        </ul>
+        <ol class="breadcrumb in-well text-right">
+              <li><a href='../sourcefile/slsqp_core.f90.html'>slsqp_core.f90</a></li>
+              <li><a href='../module/slsqp_core.html'>slsqp_core</a></li>
+          <li class="active">diff</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+    })
+  </script>
 
   </div>
   
   <div class="row">
     <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
-    <div id="sidebar">
-  <h3>Contents</h3>
- 
-<div class="panel panel-primary">
-  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
-  <div class="list-group">
-    <a class="list-group-item" href="../proc/diff.html#src">diff</a>
-  </div>
-</div>
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="panel panel-primary">
+      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/diff.html#src">diff</a>
+      </div>
+    </div>
 
-</div>
+
+  </div>
 
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private pure elemental function diff(u, v) result(d)</h2>
+    <h2>private pure elemental function diff(u, v) result(d)  
+</h2>
     
 
     <p>Replaced statement function in the original code.
 Returns <script type="math/tex"> d = u - v </script>.</p>
 
     <h3>Arguments</h3>
-      <table class="table table-striped varlist">
-<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
-<tbody>
-<tr>
-  <td><span class="anchor" id="variable-u~2"></span>real(kind=wp),</td>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th>Type</th>
+<th>Intent</th><th>Optional</th>        <th>Attributes</th>
+        <th></th>
+        <th>Name</th>
+        <th></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-u~3"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>u</strong></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-v~2"></span>real(kind=wp),</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>u</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~2"></span>
+              real(kind=wp),
+            </td>
 <td>intent(in)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>v</strong></td><td></td>
-</tr>
-</tbody>
-</table>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
 
-   <h3>Return Value <small><span class="anchor" id="variable-d~2"></span>real(kind=wp)</small></h3>
-    
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-d~2"></span>
+          real(kind=wp)
+        </small>
+      </h3>
+      
     <br>
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -190,17 +246,32 @@ Returns <script type="math/tex"> d = u - v </script>.</p>
 <path fill="none" stroke="#000000" d="M719.4,-24C727.66,-27.75 736.9,-31.95 745.66,-35.94"/>
 <polygon fill="#000000" stroke="#000000" points="744.37,-39.19 754.92,-40.14 747.26,-32.82 744.37,-39.19"/>
 </g>
-<!-- proc~ldp -->
+<!-- proc~hfti -->
 <g id="proc~~diff~~CalledByGraph_node3" class="node">
+<title>proc~hfti</title>
+<g id="a_proc~~diff~~CalledByGraph_node3"><a xlink:href=".././proc/hfti.html" xlink:title="hfti">
+<polygon fill="#d9534f" stroke="#d9534f" points="629,-102 575,-102 575,-78 629,-78 629,-102"/>
+<text text-anchor="middle" x="602" y="-87.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hfti</text>
+</a>
+</g>
+</g>
+<!-- proc~hfti&#45;&gt;proc~diff -->
+<g id="proc~~diff~~CalledByGraph_edge2" class="edge">
+<title>proc~hfti&#45;&gt;proc~diff</title>
+<path fill="none" stroke="#000000" d="M629.26,-84.39C659.85,-77.86 710.55,-67.04 744.84,-59.72"/>
+<polygon fill="#000000" stroke="#000000" points="745.87,-63.08 754.92,-57.57 744.41,-56.23 745.87,-63.08"/>
+</g>
+<!-- proc~ldp -->
+<g id="proc~~diff~~CalledByGraph_node4" class="node">
 <title>proc~ldp</title>
-<g id="a_proc~~diff~~CalledByGraph_node3"><a xlink:href=".././proc/ldp.html" xlink:title="ldp">
+<g id="a_proc~~diff~~CalledByGraph_node4"><a xlink:href=".././proc/ldp.html" xlink:title="ldp">
 <polygon fill="#d9534f" stroke="#d9534f" points="629,-60 575,-60 575,-36 629,-36 629,-60"/>
 <text text-anchor="middle" x="602" y="-45.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ldp</text>
 </a>
 </g>
 </g>
 <!-- proc~ldp&#45;&gt;proc~diff -->
-<g id="proc~~diff~~CalledByGraph_edge2" class="edge">
+<g id="proc~~diff~~CalledByGraph_edge3" class="edge">
 <title>proc~ldp&#45;&gt;proc~diff</title>
 <path fill="none" stroke="#000000" d="M629.26,-48.59C659.85,-49.28 710.55,-50.42 744.84,-51.19"/>
 <polygon fill="#000000" stroke="#000000" points="744.84,-54.69 754.92,-51.41 745,-47.69 744.84,-54.69"/>
@@ -211,56 +282,41 @@ Returns <script type="math/tex"> d = u - v </script>.</p>
 <path fill="none" stroke="#000000" d="M629.4,-37.2C637.57,-33.86 646.7,-30.12 655.38,-26.57"/>
 <polygon fill="#000000" stroke="#000000" points="656.99,-29.7 664.92,-22.67 654.34,-23.22 656.99,-29.7"/>
 </g>
-<!-- proc~hfti -->
-<g id="proc~~diff~~CalledByGraph_node4" class="node">
-<title>proc~hfti</title>
-<g id="a_proc~~diff~~CalledByGraph_node4"><a xlink:href=".././proc/hfti.html" xlink:title="hfti">
-<polygon fill="#d9534f" stroke="#d9534f" points="629,-102 575,-102 575,-78 629,-78 629,-102"/>
-<text text-anchor="middle" x="602" y="-87.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hfti</text>
-</a>
-</g>
-</g>
-<!-- proc~hfti&#45;&gt;proc~diff -->
-<g id="proc~~diff~~CalledByGraph_edge3" class="edge">
-<title>proc~hfti&#45;&gt;proc~diff</title>
-<path fill="none" stroke="#000000" d="M629.26,-84.39C659.85,-77.86 710.55,-67.04 744.84,-59.72"/>
-<polygon fill="#000000" stroke="#000000" points="745.87,-63.08 754.92,-57.57 744.41,-56.23 745.87,-63.08"/>
-</g>
-<!-- proc~lsi -->
-<g id="proc~~diff~~CalledByGraph_node5" class="node">
-<title>proc~lsi</title>
-<g id="a_proc~~diff~~CalledByGraph_node5"><a xlink:href=".././proc/lsi.html" xlink:title="lsi">
-<polygon fill="#d9534f" stroke="#d9534f" points="539,-61 485,-61 485,-37 539,-37 539,-61"/>
-<text text-anchor="middle" x="512" y="-46.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsi</text>
-</a>
-</g>
-</g>
-<!-- proc~lsi&#45;&gt;proc~ldp -->
-<g id="proc~~diff~~CalledByGraph_edge5" class="edge">
-<title>proc~lsi&#45;&gt;proc~ldp</title>
-<path fill="none" stroke="#000000" d="M539.4,-48.7C547.39,-48.61 556.31,-48.51 564.82,-48.41"/>
-<polygon fill="#000000" stroke="#000000" points="564.96,-51.91 574.92,-48.3 564.88,-44.91 564.96,-51.91"/>
-</g>
 <!-- proc~lsei -->
-<g id="proc~~diff~~CalledByGraph_node6" class="node">
+<g id="proc~~diff~~CalledByGraph_node5" class="node">
 <title>proc~lsei</title>
-<g id="a_proc~~diff~~CalledByGraph_node6"><a xlink:href=".././proc/lsei.html" xlink:title="lsei">
+<g id="a_proc~~diff~~CalledByGraph_node5"><a xlink:href=".././proc/lsei.html" xlink:title="lsei">
 <polygon fill="#d9534f" stroke="#d9534f" points="449,-81 395,-81 395,-57 449,-57 449,-81"/>
 <text text-anchor="middle" x="422" y="-66.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsei</text>
 </a>
 </g>
 </g>
 <!-- proc~lsei&#45;&gt;proc~hfti -->
-<g id="proc~~diff~~CalledByGraph_edge6" class="edge">
+<g id="proc~~diff~~CalledByGraph_edge5" class="edge">
 <title>proc~lsei&#45;&gt;proc~hfti</title>
 <path fill="none" stroke="#000000" d="M449.26,-72.1C479.85,-75.71 530.55,-81.69 564.84,-85.73"/>
 <polygon fill="#000000" stroke="#000000" points="564.58,-89.23 574.92,-86.92 565.4,-82.28 564.58,-89.23"/>
 </g>
+<!-- proc~lsi -->
+<g id="proc~~diff~~CalledByGraph_node6" class="node">
+<title>proc~lsi</title>
+<g id="a_proc~~diff~~CalledByGraph_node6"><a xlink:href=".././proc/lsi.html" xlink:title="lsi">
+<polygon fill="#d9534f" stroke="#d9534f" points="539,-61 485,-61 485,-37 539,-37 539,-61"/>
+<text text-anchor="middle" x="512" y="-46.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsi</text>
+</a>
+</g>
+</g>
 <!-- proc~lsei&#45;&gt;proc~lsi -->
-<g id="proc~~diff~~CalledByGraph_edge7" class="edge">
+<g id="proc~~diff~~CalledByGraph_edge8" class="edge">
 <title>proc~lsei&#45;&gt;proc~lsi</title>
 <path fill="none" stroke="#000000" d="M449.4,-63C457.48,-61.16 466.51,-59.11 475.1,-57.16"/>
 <polygon fill="#000000" stroke="#000000" points="475.94,-60.56 484.92,-54.93 474.39,-53.73 475.94,-60.56"/>
+</g>
+<!-- proc~lsi&#45;&gt;proc~ldp -->
+<g id="proc~~diff~~CalledByGraph_edge6" class="edge">
+<title>proc~lsi&#45;&gt;proc~ldp</title>
+<path fill="none" stroke="#000000" d="M539.4,-48.7C547.39,-48.61 556.31,-48.51 564.82,-48.41"/>
+<polygon fill="#000000" stroke="#000000" points="564.96,-51.91 574.92,-48.3 564.88,-44.91 564.96,-51.91"/>
 </g>
 <!-- proc~lsq -->
 <g id="proc~~diff~~CalledByGraph_node7" class="node">
@@ -272,7 +328,7 @@ Returns <script type="math/tex"> d = u - v </script>.</p>
 </g>
 </g>
 <!-- proc~lsq&#45;&gt;proc~lsei -->
-<g id="proc~~diff~~CalledByGraph_edge8" class="edge">
+<g id="proc~~diff~~CalledByGraph_edge7" class="edge">
 <title>proc~lsq&#45;&gt;proc~lsei</title>
 <path fill="none" stroke="#000000" d="M359.4,-69C367.39,-69 376.31,-69 384.82,-69"/>
 <polygon fill="#000000" stroke="#000000" points="384.92,-72.5 394.92,-69 384.92,-65.5 384.92,-72.5"/>
@@ -388,14 +444,33 @@ Returns <script type="math/tex"> d = u - v </script>.</p>
     <br>
 
     <section class="visible-xs visible-sm hidden-md">
-      <h3>Contents</h3>
- 
-<div class="panel panel-primary">
-  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
-  <div class="list-group">
-    <a class="list-group-item" href="../proc/diff.html#src">diff</a>
-  </div>
-</div>
+        <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="panel panel-primary">
+      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/diff.html#src">diff</a>
+      </div>
+    </div>
+
 
     </section>
     <br class="visible-xs visible-sm hidden-md">
@@ -435,7 +510,7 @@ Returns <script type="math/tex"> d = u - v </script>.</p>
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>slsqp was developed by Jacob Williams<br>&copy; 2022 
+        <div class="col-xs-6 col-md-6"><p>slsqp was developed by Jacob Williams<br>&copy; 2023 
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
