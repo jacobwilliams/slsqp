@@ -1,6 +1,7 @@
 project: slsqp
 project_dir: ./src
 output_dir: ./doc
+media_dir: ./media
 project_github: https://github.com/jacobwilliams/slsqp
 summary: Modern Fortran Implementation of the SLSQP Optimization Method
 author: Jacob Williams
