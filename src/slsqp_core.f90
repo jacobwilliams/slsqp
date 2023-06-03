@@ -638,7 +638,7 @@
     logical :: ok ! temp variable
     real(wp),dimension(n) :: xmx0
 
-    if (h3<acc) then
+    if (h3>=acc) then
         mode = not_converged
     else
 
