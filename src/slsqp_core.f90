@@ -8,7 +8,8 @@
 
     use slsqp_kinds
     use slsqp_support
-    use bvls_module, only: bvls_wrapper
+    use bvls_module,     only: bvls_wrapper
+    use, intrinsic :: ieee_arithmetic, only: ieee_is_nan, ieee_value, ieee_quiet_nan
 
     implicit none
 
@@ -327,6 +328,9 @@
     integer,intent(in)                  :: nnls_mode !! which NNLS method to use
 
     integer :: i, j, k
+    logical :: inconsistent_linearization !! if the SQP problem is inconsistent
+
+    inconsistent_linearization = .false. ! initialize
 
     if ( mode<0 ) then
 
@@ -380,9 +384,15 @@
             call dscal(n,h4,u,1)
             call daxpy(n,one-h4,v,1,u,1)
         end if
-        call ldl(n,l,u,+one/h1,v)
-        call ldl(n,l,v,-one/h2,u)
-
+        if (h1==zero .or. h2==zero) then
+            ! Singular update: reset hessian.
+            ! [ JW : this is based on a SciPy update ]
+            call reset_bfgs_matrix()
+            if ( ireset>5 ) return
+        else
+            call ldl(n,l,u,+one/h1,v)
+            call ldl(n,l,v,-one/h2,u)
+        end if
         ! end of main iteration
 
     else if ( mode==0 ) then
@@ -425,14 +435,14 @@
         select case (iexact)
         case(0)
             if ( h1<=h3/ten .or. line>10 ) then
-                call convergence_check()
+                call convergence_check(acc,0,-1)
             else
                 alpha = min(max(h3/(two*(h3-h1)),alphamin),alphamax)
                 call inexact_linesearch()
             end if
         case(1)
             call exact_linesearch()
-            if ( line==3 ) call convergence_check()
+            if ( line==3 ) call convergence_check(acc,0,-1)
         end select
 
         return
@@ -457,10 +467,13 @@
 
         ! augmented problem for inconsistent linearization
 
+        inconsistent_linearization = .false. ! initialize
         if ( mode==6 ) then
             if ( n==meq ) mode = 4
         end if
         if ( mode==4 ) then
+            ! Will reject this iteration if the SQP problem is inconsistent,
+            inconsistent_linearization = .true.
             do j = 1 , m
                 if ( j<=meq ) then
                     a(j,n1) = -c(j)
@@ -521,7 +534,9 @@
         ! check convergence
 
         mode = 0
-        if ( h1<acc .and. h2<acc ) return
+        if ( h1<acc .and. h2<acc .and. &
+             .not. inconsistent_linearization .and. &
+             .not. ieee_is_nan(f)) return
         h1 = zero
         do j = 1 , m
             if ( j<=meq ) then
@@ -549,7 +564,7 @@
     alpha = alphamax
     if ( iexact==1 ) then
         call exact_linesearch()
-        if ( line==3 ) call convergence_check()
+        if ( line==3 ) call convergence_check(acc,0,-1)
     else
         call inexact_linesearch()
     end if
@@ -557,11 +572,14 @@
     contains
 
         subroutine reset_bfgs_matrix()  ! 100
+            !! reset BFGS matrix
             ireset = ireset + 1
             if ( ireset>5 ) then
                 ! check relaxed convergence in case of positive directional derivative
-                mode = check_convergence(n,f,f0,x,x0,s,h3,tol,tolf,toldf,toldx,0,8)
-                return
+                ! [ JW: reuse this routine so that h3 is recomputed.
+                !   this is based on a SciPy update to SLSQP ]
+                call convergence_check(tol,0,8)
+                ! the caller should return in this case
             else
                 l(1) = zero
                 call dcopy(n2,l(1),0,l,1)
@@ -597,17 +615,22 @@
             end if
         end subroutine exact_linesearch
 
-        subroutine convergence_check()  ! 500
+        subroutine convergence_check(tolerance,converged,not_converged)  ! 500
+            real(wp),intent(in) :: tolerance !! tolerance
+            integer,intent(in) :: converged     !! mode value if converged
+            integer,intent(in) :: not_converged !! mode value if not converged
+
             h3 = zero
             do j = 1 , m
-                if ( j<=meq ) then
+                if (j<=meq) then
                     h1 = c(j)
                 else
                     h1 = zero
                 end if
                 h3 = h3 + max(-c(j),h1)
             end do
-            mode = check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,0,-1)
+            mode = check_convergence(n,f,f0,x,x0,s,h3,tolerance,tolf,toldf,toldx,&
+                                     converged,not_converged,inconsistent_linearization)
         end subroutine convergence_check
 
     end subroutine slsqpb
@@ -618,7 +641,7 @@
 !  Check for convergence.
 
     pure function check_convergence(n,f,f0,x,x0,s,h3,acc,tolf,toldf,toldx,&
-                                    converged,not_converged) result(mode)
+                                    converged,not_converged,inconsistent_linearization) result(mode)
 
     implicit none
 
@@ -635,12 +658,13 @@
     real(wp),intent(in) :: toldx
     integer,intent(in) :: converged     !! mode value if converged
     integer,intent(in) :: not_converged !! mode value if not converged
+    logical,intent(in) :: inconsistent_linearization !! if the SQP problem is inconsistent (will return `not_converged`)
     integer :: mode
 
     logical :: ok ! temp variable
     real(wp),dimension(n) :: xmx0
 
-    if (h3>=acc) then
+    if (h3>=acc .or. inconsistent_linearization .or. ieee_is_nan(f)) then
         mode = not_converged
     else
 
@@ -1099,7 +1123,7 @@
     mode = 5
     do i = 1 , mg
         do j = 1 , n
-            if ( abs(e(j,j))<epmach ) return
+            if ( abs(e(j,j))<epmach .or. ieee_is_nan(e(j,j))) return
             g(i,j) = (g(i,j)-ddot(j-1,g(i,1),lg,e(1,j),1))/e(j,j)
         end do
         h(i) = h(i) - ddot(n,g(i,1),lg,f,1)
@@ -1225,6 +1249,7 @@
                 if (rnorm>zero) then
                     !  compute solution of primal problem
                     fac=one-ddot(m,h,1,w(iy),1)
+                    if (ieee_is_nan(fac)) return
                     if (fac>=eps) then
                         mode=1
                         fac=one/fac
