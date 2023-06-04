@@ -100,7 +100,7 @@
           <li id="statements"><i class="fa fa-list-ol"></i>
             <a data-toggle="tooltip"
                data-placement="bottom" data-html="true"
-               title="<p>45.0% of total for derived types.</p>Including implementation: 337 statements, 86.6% of total for derived types.">36 statements</a>
+               title="<p>45.7% of total for derived types.</p>Including implementation: 344 statements, 86.9% of total for derived types.">37 statements</a>
           </li>
 
             <li id="source-file">
@@ -163,6 +163,7 @@
             <a class="list-group-item" href="../type/slsqp_solver.html#variable-nnls_mode~8">nnls_mode</a>
             <a class="list-group-item" href="../type/slsqp_solver.html#variable-max_iter_ls~8">max_iter_ls</a>
             <a class="list-group-item" href="../type/slsqp_solver.html#variable-user_triggered_stop">user_triggered_stop</a>
+            <a class="list-group-item" href="../type/slsqp_solver.html#variable-infinite_bound~3">infinite_bound</a>
         </div>
       </div>
     </div>
@@ -359,6 +360,7 @@ said component(s).
             <a class="list-group-item" href="../type/slsqp_solver.html#variable-nnls_mode~8">nnls_mode</a>
             <a class="list-group-item" href="../type/slsqp_solver.html#variable-max_iter_ls~8">max_iter_ls</a>
             <a class="list-group-item" href="../type/slsqp_solver.html#variable-user_triggered_stop">user_triggered_stop</a>
+            <a class="list-group-item" href="../type/slsqp_solver.html#variable-infinite_bound~3">infinite_bound</a>
         </div>
       </div>
     </div>
@@ -883,6 +885,25 @@ if <code>&lt;=0</code>, defaults to <code>3*n</code>.
 to stop the iterations</p>
             </td>
         </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-infinite_bound~3"></span>
+              real(kind=wp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>infinite_bound</strong></td>
+<td> =</td>
+                <td>huge(one)</td>
+            <td>
+                <p>"infinity" for the upper and lower bounds.
+if <code>xl&lt;=-infinite_bound</code> or <code>xu&gt;=infinite_bound</code>
+then these bounds are considered nonexistant.</p>
+            </td>
+        </tr>
     </tbody>
   </table>
 
@@ -899,7 +920,7 @@ to stop the iterations</p>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    private  subroutine <a href='../proc/initialize_slsqp.html'>initialize_slsqp</a>(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx, max_iter_ls, nnls_mode)  
+    private  subroutine <a href='../proc/initialize_slsqp.html'>initialize_slsqp</a>(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx, max_iter_ls, nnls_mode, infinite_bound)  
 </h3>
     
   <p>initialize the <a href="../type/slsqp_solver.html">slsqp_solver</a> class.  see <a href="../proc/slsqp.html">slsqp</a> for more details.</p>
@@ -1051,7 +1072,8 @@ associated if <code>gradient_mode=0</code>)</p>
             <td>::</td>
             <td><strong>xl</strong></td>
             <td>
-<p>lower bounds on <code>x</code></p>
+<p>lower bounds on <code>x</code>.
+<code>xl(i)=NaN</code> (or <code>xl(i)&lt;=-infinite_bound</code>) indicates to ignore <code>i</code>th bound</p>
             </td>
         </tr>
         <tr>
@@ -1066,7 +1088,8 @@ associated if <code>gradient_mode=0</code>)</p>
             <td>::</td>
             <td><strong>xu</strong></td>
             <td>
-<p>upper bounds on <code>x</code></p>
+<p>upper bounds on <code>x</code>.
+<code>xu(i)=NaN</code> (or <code>xu(i)&gt;=infinite_bound</code>) indicates to ignore <code>i</code>th bound</p>
             </td>
         </tr>
         <tr>
@@ -1111,7 +1134,7 @@ associated if <code>gradient_mode=0</code>)</p>
             <td>::</td>
             <td><strong>iprint</strong></td>
             <td>
-<p>unit number of status messages (default=output_unit)</p>
+<p>unit number of status messages (default=<code>output_unit</code>)</p>
             </td>
         </tr>
         <tr>
@@ -1265,6 +1288,24 @@ the <code>xl</code> or <code>xu</code> variable bounds.</p>
             <td><strong>nnls_mode</strong></td>
             <td>
 <p>Which NNLS method to use:</p><a href="../proc/initialize_slsqp.html#variable-nnls_mode~7" class="pull-right"><emph>Read more&hellip;</emph></a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>infinite_bound</strong></td>
+            <td>
+<p>"infinity" for the upper and lower bounds.
+if <code>xl&lt;=-infinite_bound</code> or <code>xu&gt;=infinite_bound</code>
+then these bounds are considered nonexistant.
+If not present then <code>huge()</code> is used for this.</p>
             </td>
         </tr>
     </tbody>
@@ -1650,6 +1691,10 @@ if no unit is specified, the <code>error_unit</code> is used.</p>
 
 <span class="w">        </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">user_triggered_stop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w">    </span><span class="c">!! if the `abort` method has been called</span>
 <span class="w">                                                    </span><span class="c">!! to stop the iterations</span>
+
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">infinite_bound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">huge</span><span class="p">(</span><span class="n">one</span><span class="p">)</span><span class="w">  </span><span class="c">!! &quot;infinity&quot; for the upper and lower bounds.</span>
+<span class="w">                                                </span><span class="c">!! if `xl&lt;=-infinite_bound` or `xu&gt;=infinite_bound`</span>
+<span class="w">                                                </span><span class="c">!! then these bounds are considered nonexistant.</span>
 
 <span class="w">    </span><span class="k">contains</span>
 

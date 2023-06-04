@@ -100,7 +100,7 @@
           <li id="statements"><i class="fa fa-list-ol"></i>
             <a data-toggle="tooltip"
                data-placement="bottom" data-html="true"
-               title=" 1.7% of total for procedures.">37 statements</a>
+               title=" 1.7% of total for procedures.">38 statements</a>
           </li>
 
             <li id="source-file">
@@ -160,7 +160,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private pure function check_convergence(n, f, f0, x, x0, s, h3, acc, tolf, toldf, toldx, converged, not_converged) result(mode)  
+    <h2>private pure function check_convergence(n, f, f0, x, x0, s, h3, acc, tolf, toldf, toldx, converged, not_converged, inconsistent_linearization) result(mode)  
 </h2>
     
 
@@ -373,6 +373,21 @@
                 <p>mode value if not converged</p>
             </td>
         </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-inconsistent_linearization"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>inconsistent_linearization</strong></td>
+            <td>
+                <p>if the SQP problem is inconsistent (will return <code>not_converged</code>)</p>
+            </td>
+        </tr>
     </tbody>
   </table>
 
@@ -542,7 +557,7 @@ implementation in a submodule of an interface in a parent module.
     <section>
     <h2><span class="anchor" id="src"></span>Source Code</h2>
     <div class="highlight"><pre><span></span><span class="w">    </span><span class="k">pure function </span><span class="n">check_convergence</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">f0</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x0</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">h3</span><span class="p">,</span><span class="n">acc</span><span class="p">,</span><span class="n">tolf</span><span class="p">,</span><span class="n">toldf</span><span class="p">,</span><span class="n">toldx</span><span class="p">,&amp;</span><span class="w"></span>
-<span class="w">                                    </span><span class="n">converged</span><span class="p">,</span><span class="n">not_converged</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span><span class="w"></span>
+<span class="w">                                    </span><span class="n">converged</span><span class="p">,</span><span class="n">not_converged</span><span class="p">,</span><span class="n">inconsistent_linearization</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 
@@ -559,12 +574,13 @@ implementation in a submodule of an interface in a parent module.
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">toldx</span><span class="w"></span>
 <span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">converged</span><span class="w">     </span><span class="c">!! mode value if converged</span>
 <span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">not_converged</span><span class="w"> </span><span class="c">!! mode value if not converged</span>
+<span class="w">    </span><span class="kt">logical</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">inconsistent_linearization</span><span class="w"> </span><span class="c">!! if the SQP problem is inconsistent (will return `not_converged`)</span>
 <span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mode</span><span class="w"></span>
 
 <span class="w">    </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ok</span><span class="w"> </span><span class="c">! temp variable</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xmx0</span><span class="w"></span>
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">h3</span><span class="o">&gt;=</span><span class="n">acc</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">h3</span><span class="o">&gt;=</span><span class="n">acc</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">inconsistent_linearization</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_nan</span><span class="p">(</span><span class="n">f</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
 <span class="k">        </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">not_converged</span><span class="w"></span>
 <span class="w">    </span><span class="k">else</span><span class="w"></span>
 

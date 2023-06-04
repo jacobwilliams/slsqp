@@ -100,7 +100,7 @@
           <li id="statements"><i class="fa fa-list-ol"></i>
             <a data-toggle="tooltip"
                data-placement="bottom" data-html="true"
-               title=" 5.0% of total for procedures.">108 statements</a>
+               title=" 5.2% of total for procedures.">114 statements</a>
           </li>
 
             <li id="source-file">
@@ -160,7 +160,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  subroutine initialize_slsqp(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx, max_iter_ls, nnls_mode)  
+    <h2>private  subroutine initialize_slsqp(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx, max_iter_ls, nnls_mode, infinite_bound)  
 </h2>
     
 
@@ -316,7 +316,8 @@ associated if <code>gradient_mode=0</code>)</p>
             <td>::</td>
             <td><strong>xl</strong></td>
             <td>
-                <p>lower bounds on <code>x</code></p>
+                <p>lower bounds on <code>x</code>.
+<code>xl(i)=NaN</code> (or <code>xl(i)&lt;=-infinite_bound</code>) indicates to ignore <code>i</code>th bound</p>
             </td>
         </tr>
         <tr>
@@ -331,7 +332,8 @@ associated if <code>gradient_mode=0</code>)</p>
             <td>::</td>
             <td><strong>xu</strong></td>
             <td>
-                <p>upper bounds on <code>x</code></p>
+                <p>upper bounds on <code>x</code>.
+<code>xu(i)=NaN</code> (or <code>xu(i)&gt;=infinite_bound</code>) indicates to ignore <code>i</code>th bound</p>
             </td>
         </tr>
         <tr>
@@ -376,7 +378,7 @@ associated if <code>gradient_mode=0</code>)</p>
             <td>::</td>
             <td><strong>iprint</strong></td>
             <td>
-                <p>unit number of status messages (default=output_unit)</p>
+                <p>unit number of status messages (default=<code>output_unit</code>)</p>
             </td>
         </tr>
         <tr>
@@ -443,6 +445,7 @@ associated if <code>gradient_mode=0</code>)</p>
 <li>2 - approximate by basic forward differences</li>
 <li>3 - approximate by basic central differences</li>
 </ul>
+<p>Note that modes 1-3 do not respect the variable bounds.</p>
             </td>
         </tr>
         <tr>
@@ -540,6 +543,24 @@ the <code>xl</code> or <code>xu</code> variable bounds.</p>
 <li>Use the original <a href="../proc/nnls.html">nnls</a></li>
 <li>Use the newer <a href="../proc/bvls.html">bvls</a></li>
 </ol>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-infinite_bound~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>infinite_bound</strong></td>
+            <td>
+                <p>"infinity" for the upper and lower bounds.
+if <code>xl&lt;=-infinite_bound</code> or <code>xu&gt;=infinite_bound</code>
+then these bounds are considered nonexistant.
+If not present then <code>huge()</code> is used for this.</p>
             </td>
         </tr>
     </tbody>
@@ -730,7 +751,7 @@ implementation in a submodule of an interface in a parent module.
     <div class="highlight"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">initialize_slsqp</span><span class="p">(</span><span class="n">me</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">meq</span><span class="p">,</span><span class="n">max_iter</span><span class="p">,</span><span class="n">acc</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">xl</span><span class="p">,</span><span class="n">xu</span><span class="p">,</span><span class="n">status_ok</span><span class="p">,&amp;</span><span class="w"></span>
 <span class="w">                                </span><span class="n">linesearch_mode</span><span class="p">,</span><span class="n">iprint</span><span class="p">,</span><span class="n">report</span><span class="p">,</span><span class="n">alphamin</span><span class="p">,</span><span class="n">alphamax</span><span class="p">,&amp;</span><span class="w"></span>
 <span class="w">                                </span><span class="n">gradient_mode</span><span class="p">,</span><span class="n">gradient_delta</span><span class="p">,</span><span class="n">tolf</span><span class="p">,</span><span class="n">toldf</span><span class="p">,</span><span class="n">toldx</span><span class="p">,&amp;</span><span class="w"></span>
-<span class="w">                                </span><span class="n">max_iter_ls</span><span class="p">,</span><span class="n">nnls_mode</span><span class="p">)</span><span class="w"></span>
+<span class="w">                                </span><span class="n">max_iter_ls</span><span class="p">,</span><span class="n">nnls_mode</span><span class="p">,</span><span class="n">infinite_bound</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 
@@ -742,12 +763,14 @@ implementation in a submodule of an interface in a parent module.
 <span class="w">    </span><span class="k">procedure</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="w">                   </span><span class="kd">::</span><span class="w"> </span><span class="n">f</span><span class="w">               </span><span class="c">!! problem function</span>
 <span class="w">    </span><span class="k">procedure</span><span class="p">(</span><span class="n">grad</span><span class="p">)</span><span class="w">                   </span><span class="kd">::</span><span class="w"> </span><span class="n">g</span><span class="w">               </span><span class="c">!! function to compute gradients (must be</span>
 <span class="w">                                                         </span><span class="c">!! associated if `gradient_mode=0`)</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">xl</span><span class="w">              </span><span class="c">!! lower bounds on `x`</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">xu</span><span class="w">              </span><span class="c">!! upper bounds on `x`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">xl</span><span class="w">              </span><span class="c">!! lower bounds on `x`.</span>
+<span class="w">                                                         </span><span class="c">!! `xl(i)=NaN` (or `xl(i)&lt;=-infinite_bound`) indicates to ignore `i`th bound</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">xu</span><span class="w">              </span><span class="c">!! upper bounds on `x`.</span>
+<span class="w">                                                         </span><span class="c">!! `xu(i)=NaN` (or `xu(i)&gt;=infinite_bound`) indicates to ignore `i`th bound</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">               </span><span class="kd">::</span><span class="w"> </span><span class="n">acc</span><span class="w">             </span><span class="c">!! accuracy</span>
 <span class="w">    </span><span class="kt">logical</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w">               </span><span class="kd">::</span><span class="w"> </span><span class="n">status_ok</span><span class="w">       </span><span class="c">!! will be false if there were errors</span>
 <span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">       </span><span class="kd">::</span><span class="w"> </span><span class="n">linesearch_mode</span><span class="w"> </span><span class="c">!! 1 = inexact (default), 2 = exact</span>
-<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">       </span><span class="kd">::</span><span class="w"> </span><span class="n">iprint</span><span class="w">          </span><span class="c">!! unit number of status messages (default=output_unit)</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">       </span><span class="kd">::</span><span class="w"> </span><span class="n">iprint</span><span class="w">          </span><span class="c">!! unit number of status messages (default=`output_unit`)</span>
 <span class="w">    </span><span class="k">procedure</span><span class="p">(</span><span class="n">iterfunc</span><span class="p">),</span><span class="k">optional</span><span class="w">      </span><span class="kd">::</span><span class="w"> </span><span class="n">report</span><span class="w">          </span><span class="c">!! user-defined procedure that will be called once per iteration</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">      </span><span class="kd">::</span><span class="w"> </span><span class="n">alphamin</span><span class="w">        </span><span class="c">!! minimum alpha for linesearch [default 0.1]</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">      </span><span class="kd">::</span><span class="w"> </span><span class="n">alphamax</span><span class="w">        </span><span class="c">!! maximum alpha for linesearch [default 1.0]</span>
@@ -757,6 +780,8 @@ implementation in a submodule of an interface in a parent module.
 <span class="w">                                                         </span><span class="c">!! * 1 - approximate by basic backward differences</span>
 <span class="w">                                                         </span><span class="c">!! * 2 - approximate by basic forward differences</span>
 <span class="w">                                                         </span><span class="c">!! * 3 - approximate by basic central differences</span>
+<span class="w">                                                         </span><span class="c">!!</span>
+<span class="w">                                                         </span><span class="c">!! Note that modes 1-3 do not respect the variable bounds.</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w">      </span><span class="kd">::</span><span class="w"> </span><span class="n">gradient_delta</span><span class="w">  </span><span class="c">!! perturbation step size (&gt;epsilon) to compute the approximated</span>
 <span class="w">                                                         </span><span class="c">!! gradient by finite differences (`gradient_mode` 1-3).</span>
 <span class="w">                                                         </span><span class="c">!! note that this is an absolute step that does not respect</span>
@@ -769,6 +794,10 @@ implementation in a submodule of an interface in a parent module.
 <span class="w">                                                         </span><span class="c">!!</span>
 <span class="w">                                                         </span><span class="c">!! 1. Use the original [[nnls]]</span>
 <span class="w">                                                         </span><span class="c">!! 2. Use the newer [[bvls]]</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">infinite_bound</span><span class="w"> </span><span class="c">!! &quot;infinity&quot; for the upper and lower bounds.</span>
+<span class="w">                                                   </span><span class="c">!! if `xl&lt;=-infinite_bound` or `xu&gt;=infinite_bound`</span>
+<span class="w">                                                   </span><span class="c">!! then these bounds are considered nonexistant.</span>
+<span class="w">                                                   </span><span class="c">!! If not present then `huge()` is used for this.</span>
 
 <span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n1</span><span class="p">,</span><span class="n">mineq</span><span class="p">,</span><span class="n">i</span><span class="w"></span>
 
@@ -788,10 +817,10 @@ implementation in a submodule of an interface in a parent module.
 <span class="k">        call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="s1">&#39;error: invalid m value:&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ival</span><span class="o">=</span><span class="n">m</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="k">else if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
 <span class="k">        call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="s1">&#39;error: invalid n value:&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ival</span><span class="o">=</span><span class="n">n</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="k">else if</span><span class="w"> </span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">xl</span><span class="o">&gt;</span><span class="n">xu</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="k">else if</span><span class="w"> </span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">xl</span><span class="o">&gt;</span><span class="n">xu</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_nan</span><span class="p">(</span><span class="n">xl</span><span class="p">)</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_nan</span><span class="p">(</span><span class="n">xu</span><span class="p">)))</span><span class="w"> </span><span class="k">then</span>
 <span class="k">        call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="s1">&#39;error: lower bounds must be &lt;= upper bounds.&#39;</span><span class="p">)</span><span class="w"></span>
 <span class="w">        </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="w"></span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">xl</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">&gt;</span><span class="n">xu</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">xl</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">&gt;</span><span class="n">xu</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_nan</span><span class="p">(</span><span class="n">xl</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_nan</span><span class="p">(</span><span class="n">xu</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span><span class="w"> </span><span class="k">then</span>
 <span class="k">                call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="s1">&#39;  xl(i)&gt;xu(i) for variable&#39;</span><span class="p">,</span><span class="n">ival</span><span class="o">=</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
 <span class="w">            </span><span class="k">end if</span>
 <span class="k">        end do</span>
@@ -875,6 +904,13 @@ implementation in a submodule of an interface in a parent module.
 <span class="k">                </span><span class="n">me</span><span class="p">%</span><span class="n">gradient_delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gradient_delta</span><span class="w"></span>
 <span class="w">            </span><span class="k">end if</span>
 <span class="k">        end if</span>
+
+<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">infinite_bound</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">me</span><span class="p">%</span><span class="n">infinite_bound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">infinite_bound</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">else</span>
+<span class="k">            </span><span class="n">me</span><span class="p">%</span><span class="n">infinite_bound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">huge</span><span class="p">(</span><span class="n">one</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">end if</span>
+
 <span class="k">    end if</span>
 
 <span class="k">    end subroutine </span><span class="n">initialize_slsqp</span><span class="w"></span>

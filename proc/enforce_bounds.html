@@ -100,7 +100,7 @@
           <li id="statements"><i class="fa fa-list-ol"></i>
             <a data-toggle="tooltip"
                data-placement="bottom" data-html="true"
-               title=" 0.5% of total for procedures.">11 statements</a>
+               title=" 0.5% of total for procedures.">12 statements</a>
           </li>
 
             <li id="source-file">
@@ -160,11 +160,11 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private pure subroutine enforce_bounds(x, xl, xu)  
+    <h2>private  subroutine enforce_bounds(x, xl, xu, infbnd)  
 </h2>
     
 
-    <p>enforce the bound constraints on x.</p>
+    <p>enforce the bound constraints on <code>x</code>.</p>
 
 
     <h3>Arguments</h3>
@@ -221,6 +221,22 @@
             <td><strong>xu</strong></td>
             <td>
                 <p>upper bounds (must be same dimension as <code>x</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-infbnd~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>infbnd</strong></td>
+            <td>
+                <p>"infinity" for the upper and lower bounds.
+Note that <code>NaN</code> may also be used to indicate no bound.</p>
             </td>
         </tr>
     </tbody>
@@ -433,17 +449,19 @@ implementation in a submodule of an interface in a parent module.
     
     <section>
     <h2><span class="anchor" id="src"></span>Source Code</h2>
-    <div class="highlight"><pre><span></span><span class="w">    </span><span class="k">pure subroutine </span><span class="n">enforce_bounds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">xl</span><span class="p">,</span><span class="n">xu</span><span class="p">)</span><span class="w"></span>
+    <div class="highlight"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">enforce_bounds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">xl</span><span class="p">,</span><span class="n">xu</span><span class="p">,</span><span class="n">infbnd</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 
 <span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="w">   </span><span class="c">!! optimization variable vector</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">xl</span><span class="w">  </span><span class="c">!! lower bounds (must be same dimension as `x`)</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">xu</span><span class="w">  </span><span class="c">!! upper bounds (must be same dimension as `x`)</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">infbnd</span><span class="w"> </span><span class="c">!! &quot;infinity&quot; for the upper and lower bounds.</span>
+<span class="w">                                  </span><span class="c">!! Note that `NaN` may also be used to indicate no bound.</span>
 
-<span class="w">    </span><span class="k">where</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">&lt;</span><span class="n">xl</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">where</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">&lt;</span><span class="n">xl</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">xl</span><span class="o">&gt;-</span><span class="n">infbnd</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_nan</span><span class="p">(</span><span class="n">xl</span><span class="p">))</span><span class="w"></span>
 <span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xl</span><span class="w"></span>
-<span class="w">    </span><span class="n">elsewhere</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">&gt;</span><span class="n">xu</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">elsewhere</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">&gt;</span><span class="n">xu</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">xu</span><span class="o">&lt;</span><span class="n">infbnd</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_nan</span><span class="p">(</span><span class="n">xu</span><span class="p">))</span><span class="w"></span>
 <span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xu</span><span class="w"></span>
 <span class="w">    </span><span class="k">end where</span>
 
