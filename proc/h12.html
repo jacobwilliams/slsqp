@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <meta name="description" content="Modern Fortran Implementation of the SLSQP Optimization Method">
+      <meta name="description" content="Modern Fortran Implementation of the SLSQP Optimization Method">
     <meta name="author" content="Jacob Williams" >
     <link rel="icon" href="../favicon.png">
 
@@ -14,16 +14,16 @@
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
-    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    
-    <script src="../js/jquery-2.1.3.min.js"></script>
-    <script src="../js/svg-pan-zoom.min.js"></script>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+         <script src="../js/jquery-2.1.3.min.js"></script>
+         <script src="../js/svg-pan-zoom.min.js"></script>
 
   </head>
 
@@ -45,33 +45,43 @@
           <ul class="nav navbar-nav">
             <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
               <a href="#" class="dropdown-toggle"
-              data-toggle="dropdown" role="button"
-              aria-haspopup="true"
-     aria-expanded="false">Contents <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-            <li><a href="../lists/files.html">Source Files</a></li>
-            <li><a href="../lists/modules.html">Modules</a></li>
-            <li><a href="../lists/procedures.html">Procedures</a></li>
-            <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
-                   <li><a href="../lists/types.html">Derived Types</a></li>
-       
-            </ul>
-        
+                 data-toggle="dropdown" role="button"
+                 aria-haspopup="true"
+                 aria-expanded="false">
+                 Contents <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                    <li><a href="../lists/files.html">Source Files</a></li>
+                  <li><a href="../lists/modules.html">Modules</a></li>
+                  <li><a href="../lists/procedures.html">Procedures</a></li>
+                  <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
+                  <li><a href="../lists/types.html">Derived Types</a></li>
+              </ul>
             </li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/absint.html">Abstract Interfaces</a></li>
-                             <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+                <li class="visible-xs hidden-sm visible-lg">
+                  <a href="../lists/files.html">Source Files</a>
+                </li>
+              <li class="visible-xs hidden-sm visible-lg">
+                <a href="../lists/modules.html">Modules</a>
+              </li>
+              <li class="visible-xs hidden-sm visible-lg">
+                <a href="../lists/procedures.html">Procedures</a>
+              </li>
+              <li class="visible-xs hidden-sm visible-lg">
+                <a href="../lists/absint.html">Abstract Interfaces</a>
+              </li>
+              <li class="visible-xs hidden-sm visible-lg">
+                <a href="../lists/types.html">Derived Types</a>
+              </li>
           </ul>
-        <form action="../search.html" class="navbar-form navbar-right" role="search">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
-        </div>
-<!--
-        <button type="submit" class="btn btn-default">Submit</button>
--->
-        </form>
+            <form action="../search.html" class="navbar-form navbar-right" role="search">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+              </div>
+              <!--
+                  <button type="submit" class="btn btn-default">Submit</button>
+                  -->
+            </form>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
@@ -167,6 +177,7 @@
 <li>Jacob Williams, refactored into modern Fortran, Jan. 2016.</li>
 </ul>
 
+
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
     <thead>
@@ -180,7 +191,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-mode~9"></span>
+              <span class="anchor" id="variable-mode~8"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -229,7 +240,7 @@ if <code>l1 &gt; m</code> the subroutine does an identity transformation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-m~4"></span>
+              <span class="anchor" id="variable-m~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -296,7 +307,7 @@ not be modified during the entry with <code>mode = 2</code>.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~6"></span>
+              <span class="anchor" id="variable-c~3"></span>
               real(kind=wp),
             </td>
 <td>intent(inout),</td>
@@ -373,175 +384,189 @@ no operations will be done on <code>c</code>.</p>
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~h12~~CalledByGraph Pages: 1 -->
-<svg id="proch12CalledByGraph" width="641pt" height="99pt"
- viewBox="0.00 0.00 641.00 98.84" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~h12~~CalledByGraph" class="graph" transform="scale(1.27 1.27) rotate(0) translate(4 121.98)">
+<svg id="proch12CalledByGraph" width="641pt" height="63pt"
+ viewBox="0.00 0.00 641.00 62.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~h12~~CalledByGraph" class="graph" transform="scale(2.04 2.04) rotate(0) translate(4 123.74)">
 <title>proc~~h12~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-121.98 813,-121.98 813,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-123.74 1306,-123.74 1306,4 -4,4"/>
 <!-- proc~h12 -->
 <g id="proc~~h12~~CalledByGraph_node1" class="node">
 <title>proc~h12</title>
-<polygon fill="none" stroke="black" points="809,-84 755,-84 755,-60 809,-60 809,-84"/>
-<text text-anchor="middle" x="782" y="-69.6" font-family="Helvetica,sans-Serif" font-size="10.50">h12</text>
+<polygon fill="none" stroke="black" points="1302,-84 1206,-84 1206,-60 1302,-60 1302,-84"/>
+<text text-anchor="middle" x="1254" y="-69.6" font-family="Helvetica,sans-Serif" font-size="10.50">slsqp_core::h12</text>
+</g>
+<!-- proc~hfti -->
+<g id="proc~~h12~~CalledByGraph_node2" class="node">
+<title>proc~hfti</title>
+<g id="a_proc~~h12~~CalledByGraph_node2"><a xlink:href=".././proc/hfti.html" xlink:title="slsqp_core::hfti">
+<polygon fill="#d9534f" stroke="#d9534f" points="1037,-104 944,-104 944,-80 1037,-80 1037,-104"/>
+<text text-anchor="middle" x="990.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::hfti</text>
+</a>
+</g>
+</g>
+<!-- proc~hfti&#45;&gt;proc~h12 -->
+<g id="proc~~h12~~CalledByGraph_edge1" class="edge">
+<title>proc~hfti&#45;&gt;proc~h12</title>
+<path fill="none" stroke="#000000" d="M1037.05,-88.52C1081.08,-85.15 1147.95,-80.03 1195.6,-76.39"/>
+<polygon fill="#000000" stroke="#000000" points="1196.06,-79.86 1205.77,-75.61 1195.53,-72.89 1196.06,-79.86"/>
 </g>
 <!-- proc~lsei -->
-<g id="proc~~h12~~CalledByGraph_node2" class="node">
+<g id="proc~~h12~~CalledByGraph_node3" class="node">
 <title>proc~lsei</title>
-<g id="a_proc~~h12~~CalledByGraph_node2"><a xlink:href=".././proc/lsei.html" xlink:title="lsei">
-<polygon fill="#d9534f" stroke="#d9534f" points="449,-104 395,-104 395,-80 449,-80 449,-104"/>
-<text text-anchor="middle" x="422" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsei</text>
+<g id="a_proc~~h12~~CalledByGraph_node3"><a xlink:href=".././proc/lsei.html" xlink:title="slsqp_core::lsei">
+<polygon fill="#d9534f" stroke="#d9534f" points="785,-104 691,-104 691,-80 785,-80 785,-104"/>
+<text text-anchor="middle" x="738" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::lsei</text>
 </a>
 </g>
 </g>
 <!-- proc~lsei&#45;&gt;proc~h12 -->
-<g id="proc~~h12~~CalledByGraph_edge1" class="edge">
+<g id="proc~~h12~~CalledByGraph_edge2" class="edge">
 <title>proc~lsei&#45;&gt;proc~h12</title>
-<path fill="none" stroke="#000000" d="M449.09,-98.77C460.1,-101.4 473.11,-104.2 485,-106 587.93,-121.54 618.9,-124.57 719,-96 727.71,-93.51 736.9,-90.3 745.47,-87.03"/>
-<polygon fill="#000000" stroke="#000000" points="746.79,-90.27 754.81,-83.36 744.23,-83.76 746.79,-90.27"/>
-</g>
-<!-- proc~hfti -->
-<g id="proc~~h12~~CalledByGraph_node3" class="node">
-<title>proc~hfti</title>
-<g id="a_proc~~h12~~CalledByGraph_node3"><a xlink:href=".././proc/hfti.html" xlink:title="hfti">
-<polygon fill="#d9534f" stroke="#d9534f" points="629,-104 575,-104 575,-80 629,-80 629,-104"/>
-<text text-anchor="middle" x="602" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hfti</text>
-</a>
-</g>
+<path fill="none" stroke="#000000" d="M785.27,-100.83C796.9,-102.8 809.38,-104.68 821,-106 975.19,-123.49 1018.05,-127.48 1170,-96 1181.7,-93.58 1194.16,-90.34 1205.77,-87.02"/>
+<polygon fill="#000000" stroke="#000000" points="1207.09,-90.28 1215.71,-84.11 1205.13,-83.56 1207.09,-90.28"/>
 </g>
 <!-- proc~lsei&#45;&gt;proc~hfti -->
-<g id="proc~~h12~~CalledByGraph_edge6" class="edge">
+<g id="proc~~h12~~CalledByGraph_edge5" class="edge">
 <title>proc~lsei&#45;&gt;proc~hfti</title>
-<path fill="none" stroke="#000000" d="M449.26,-92C479.85,-92 530.55,-92 564.84,-92"/>
-<polygon fill="#000000" stroke="#000000" points="564.92,-95.5 574.92,-92 564.92,-88.5 564.92,-95.5"/>
+<path fill="none" stroke="#000000" d="M785.24,-92C827.21,-92 889.18,-92 933.85,-92"/>
+<polygon fill="#000000" stroke="#000000" points="933.95,-95.5 943.95,-92 933.95,-88.5 933.95,-95.5"/>
 </g>
 <!-- proc~lsi -->
 <g id="proc~~h12~~CalledByGraph_node4" class="node">
 <title>proc~lsi</title>
-<g id="a_proc~~h12~~CalledByGraph_node4"><a xlink:href=".././proc/lsi.html" xlink:title="lsi">
-<polygon fill="#d9534f" stroke="#d9534f" points="539,-64 485,-64 485,-40 539,-40 539,-64"/>
-<text text-anchor="middle" x="512" y="-49.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsi</text>
+<g id="a_proc~~h12~~CalledByGraph_node4"><a xlink:href=".././proc/lsi.html" xlink:title="slsqp_core::lsi">
+<polygon fill="#d9534f" stroke="#d9534f" points="908,-64 821,-64 821,-40 908,-40 908,-64"/>
+<text text-anchor="middle" x="864.5" y="-49.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::lsi</text>
 </a>
 </g>
 </g>
 <!-- proc~lsei&#45;&gt;proc~lsi -->
 <g id="proc~~h12~~CalledByGraph_edge7" class="edge">
 <title>proc~lsei&#45;&gt;proc~lsi</title>
-<path fill="none" stroke="#000000" d="M449.4,-80C457.66,-76.25 466.9,-72.05 475.66,-68.06"/>
-<polygon fill="#000000" stroke="#000000" points="477.26,-71.18 484.92,-63.86 474.37,-64.81 477.26,-71.18"/>
-</g>
-<!-- proc~hfti&#45;&gt;proc~h12 -->
-<g id="proc~~h12~~CalledByGraph_edge2" class="edge">
-<title>proc~hfti&#45;&gt;proc~h12</title>
-<path fill="none" stroke="#000000" d="M629.26,-89.05C659.85,-85.61 710.55,-79.92 744.84,-76.06"/>
-<polygon fill="#000000" stroke="#000000" points="745.37,-79.53 754.92,-74.93 744.59,-72.57 745.37,-79.53"/>
+<path fill="none" stroke="#000000" d="M776.35,-80C788.8,-76 802.83,-71.49 815.94,-67.28"/>
+<polygon fill="#000000" stroke="#000000" points="817.29,-70.52 825.74,-64.13 815.15,-63.86 817.29,-70.52"/>
 </g>
 <!-- proc~lsi&#45;&gt;proc~h12 -->
 <g id="proc~~h12~~CalledByGraph_edge3" class="edge">
 <title>proc~lsi&#45;&gt;proc~h12</title>
-<path fill="none" stroke="#000000" d="M539.18,-53.95C587.32,-57.55 689.93,-65.2 744.74,-69.29"/>
-<polygon fill="#000000" stroke="#000000" points="744.48,-72.78 754.71,-70.04 745,-65.8 744.48,-72.78"/>
+<path fill="none" stroke="#000000" d="M908.08,-54.2C977.98,-57.81 1117.12,-64.99 1195.64,-69.04"/>
+<polygon fill="#000000" stroke="#000000" points="1195.67,-72.55 1205.83,-69.57 1196.03,-65.55 1195.67,-72.55"/>
 </g>
 <!-- proc~ldp -->
-<g id="proc~~h12~~CalledByGraph_node7" class="node">
+<g id="proc~~h12~~CalledByGraph_node6" class="node">
 <title>proc~ldp</title>
-<g id="a_proc~~h12~~CalledByGraph_node7"><a xlink:href=".././proc/ldp.html" xlink:title="ldp">
-<polygon fill="#d9534f" stroke="#d9534f" points="629,-24 575,-24 575,0 629,0 629,-24"/>
-<text text-anchor="middle" x="602" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ldp</text>
+<g id="a_proc~~h12~~CalledByGraph_node6"><a xlink:href=".././proc/ldp.html" xlink:title="slsqp_core::ldp">
+<polygon fill="#d9534f" stroke="#d9534f" points="1036.5,-24 944.5,-24 944.5,0 1036.5,0 1036.5,-24"/>
+<text text-anchor="middle" x="990.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::ldp</text>
 </a>
 </g>
 </g>
 <!-- proc~lsi&#45;&gt;proc~ldp -->
-<g id="proc~~h12~~CalledByGraph_edge10" class="edge">
+<g id="proc~~h12~~CalledByGraph_edge9" class="edge">
 <title>proc~lsi&#45;&gt;proc~ldp</title>
-<path fill="none" stroke="#000000" d="M539.4,-40C547.66,-36.25 556.9,-32.05 565.66,-28.06"/>
-<polygon fill="#000000" stroke="#000000" points="567.26,-31.18 574.92,-23.86 564.37,-24.81 567.26,-31.18"/>
+<path fill="none" stroke="#000000" d="M902.7,-40C915.1,-36 929.07,-31.49 942.13,-27.28"/>
+<polygon fill="#000000" stroke="#000000" points="943.45,-30.53 951.89,-24.13 941.3,-23.87 943.45,-30.53"/>
 </g>
 <!-- proc~nnls -->
 <g id="proc~~h12~~CalledByGraph_node5" class="node">
 <title>proc~nnls</title>
-<g id="a_proc~~h12~~CalledByGraph_node5"><a xlink:href=".././proc/nnls.html" xlink:title="nnls">
-<polygon fill="#d9534f" stroke="#d9534f" points="719,-24 665,-24 665,0 719,0 719,-24"/>
-<text text-anchor="middle" x="692" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">nnls</text>
+<g id="a_proc~~h12~~CalledByGraph_node5"><a xlink:href=".././proc/nnls.html" xlink:title="slsqp_core::nnls">
+<polygon fill="#d9534f" stroke="#d9534f" points="1170,-24 1073,-24 1073,0 1170,0 1170,-24"/>
+<text text-anchor="middle" x="1121.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::nnls</text>
 </a>
 </g>
 </g>
 <!-- proc~nnls&#45;&gt;proc~h12 -->
 <g id="proc~~h12~~CalledByGraph_edge4" class="edge">
 <title>proc~nnls&#45;&gt;proc~h12</title>
-<path fill="none" stroke="#000000" d="M710.81,-24.14C723.45,-32.76 740.63,-44.48 754.83,-54.16"/>
-<polygon fill="#000000" stroke="#000000" points="752.98,-57.13 763.22,-59.88 756.93,-51.35 752.98,-57.13"/>
-</g>
-<!-- proc~lsq -->
-<g id="proc~~h12~~CalledByGraph_node6" class="node">
-<title>proc~lsq</title>
-<g id="a_proc~~h12~~CalledByGraph_node6"><a xlink:href=".././proc/lsq.html" xlink:title="lsq">
-<polygon fill="#d9534f" stroke="#d9534f" points="359,-104 305,-104 305,-80 359,-80 359,-104"/>
-<text text-anchor="middle" x="332" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsq</text>
-</a>
-</g>
-</g>
-<!-- proc~lsq&#45;&gt;proc~lsei -->
-<g id="proc~~h12~~CalledByGraph_edge5" class="edge">
-<title>proc~lsq&#45;&gt;proc~lsei</title>
-<path fill="none" stroke="#000000" d="M359.4,-92C367.39,-92 376.31,-92 384.82,-92"/>
-<polygon fill="#000000" stroke="#000000" points="384.92,-95.5 394.92,-92 384.92,-88.5 384.92,-95.5"/>
+<path fill="none" stroke="#000000" d="M1148.91,-24.14C1168.63,-33.21 1195.8,-45.7 1217.43,-55.65"/>
+<polygon fill="#000000" stroke="#000000" points="1216.08,-58.88 1226.63,-59.88 1219.01,-52.52 1216.08,-58.88"/>
 </g>
 <!-- proc~ldp&#45;&gt;proc~nnls -->
 <g id="proc~~h12~~CalledByGraph_edge8" class="edge">
 <title>proc~ldp&#45;&gt;proc~nnls</title>
-<path fill="none" stroke="#000000" d="M629.4,-12C637.39,-12 646.31,-12 654.82,-12"/>
-<polygon fill="#000000" stroke="#000000" points="654.92,-15.5 664.92,-12 654.92,-8.5 654.92,-15.5"/>
+<path fill="none" stroke="#000000" d="M1036.62,-12C1045.08,-12 1054.03,-12 1062.81,-12"/>
+<polygon fill="#000000" stroke="#000000" points="1063,-15.5 1073,-12 1063,-8.5 1063,-15.5"/>
+</g>
+<!-- proc~lsq -->
+<g id="proc~~h12~~CalledByGraph_node7" class="node">
+<title>proc~lsq</title>
+<g id="a_proc~~h12~~CalledByGraph_node7"><a xlink:href=".././proc/lsq.html" xlink:title="slsqp_core::lsq">
+<polygon fill="#d9534f" stroke="#d9534f" points="655,-104 564,-104 564,-80 655,-80 655,-104"/>
+<text text-anchor="middle" x="609.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::lsq</text>
+</a>
+</g>
+</g>
+<!-- proc~lsq&#45;&gt;proc~lsei -->
+<g id="proc~~h12~~CalledByGraph_edge6" class="edge">
+<title>proc~lsq&#45;&gt;proc~lsei</title>
+<path fill="none" stroke="#000000" d="M655.1,-92C663.29,-92 671.94,-92 680.43,-92"/>
+<polygon fill="#000000" stroke="#000000" points="680.66,-95.5 690.66,-92 680.66,-88.5 680.66,-95.5"/>
 </g>
 <!-- proc~slsqpb -->
 <g id="proc~~h12~~CalledByGraph_node8" class="node">
 <title>proc~slsqpb</title>
-<g id="a_proc~~h12~~CalledByGraph_node8"><a xlink:href=".././proc/slsqpb.html" xlink:title="slsqpb">
-<polygon fill="#d9534f" stroke="#d9534f" points="269,-104 215,-104 215,-80 269,-80 269,-104"/>
-<text text-anchor="middle" x="242" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqpb</text>
+<g id="a_proc~~h12~~CalledByGraph_node8"><a xlink:href=".././proc/slsqpb.html" xlink:title="slsqp_core::slsqpb">
+<polygon fill="#d9534f" stroke="#d9534f" points="528,-104 419,-104 419,-80 528,-80 528,-104"/>
+<text text-anchor="middle" x="473.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::slsqpb</text>
 </a>
 </g>
 </g>
 <!-- proc~slsqpb&#45;&gt;proc~lsq -->
-<g id="proc~~h12~~CalledByGraph_edge9" class="edge">
+<g id="proc~~h12~~CalledByGraph_edge10" class="edge">
 <title>proc~slsqpb&#45;&gt;proc~lsq</title>
-<path fill="none" stroke="#000000" d="M269.4,-92C277.39,-92 286.31,-92 294.82,-92"/>
-<polygon fill="#000000" stroke="#000000" points="294.92,-95.5 304.92,-92 294.92,-88.5 294.92,-95.5"/>
+<path fill="none" stroke="#000000" d="M528.23,-92C536.62,-92 545.29,-92 553.7,-92"/>
+<polygon fill="#000000" stroke="#000000" points="553.79,-95.5 563.79,-92 553.79,-88.5 553.79,-95.5"/>
 </g>
 <!-- proc~slsqp -->
 <g id="proc~~h12~~CalledByGraph_node9" class="node">
 <title>proc~slsqp</title>
-<g id="a_proc~~h12~~CalledByGraph_node9"><a xlink:href=".././proc/slsqp.html" xlink:title="slsqp">
-<polygon fill="#d9534f" stroke="#d9534f" points="179,-104 125,-104 125,-80 179,-80 179,-104"/>
-<text text-anchor="middle" x="152" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp</text>
+<g id="a_proc~~h12~~CalledByGraph_node9"><a xlink:href=".././proc/slsqp.html" xlink:title="slsqp_core::slsqp">
+<polygon fill="#d9534f" stroke="#d9534f" points="383,-104 280,-104 280,-80 383,-80 383,-104"/>
+<text text-anchor="middle" x="331.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::slsqp</text>
 </a>
 </g>
 </g>
 <!-- proc~slsqp&#45;&gt;proc~slsqpb -->
 <g id="proc~~h12~~CalledByGraph_edge11" class="edge">
 <title>proc~slsqp&#45;&gt;proc~slsqpb</title>
-<path fill="none" stroke="#000000" d="M179.4,-92C187.39,-92 196.31,-92 204.82,-92"/>
-<polygon fill="#000000" stroke="#000000" points="204.92,-95.5 214.92,-92 204.92,-88.5 204.92,-95.5"/>
+<path fill="none" stroke="#000000" d="M383.04,-92C391.37,-92 400.11,-92 408.71,-92"/>
+<polygon fill="#000000" stroke="#000000" points="408.72,-95.5 418.72,-92 408.72,-88.5 408.72,-95.5"/>
 </g>
 <!-- proc~slsqp_wrapper -->
 <g id="proc~~h12~~CalledByGraph_node10" class="node">
 <title>proc~slsqp_wrapper</title>
-<g id="a_proc~~h12~~CalledByGraph_node10"><a xlink:href=".././proc/slsqp_wrapper.html" xlink:title="slsqp_wrapper">
-<polygon fill="#d9534f" stroke="#d9534f" points="89,-104 0,-104 0,-80 89,-80 89,-104"/>
-<text text-anchor="middle" x="44.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_wrapper</text>
+<g id="a_proc~~h12~~CalledByGraph_node10"><a xlink:href=".././proc/slsqp_wrapper.html" xlink:title="slsqp_module::slsqp_solver%slsqp_wrapper">
+<polygon fill="#d9534f" stroke="#d9534f" points="244,-104 0,-104 0,-80 244,-80 244,-104"/>
+<text text-anchor="middle" x="122" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_module::slsqp_solver%slsqp_wrapper</text>
 </a>
 </g>
 </g>
 <!-- proc~slsqp_wrapper&#45;&gt;proc~slsqp -->
 <g id="proc~~h12~~CalledByGraph_edge12" class="edge">
 <title>proc~slsqp_wrapper&#45;&gt;proc~slsqp</title>
-<path fill="none" stroke="#000000" d="M89.02,-92C97.56,-92 106.43,-92 114.71,-92"/>
-<polygon fill="#000000" stroke="#000000" points="114.8,-95.5 124.8,-92 114.8,-88.5 114.8,-95.5"/>
+<path fill="none" stroke="#000000" d="M244,-92C252.76,-92 261.34,-92 269.5,-92"/>
+<polygon fill="#000000" stroke="#000000" points="269.58,-95.5 279.58,-92 269.58,-88.5 269.58,-95.5"/>
 </g>
 </g>
 </svg>
-</div><script>var panproch12CalledByGraph = svgPanZoom('#proch12CalledByGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
-    <p>Nodes of different colours represent the following: </p>
-    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+</div>                <script>
+                  var panproch12CalledByGraph = svgPanZoom('#proch12CalledByGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>        <div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div>
+          <div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                </div>
+              <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Generated by graphviz version 2.43.0 (0)
@@ -591,13 +616,15 @@ no operations will be done on <code>c</code>.</p>
 </g>
 </svg>
 
-    
-    <p>Solid arrows point from a procedure to one which it calls. Dashed 
-    arrows point from an interface to procedures which implement that interface.
-    This could include the module procedures in a generic interface or the
-    implementation in a submodule of an interface in a parent module.
-    </p>
-    </div></div></div></div>
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <br>
@@ -738,50 +765,50 @@ no operations will be done on <code>c</code>.</p>
     </div>
   </div>
 
-    <hr>    
+      <hr>
     </div> <!-- /container -->
     <footer>
       <div class="container">
-      <div class="row">
-        <div class="col-xs-6 col-md-6"><p>slsqp was developed by Jacob Williams<br>&copy; 2023 
+        <div class="row">
+          <div class="col-xs-6 col-md-6"><p>slsqp was developed by Jacob Williams<br>&copy; 2023 
 </p>
+          </div>
+          <div class="col-xs-6 col-md-6">
+            <p class="text-right">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
         </div>
-        <div class="col-xs-6 col-md-6">
-          <p class="text-right">
-            Documentation generated by 
-            <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
-          </p>
-        </div>
-      </div>
-      <br>
-      </div> <!-- /container -->    
+        <br>
+      </div> <!-- /container -->
     </footer>
 
     <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-<!--
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
--->
-    <script src="../js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+         ================================================== -->
+         <!-- Placed at the end of the document so the pages load faster -->
+    <!--
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        -->
+        <script src="../js/bootstrap.min.js"></script>
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="../js/ie10-viewport-bug-workaround.js"></script>
 
-    <!-- MathJax JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-      });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script src="../tipuesearch/tipuesearch_content.js"></script>
-    <script src="../tipuesearch/tipuesearch_set.js"></script>
-    <script src="../tipuesearch/tipuesearch.js"></script>
-    
+        <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
   </body>
 </html>
