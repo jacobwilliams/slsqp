@@ -866,13 +866,7 @@
          if (ieee_is_nan(xl(i)) .or. xl(i)<=-infbnd) then
             num_unbounded = num_unbounded + 1
          else
-            w(il) = xl(i)
-            do j=1,n
-               w(ip + m1*(j-1)) = zero
-            end do
-            w(ip + m1*(i-1)) = one
-            ip = ip + 1
-            il = il + 1
+            call update_w(xl(i), one)
          end if
       end do
 
@@ -880,13 +874,7 @@
          if (ieee_is_nan(xu(i)) .or. xu(i)>=infbnd) then
             num_unbounded = num_unbounded + 1
          else
-            w(il) = -xu(i)
-            do j=1,n
-               w(ip + m1*(j-1)) = zero
-            end do
-            w(ip + m1*(i-1)) = -one
-            ip = ip + 1
-            il = il + 1
+            call update_w(xu(i), -one)
          end if
       end do
 
@@ -905,6 +893,20 @@
          end if
          call enforce_bounds(x,xl,xu,infbnd)  ! to ensure that bounds are not violated
       end if
+
+      contains
+
+      subroutine update_w(val, fact)
+        real(wp),intent(in) :: val  !! xu(i) or xl(i)
+        real(wp),intent(in) :: fact !! -1 or 1
+        w(il) = fact*val
+        do j=1,n
+           w(ip + m1*(j-1)) = zero
+        end do
+        w(ip + m1*(i-1)) = fact
+        ip = ip + 1
+        il = il + 1
+      end subroutine update_w
 
       end subroutine lsq
 !*******************************************************************************

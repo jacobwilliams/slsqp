@@ -7,6 +7,7 @@
 
     use slsqp_module
     use slsqp_kinds
+    use, intrinsic :: ieee_arithmetic, only: ieee_value, ieee_quiet_nan
 
     implicit none
 
@@ -14,8 +15,6 @@
     integer,parameter               :: m = 1                    !! total number of constraints
     integer,parameter               :: meq = 1                  !! number of equality constraints
     integer,parameter               :: max_iter = 100           !! maximum number of allowed iterations
-    real(wp),dimension(n),parameter :: xl = [-1.0_wp, -1.0_wp]  !! lower bounds
-    real(wp),dimension(n),parameter :: xu = [ 1.0_wp,  1.0_wp]  !! upper bounds
     real(wp),parameter              :: acc   = 1.e-8_wp         !! accuracy tolerance
     real(wp),parameter              :: tolf  = 0.e+0_wp         !! accuracy tolerance over f:  if |f| < tolf then stop
     real(wp),parameter              :: toldf = 0.e+0_wp         !! accuracy tolerance over df: if |fn+1 - fn| < toldf then stop.
@@ -31,6 +30,15 @@
     real(wp)              :: flast
     real(wp),dimension(2) :: xlast
     real(wp),dimension(1) :: clast
+    real(wp),dimension(n) :: xl   !! lower bounds
+    real(wp),dimension(n) :: xu   !! upper bounds
+    real(wp) :: nan !! not a number
+
+    nan = ieee_value(1.0_wp, ieee_quiet_nan)
+
+    ! test with some missing bounds:
+    xl = [-1.0_wp, nan]
+    xu = [nan,     1.0_wp]
 
     write(*,*) ''
     write(*,*) '-------------------------------'
