@@ -11,7 +11,8 @@
     use slsqp_kinds
     use slsqp_support
     use slsqp_core
-    use iso_fortran_env, only: error_unit,output_unit
+    use, intrinsic :: iso_fortran_env, only: error_unit,output_unit
+    use, intrinsic :: ieee_arithmetic, only: ieee_is_nan
 
     implicit none
 
@@ -78,6 +79,10 @@
 
         logical :: user_triggered_stop = .false.    !! if the `abort` method has been called
                                                     !! to stop the iterations
+
+        real(wp) :: infinite_bound = huge(one)  !! "infinity" for the upper and lower bounds.
+                                                !! if `xl<=-infinite_bound` or `xu>=infinite_bound`
+                                                !! then these bounds are considered nonexistant.
 
     contains
 
@@ -149,7 +154,7 @@
     subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok,&
                                 linesearch_mode,iprint,report,alphamin,alphamax,&
                                 gradient_mode,gradient_delta,tolf,toldf,toldx,&
-                                max_iter_ls,nnls_mode)
+                                max_iter_ls,nnls_mode,infinite_bound)
 
     implicit none
 
@@ -161,12 +166,14 @@
     procedure(func)                   :: f               !! problem function
     procedure(grad)                   :: g               !! function to compute gradients (must be
                                                          !! associated if `gradient_mode=0`)
-    real(wp),dimension(n),intent(in)  :: xl              !! lower bounds on `x`
-    real(wp),dimension(n),intent(in)  :: xu              !! upper bounds on `x`
+    real(wp),dimension(n),intent(in)  :: xl              !! lower bounds on `x`.
+                                                         !! `xl(i)=NaN` (or `xl(i)<=-infinite_bound`) indicates to ignore `i`th bound
+    real(wp),dimension(n),intent(in)  :: xu              !! upper bounds on `x`.
+                                                         !! `xu(i)=NaN` (or `xu(i)>=infinite_bound`) indicates to ignore `i`th bound
     real(wp),intent(in)               :: acc             !! accuracy
     logical,intent(out)               :: status_ok       !! will be false if there were errors
     integer,intent(in),optional       :: linesearch_mode !! 1 = inexact (default), 2 = exact
-    integer,intent(in),optional       :: iprint          !! unit number of status messages (default=output_unit)
+    integer,intent(in),optional       :: iprint          !! unit number of status messages (default=`output_unit`)
     procedure(iterfunc),optional      :: report          !! user-defined procedure that will be called once per iteration
     real(wp),intent(in),optional      :: alphamin        !! minimum alpha for linesearch [default 0.1]
     real(wp),intent(in),optional      :: alphamax        !! maximum alpha for linesearch [default 1.0]
@@ -176,6 +183,8 @@
                                                          !! * 1 - approximate by basic backward differences
                                                          !! * 2 - approximate by basic forward differences
                                                          !! * 3 - approximate by basic central differences
+                                                         !!
+                                                         !! Note that modes 1-3 do not respect the variable bounds.
     real(wp),intent(in),optional      :: gradient_delta  !! perturbation step size (>epsilon) to compute the approximated
                                                          !! gradient by finite differences (`gradient_mode` 1-3).
                                                          !! note that this is an absolute step that does not respect
@@ -188,6 +197,10 @@
                                                          !!
                                                          !! 1. Use the original [[nnls]]
                                                          !! 2. Use the newer [[bvls]]
+    real(wp),intent(in),optional :: infinite_bound !! "infinity" for the upper and lower bounds.
+                                                   !! if `xl<=-infinite_bound` or `xu>=infinite_bound`
+                                                   !! then these bounds are considered nonexistant.
+                                                   !! If not present then `huge()` is used for this.
 
     integer :: n1,mineq,i
 
@@ -207,10 +220,10 @@
         call me%report_message('error: invalid m value:', ival=m)
     else if (n<1) then
         call me%report_message('error: invalid n value:', ival=n)
-    else if (any(xl>xu)) then
+    else if (any(xl>xu .and. .not. ieee_is_nan(xl) .and. .not. ieee_is_nan(xu))) then
         call me%report_message('error: lower bounds must be <= upper bounds.')
         do i=1,n
-            if (xl(i)>xu(i)) then
+            if (xl(i)>xu(i) .and. .not. ieee_is_nan(xl(i)) .and. .not. ieee_is_nan(xu(i))) then
                 call me%report_message('  xl(i)>xu(i) for variable',ival=i)
             end if
         end do
@@ -294,6 +307,13 @@
                 me%gradient_delta = gradient_delta
             end if
         end if
+
+        if (present(infinite_bound)) then
+            me%infinite_bound = abs(infinite_bound)
+        else
+            me%infinite_bound = huge(one)
+        end if
+
     end if
 
     end subroutine initialize_slsqp
@@ -475,7 +495,8 @@
                    me%w,me%l_w, &
                    me%slsqpb,me%linmin,me%alphamin,me%alphamax,&
                    me%tolf,me%toldf,me%toldx,&
-                   me%max_iter_ls,me%nnls_mode)
+                   me%max_iter_ls,me%nnls_mode,&
+                   me%infinite_bound)
 
         if (mode==1 .or. mode==-1) then
             !continue to next call
