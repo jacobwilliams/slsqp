@@ -173,7 +173,7 @@
     real(wp),intent(in)               :: acc             !! accuracy
     logical,intent(out)               :: status_ok       !! will be false if there were errors
     integer,intent(in),optional       :: linesearch_mode !! 1 = inexact (default), 2 = exact
-    integer,intent(in),optional       :: iprint          !! unit number of status messages (default=output_unit)
+    integer,intent(in),optional       :: iprint          !! unit number of status messages (default=`output_unit`)
     procedure(iterfunc),optional      :: report          !! user-defined procedure that will be called once per iteration
     real(wp),intent(in),optional      :: alphamin        !! minimum alpha for linesearch [default 0.1]
     real(wp),intent(in),optional      :: alphamax        !! maximum alpha for linesearch [default 1.0]
@@ -183,6 +183,8 @@
                                                          !! * 1 - approximate by basic backward differences
                                                          !! * 2 - approximate by basic forward differences
                                                          !! * 3 - approximate by basic central differences
+                                                         !!
+                                                         !! Note that modes 1-3 do not respect the variable bounds.
     real(wp),intent(in),optional      :: gradient_delta  !! perturbation step size (>epsilon) to compute the approximated
                                                          !! gradient by finite differences (`gradient_mode` 1-3).
                                                          !! note that this is an absolute step that does not respect
