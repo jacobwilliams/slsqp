@@ -68,6 +68,8 @@
         write(*,*) 'istat      :', istat
         write(*,*) 'iterations :', iterations
         write(*,*) ''
+        if (any(abs(x - [0.78641515097183889_wp, 0.61769831659541152_wp]) > 1.0e-4_wp)) &
+            error stop 'Error: incorrect solution'
     else
         error stop 'error calling slsqp.'
     end if
