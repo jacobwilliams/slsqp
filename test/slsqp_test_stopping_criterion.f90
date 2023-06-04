@@ -32,6 +32,12 @@
     real(wp),dimension(2) :: xlast
     real(wp),dimension(1) :: clast
 
+    write(*,*) ''
+    write(*,*) '-------------------------------'
+    write(*,*) ' slsqp_test_stopping_criterion '
+    write(*,*) '-------------------------------'
+    write(*,*) ''
+
     x = [0.1_wp, 0.1_wp] !initial guess
     xlast = x
     call rosenbrock_func(solver,xlast,flast,clast)

@@ -115,7 +115,7 @@
 
     subroutine slsqp(m,meq,la,n,x,xl,xu,f,c,g,a,acc,iter,mode,w,l_w, &
                      sdat,ldat,alphamin,alphamax,tolf,toldf,toldx,&
-                     max_iter_ls,nnls_mode)
+                     max_iter_ls,nnls_mode,infinite_bound)
 
     implicit none
 
@@ -206,10 +206,21 @@
     real(wp),intent(in) :: toldx     !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop.
     integer,intent(in)  :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
     integer,intent(in)  :: nnls_mode !! which NNLS method to use
+    real(wp),intent(in) :: infinite_bound !! "infinity" for the upper and lower bounds.
+                                          !! if `xl<=-infinite_bound` or `xu>=infinite_bound`
+                                          !! then these bounds are considered nonexistant.
+                                          !! If `infinite_bound=0` then `huge()` is used for this.
 
     integer :: il , im , ir , is , iu , iv , iw , ix , mineq, n1
+    real(wp) :: infBnd !! local copy of `infinite_bound`
 
-    !   check length of working arrays
+    if (infinite_bound==zero) then
+        infBnd = huge(one)
+    else
+        infBnd = abs(infinite_bound)
+    end if
+
+    ! check length of working arrays
     n1 = n + 1
     mineq = m - meq + n1 + n1
     il = (3*n1+m)*(n1+1) + (n1-meq+1)*(mineq+2) + 2*mineq + (n1+mineq)&
@@ -229,7 +240,7 @@
         return
     end if
 
-    !   prepare data for calling sqpbdy  -  initial addresses in w
+    ! prepare data for calling sqpbdy  -  initial addresses in w
 
     im = 1
     il = im + max(1,m)
@@ -250,7 +261,7 @@
                 sdat%n1,sdat%n2,sdat%n3,sdat%t0,sdat%gs,sdat%tol,sdat%line,&
                 sdat%alpha,sdat%iexact,sdat%incons,sdat%ireset,sdat%itermx,&
                 ldat,alphamin,alphamax,tolf,toldf,toldx,&
-                max_iter_ls,nnls_mode)
+                max_iter_ls,nnls_mode,infBnd)
 
     end subroutine slsqp
 !*******************************************************************************
@@ -266,7 +277,7 @@
                       t,f0,h1,h2,h3,h4,n1,n2,n3,t0,gs,tol,line,&
                       alpha,iexact,incons,ireset,itermx,ldat,&
                       alphamin,alphamax,tolf,toldf,toldx,&
-                      max_iter_ls,nnls_mode)
+                      max_iter_ls,nnls_mode,infBnd)
     implicit none
 
     integer,intent(in)                  :: m
@@ -326,6 +337,7 @@
     real(wp),intent(in)                 :: toldx     !! stopping criterion if \( ||x_{n+1} - x_n|| < toldx \) then stop
     integer,intent(in)                  :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
     integer,intent(in)                  :: nnls_mode !! which NNLS method to use
+    real(wp),intent(in)                 :: infBnd !! "infinity" for the upper and lower bounds.
 
     integer :: i, j, k
     logical :: inconsistent_linearization !! if the SQP problem is inconsistent
@@ -463,7 +475,7 @@
         call daxpy(n,-one,x,1,u,1)
         call daxpy(n,-one,x,1,v,1)
         h4 = one
-        call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls,nnls_mode)
+        call lsq(m,meq,n,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls,nnls_mode,infBnd)
 
         ! augmented problem for inconsistent linearization
 
@@ -491,7 +503,7 @@
             v(n1) = one
             incons = 0
             do
-                call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls,nnls_mode)
+                call lsq(m,meq,n1,n3,la,l,g,a,c,u,v,s,r,w,mode,max_iter_ls,nnls_mode,infBnd)
                 h4 = one - s(n1)
                 if ( mode==4 ) then
                     l(n3) = ten*l(n3)
@@ -597,7 +609,7 @@
             call dscal(n,alpha,s,1)
             call dcopy(n,x0,1,x,1)
             call daxpy(n,one,s,1,x,1)
-            call enforce_bounds(x,xl,xu)  ! ensure that x doesn't violate bounds
+            call enforce_bounds(x,xl,xu,infBnd)  ! ensure that x doesn't violate bounds
             mode = 1
         end subroutine inexact_linesearch
 
@@ -723,7 +735,7 @@
 !  * coded dieter kraft, april 1987
 !  * revised march 1989
 
-    subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,mode,max_iter_ls,nnls_mode)
+    subroutine lsq(m,meq,n,nl,la,l,g,a,b,xl,xu,x,y,w,mode,max_iter_ls,nnls_mode,infBnd)
 
     implicit none
 
@@ -746,6 +758,7 @@
                                     !! * **7:** rank defect in [[hfti]]
     integer,intent(in) :: max_iter_ls !! maximum number of iterations in the [[nnls]] problem
     integer,intent(in) :: nnls_mode !! which NNLS method to use
+    real(wp),intent(in) :: infbnd !! "infinity" for the upper and lower bounds.
 
     real(wp),dimension(nl)   :: l
     real(wp),dimension(n)    :: g
@@ -757,7 +770,7 @@
     real(wp) :: diag , xnorm
     integer :: i , ic , id , ie , if , ig , ih , il , im , ip , &
                iu , iw , i1 , i2 , i3 , i4 , mineq , &
-               m1 , n1 , n2 , n3
+               m1 , n1 , n2 , n3, num_unbounded, j
 
       n1 = n + 1
       mineq = m - meq
@@ -824,57 +837,75 @@
       ig = id + meq
 
       if ( mineq>0 ) then
-         !  recover matrix g from lower part of a
+         ! recover matrix g from lower part of a
+         ! The matrix G(mineq+2*n,m1) is stored at w(ig)
+         ! Not all rows will be filled if some of the upper/lower
+         ! bounds are unbounded.
          do i = 1 , mineq
             call dcopy(n,a(meq+i,1),la,w(ig-1+i),m1)
          end do
       end if
 
-      !  augment matrix g by +i and -i
-
-      ip = ig + mineq
-      do i = 1 , n
-         w(ip-1+i) = zero
-         call dcopy(n,w(ip-1+i),0,w(ip-1+i),m1)
-      end do
-      w(ip) = one
-      call dcopy(n,w(ip),0,w(ip),m1+1)
-
-      im = ip + n
-      do i = 1 , n
-         w(im-1+i) = zero
-         call dcopy(n,w(im-1+i),0,w(im-1+i),m1)
-      end do
-      w(im) = -one
-      call dcopy(n,w(im),0,w(im),m1+1)
-
       ih = ig + m1*n
+      iw = ih + mineq + 2*n
 
       if ( mineq>0 ) then
          ! recover h from lower part of b
+         ! The vector H(mineq+2*n) is stored at w(ih)
          call dcopy(mineq,b(meq+1),1,w(ih),1)
          call dscal(mineq,-one,w(ih),1)
       end if
 
+      !  augment matrix g by +i and -i, and,
       !  augment vector h by xl and xu
+      !  NaN or infBnd value indicates no bound
 
+      ip = ig + mineq
       il = ih + mineq
-      call dcopy(n,xl,1,w(il),1)
-      iu = il + n
-      call dcopy(n,xu,1,w(iu),1)
-      call dscal(n,-one,w(iu),1)
+      num_unbounded = 0
 
-      iw = iu + n
+      do i=1,n
+         if (ieee_is_nan(xl(i)) .or. xl(i)<=-infbnd) then
+            num_unbounded = num_unbounded + 1
+         else
+            w(il) = xl(i)
+            do j=1,n
+               w(ip + m1*(j-1)) = zero
+            end do
+            w(ip + m1*(i-1)) = one
+            ip = ip + 1
+            il = il + 1
+         end if
+      end do
+
+      do i=1,n
+         if (ieee_is_nan(xu(i)) .or. xu(i)>=infbnd) then
+            num_unbounded = num_unbounded + 1
+         else
+            w(il) = -xu(i)
+            do j=1,n
+               w(ip + m1*(j-1)) = zero
+            end do
+            w(ip + m1*(i-1)) = -one
+            ip = ip + 1
+            il = il + 1
+         end if
+      end do
 
       call lsei(w(ic),w(id),w(ie),w(if),w(ig),w(ih),max(1,meq),meq,n,n, &
-                m1,m1,n,x,xnorm,w(iw),mode,max_iter_ls,nnls_mode)
+                m1,m1-num_unbounded,n,x,xnorm,w(iw),mode,max_iter_ls,nnls_mode)
 
       if ( mode==1 ) then
-         ! restore lagrange multipliers
+         ! restore lagrange multipliers (only for user-defined variables)
          call dcopy(m,w(iw),1,y(1),1)
-         call dcopy(n3,w(iw+m),1,y(m+1),1)
-         call dcopy(n3,w(iw+m+n),1,y(m+n3+1),1)
-         call enforce_bounds(x,xl,xu)  ! to ensure that bounds are not violated
+         if (n3 > 0) then
+            !set rest of the multipliers to nan (they are not used)
+            y(m+1) = ieee_value(one, ieee_quiet_nan)
+            do i=m+2,m+n3+n3
+                y(i) = y(m+1)
+            end do
+         end if
+         call enforce_bounds(x,xl,xu,infbnd)  ! to ensure that bounds are not violated
       end if
 
       end subroutine lsq
@@ -2221,19 +2252,21 @@
 
 !*******************************************************************************
 !>
-!  enforce the bound constraints on x.
+!  enforce the bound constraints on `x`.
 
-    pure subroutine enforce_bounds(x,xl,xu)
+    subroutine enforce_bounds(x,xl,xu,infbnd)
 
     implicit none
 
     real(wp),dimension(:),intent(inout) :: x   !! optimization variable vector
     real(wp),dimension(:),intent(in)    :: xl  !! lower bounds (must be same dimension as `x`)
     real(wp),dimension(:),intent(in)    :: xu  !! upper bounds (must be same dimension as `x`)
+    real(wp),intent(in) :: infbnd !! "infinity" for the upper and lower bounds.
+                                  !! Note that `NaN` may also be used to indicate no bound.
 
-    where (x<xl)
+    where (x<xl .and. xl>-infbnd .and. .not. ieee_is_nan(xl))
         x = xl
-    elsewhere (x>xu)
+    elsewhere (x>xu .and. xu<infbnd .and. .not. ieee_is_nan(xu))
         x = xu
     end where
 
