@@ -15,6 +15,8 @@
 
     private
 
+    real(wp),parameter :: eps = epsilon(1.0_wp)  !! machine precision
+
     type,public :: linmin_data
         !! data formerly saved in [[linmin]] routine.
         real(wp) :: a    = zero
@@ -1281,7 +1283,7 @@
                     !  compute solution of primal problem
                     fac=one-ddot(m,h,1,w(iy),1)
                     if (ieee_is_nan(fac)) return
-                    if (diff(one+fac,one)>zero) then
+                    if (fac>=eps) then
                         mode=1
                         fac=one/fac
                         do j=1,n
@@ -1299,24 +1301,6 @@
     end if
 
     end subroutine ldp
-!*******************************************************************************
-
-!*******************************************************************************
-!>
-!  Replaced statement function in the original code.
-!  Returns \( d = u - v \).
-
-    pure elemental function diff(u,v) result(d)
-
-    implicit none
-
-    real(wp),intent(in) :: u
-    real(wp),intent(in) :: v
-    real(wp)            :: d
-
-    d = u - v
-
-    end function diff
 !*******************************************************************************
 
 !*******************************************************************************
@@ -1450,7 +1434,7 @@
                     end do
                 end if
                 unorm = sqrt(unorm)
-                if ( diff(unorm+abs(a(npp1,j))*factor,unorm)>zero ) then
+                if (abs(a(npp1,j))*factor >= unorm*eps) then
 
                     ! col j is sufficiently independent.  copy b into zz, update zz
                     ! and solve for ztest ( = proposed new value for x(j) ).
@@ -1733,7 +1717,8 @@
                     h(l) = h(l) - a(j-1,l)**2
                     if ( h(l)>h(lmax) ) lmax = l
                 end do
-                if ( diff(hmax+factor*h(lmax),hmax)>zero ) need_lmax = .false.
+                if (factor*h(lmax) >= hmax*eps) need_lmax = .false.
+
             end if
 
             if (need_lmax) then
@@ -2161,8 +2146,8 @@
     real(wp),intent(in) :: bx      !! right endpoint of initial interval
     real(wp),intent(inout) :: a,b,d,e,p,q,r,u,v,w,x,m,fu,fv,fw,fx,tol1,tol2
 
-    real(wp),parameter :: c    = (3.0_wp-sqrt(5.0_wp))/2.0_wp  !! golden section ratio = `0.381966011`
-    real(wp),parameter :: eps  = sqrt(epsilon(1.0_wp))         !! square - root of machine precision
+    real(wp),parameter :: c = (3.0_wp-sqrt(5.0_wp))/2.0_wp  !! golden section ratio = `0.381966011`
+    real(wp),parameter :: sqrteps = sqrt(eps)  !! square root of machine precision
 
     select case (mode)
     case(1)
@@ -2216,7 +2201,7 @@
     end select
 
     m = 0.5_wp*(a+b)
-    tol1 = eps*abs(x) + tol
+    tol1 = sqrteps*abs(x) + tol
     tol2 = tol1 + tol1
 
     ! test convergence
