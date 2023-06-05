@@ -101,7 +101,7 @@
           <li id="statements"><i class="fa fa-list-ol"></i>
             <a data-toggle="tooltip"
                data-placement="bottom" data-html="true"
-               title="57.5% of total for modules and submodules.">1356 statements</a>
+               title="57.4% of total for modules and submodules.">1350 statements</a>
           </li>
 
             <li id="source-file">
@@ -129,7 +129,19 @@
         <div id="sidebar">
       <h3>Contents</h3>
   
-  
+      <div class="panel panel-primary">
+      <div class="panel-heading text-left">
+        <h3 class="panel-title">
+          <a data-toggle="collapse" href="#vars-0">Variables</a>
+        </h3>
+      </div>
+      <div id="vars-0" class="panel-collapse collapse">
+        <div class="list-group">
+            <a class="list-group-item" href="../module/slsqp_core.html#variable-eps">eps</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -161,7 +173,6 @@
       <div id="funcs-0" class="panel-collapse collapse">
         <div class="list-group">
             <a class="list-group-item" href="../module/slsqp_core.html#proc-check_convergence">check_convergence</a>
-            <a class="list-group-item" href="../module/slsqp_core.html#proc-diff">diff</a>
             <a class="list-group-item" href="../module/slsqp_core.html#proc-linmin">linmin</a>
         </div>
       </div>
@@ -215,10 +226,10 @@
       <ul class="list-group">
           <li class="list-group-item">
             <ul class="list-inline">
-                <li><a href='../module/bvls_module.html'>bvls_module</a></li>
-                <li><a href='<a href="http://fortranwiki.org/fortran/show/ieee_arithmetic">ieee_arithmetic</a>'>ieee_arithmetic</a></li>
                 <li><a href='../module/slsqp_support.html'>slsqp_support</a></li>
                 <li><a href='../module/slsqp_kinds.html'>slsqp_kinds</a></li>
+                <li><a href='../module/bvls_module.html'>bvls_module</a></li>
+                <li><a href='<a href="http://fortranwiki.org/fortran/show/ieee_arithmetic">ieee_arithmetic</a>'>ieee_arithmetic</a></li>
             </ul>
           </li>
           <li class="list-group-item">
@@ -522,7 +533,19 @@ modules which it uses.
       <section class="visible-xs visible-sm hidden-md">
           <h3>Contents</h3>
   
-  
+      <div class="panel panel-primary">
+      <div class="panel-heading text-left">
+        <h3 class="panel-title">
+          <a data-toggle="collapse" href="#vars-1">Variables</a>
+        </h3>
+      </div>
+      <div id="vars-1" class="panel-collapse collapse">
+        <div class="list-group">
+            <a class="list-group-item" href="../module/slsqp_core.html#variable-eps">eps</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -554,7 +577,6 @@ modules which it uses.
       <div id="funcs-1" class="panel-collapse collapse">
         <div class="list-group">
             <a class="list-group-item" href="../module/slsqp_core.html#proc-check_convergence">check_convergence</a>
-            <a class="list-group-item" href="../module/slsqp_core.html#proc-diff">diff</a>
             <a class="list-group-item" href="../module/slsqp_core.html#proc-linmin">linmin</a>
         </div>
       </div>
@@ -598,6 +620,40 @@ modules which it uses.
       <br class="visible-xs visible-sm hidden-md">
 
 
+        <section>
+          <h2>Variables</h2>
+            <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th>Type</th>
+<th>Visibility</th>        <th>Attributes</th>
+        <th></th>
+        <th>Name</th>
+<th></th><th>Initial</th>        <th></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eps"></span>
+              real(kind=wp),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>eps</strong></td>
+<td> =</td>
+                <td>epsilon(1.0_wp)</td>
+            <td>
+                <p>machine precision</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+        </section>
+        <br>
 
 
 
@@ -1549,67 +1605,6 @@ modules which it uses.
     <h4>
     Return Value
     <small>integer</small>
-    </h4>
-    
-
-    </div>
-  </div>
-
-              <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="proc-diff"></span><h3>private pure elemental function <a href='../proc/diff.html'>diff</a>(u, v) result(d)  
-</h3></div>
-    <div class="panel-body">
-          
-  <p>Replaced statement function in the original code.
-Returns <script type="math/tex"> d = u - v </script>.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" ></span>
-              real(kind=wp),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>u</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" ></span>
-              real(kind=wp),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>v</strong></td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-    <h4>
-    Return Value
-    <small>real(kind=wp)</small>
     </h4>
     
 
