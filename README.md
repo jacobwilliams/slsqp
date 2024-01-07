@@ -5,6 +5,7 @@ Modern Fortran Edition of the SLSQP Optimizer
 
 ### Status
 
+[![Language](https://img.shields.io/badge/-Fortran-734f96?logo=fortran&logoColor=white)](https://github.com/topics/fortran)
 [![GitHub release](https://img.shields.io/github/release/jacobwilliams/slsqp.svg)](https://github.com/jacobwilliams/slsqp/releases/latest)
 [![Build Status](https://github.com/jacobwilliams/slsqp/actions/workflows/CI.yml/badge.svg)](https://github.com/jacobwilliams/slsqp/actions)
 [![codecov](https://codecov.io/gh/jacobwilliams/slsqp/branch/master/graph/badge.svg)](https://codecov.io/gh/jacobwilliams/slsqp)
