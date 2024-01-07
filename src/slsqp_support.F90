@@ -23,6 +23,62 @@
 
     public :: daxpy,dcopy,ddot,dnrm2,dscal
 
+#ifdef HAS_BLAS
+
+    ! linking with an external BLAS library.
+    ! Define the interfaces here. Note that this
+    ! will only work if the `wp` is the same kind
+    ! as used in the BLAS library.
+
+    interface
+        pure subroutine daxpy(n,da,dx,incx,dy,incy)
+            import :: wp
+            implicit none
+            integer,intent(in)                  :: n
+            real(wp),intent(in)                 :: da
+            real(wp),dimension(*),intent(in)    :: dx
+            integer,intent(in)                  :: incx
+            real(wp),dimension(*),intent(inout) :: dy
+            integer,intent(in)                  :: incy
+        end subroutine daxpy
+        pure subroutine dcopy(n,dx,incx,dy,incy)
+            import :: wp
+            implicit none
+            integer,intent(in)                :: n
+            real(wp),dimension(*),intent(in)  :: dx
+            integer,intent(in)                :: incx
+            real(wp),dimension(*),intent(out) :: dy
+            integer,intent(in)                :: incy
+        end subroutine dcopy
+        pure real(wp) function ddot(n,dx,incx,dy,incy)
+            import :: wp
+            implicit none
+            integer,intent(in)               :: n
+            real(wp),dimension(*),intent(in) :: dx
+            integer,intent(in)               :: incx
+            real(wp),dimension(*),intent(in) :: dy
+            integer,intent(in)               :: incy
+        end function ddot
+        pure function dnrm2(n,x,incx) result(norm)
+            import :: wp
+            implicit none
+            integer,intent(in)               :: incx
+            integer,intent(in)               :: n
+            real(wp),dimension(*),intent(in) :: x
+            real(wp)                         :: norm
+        end function dnrm2
+        pure subroutine dscal(n,da,dx,incx)
+            import :: wp
+            implicit none
+            integer,intent(in)                  :: n
+            real(wp),intent(in)                 :: da
+            real(wp),dimension(*),intent(inout) :: dx
+            integer,intent(in)                  :: incx
+        end subroutine dscal
+    end interface
+
+#else
+
     contains
 !*******************************************************************************
 
@@ -332,6 +388,8 @@
 
     end subroutine dscal
 !*******************************************************************************
+
+#endif
 
 !*******************************************************************************
     end module slsqp_support
