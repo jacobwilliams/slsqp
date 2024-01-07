@@ -28,10 +28,6 @@ Updates to the original code include:
 * The documentation strings in the code have been converted to [FORD](https://github.com/Fortran-FOSS-Programmers/ford) format, allowing for [nicely formatted documentation](https://jacobwilliams.github.io/slsqp/) to be auto-generated.
 * A couple of bug fixes noted elsewhere have been applied.
 
-### License
-
-  * The original sourcecode and the modifications are released under a [permissive BSD-style license](https://github.com/jacobwilliams/slsqp/blob/master/LICENSE).
-
 ### Building SLSQP
 
 #### **Fortran Package Manager**
@@ -69,13 +65,27 @@ or, to use a specific version:
 slsqp = { git="https://github.com/jacobwilliams/slsqp.git", tag = "1.3.0" }
 ```
 
-### Development
+## Dependencies
 
-  * Development continues on [GitHub](https://github.com/jacobwilliams/slsqp).
+The library requires some [BLAS](https://netlib.org/blas/) routines, which are included. However, the user may also choose to link to an external BLAS library. This can be done by using the `HAS_BLAS` compiler directive. For example:
+
+```
+fpm build --compiler gfortran --flag "-DHAS_BLAS -lblas"
+```
+
+However, note that an external BLAS can only be used if the library is compiled with double precision (`real64`) reals.
 
 ### Documentation
 
   The latest API documentation can be found [here](https://jacobwilliams.github.io/slsqp/). This was generated from the source code using [FORD](https://github.com/Fortran-FOSS-Programmers/ford).
+
+### License
+
+  * The original sourcecode and the modifications are released under a [permissive BSD-style license](https://github.com/jacobwilliams/slsqp/blob/master/LICENSE).
+
+### Development
+
+  * Development continues on [GitHub](https://github.com/jacobwilliams/slsqp).
 
 ### References
 
