@@ -1,3 +1,5 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,81 +12,56 @@
 
     <title>slsqp &ndash; slsqp</title>
 
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
       <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]-->
-
-         <script src="../js/jquery-2.1.3.min.js"></script>
-         <script src="../js/svg-pan-zoom.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
 
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
           <a class="navbar-brand" href="../index.html">slsqp </a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
-              <a href="#" class="dropdown-toggle"
-                 data-toggle="dropdown" role="button"
-                 aria-haspopup="true"
-                 aria-expanded="false">
-                 Contents <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu">
-                    <li><a href="../lists/files.html">Source Files</a></li>
-                  <li><a href="../lists/modules.html">Modules</a></li>
-                  <li><a href="../lists/procedures.html">Procedures</a></li>
-                  <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
-                  <li><a href="../lists/types.html">Derived Types</a></li>
-              </ul>
-            </li>
-                <li class="visible-xs hidden-sm visible-lg">
-                  <a href="../lists/files.html">Source Files</a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
                 </li>
-              <li class="visible-xs hidden-sm visible-lg">
-                <a href="../lists/modules.html">Modules</a>
-              </li>
-              <li class="visible-xs hidden-sm visible-lg">
-                <a href="../lists/procedures.html">Procedures</a>
-              </li>
-              <li class="visible-xs hidden-sm visible-lg">
-                <a href="../lists/absint.html">Abstract Interfaces</a>
-              </li>
-              <li class="visible-xs hidden-sm visible-lg">
-                <a href="../lists/types.html">Derived Types</a>
-              </li>
-          </ul>
-            <form action="../search.html" class="navbar-form navbar-right" role="search">
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
               </div>
-              <!--
-                  <button type="submit" class="btn btn-default">Submit</button>
-                  -->
-            </form>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
 
     <div class="container">
   <div class="row">
@@ -92,33 +69,37 @@
       <small>Subroutine</small>
       
     </h1>
-      <div class="row" id="info-bar">
-    <div class="col-lg-12">
-      <div class="well well-sm">
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
-          <li id="statements"><i class="fa fa-list-ol"></i>
-            <a data-toggle="tooltip"
-               data-placement="bottom" data-html="true"
-               title=" 2.9% of total for procedures.">63 statements</a>
-          </li>
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip"
+                 data-bs-placement="bottom" data-html="true"
+                 title=" 2.9% of total for procedures.">63 statements</a>
+            </li>
 
-            <li id="source-file">
+            <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
               <a href="../src/slsqp_core.f90"> Source File</a>
             </li>
         </ul>
-        <ol class="breadcrumb in-well text-right">
-              <li><a href='../sourcefile/slsqp_core.f90.html'>slsqp_core.f90</a></li>
-              <li><a href='../module/slsqp_core.html'>slsqp_core</a></li>
-          <li class="active">slsqp</li>
-        </ol>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/slsqp_core.f90.html'>slsqp_core.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/slsqp_core.html'>slsqp_core</a></li>
+            <li class="breadcrumb-item active" aria-current="page">slsqp</li>
+          </ol>
+        </nav>
       </div>
     </div>
   </div>
   <script>
     $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-bs-toggle="tooltip"]').tooltip()
     })
   </script>
 
@@ -147,8 +128,9 @@
   
   
   
-    <div class="panel panel-primary">
-      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
       <div class="list-group">
         <a class="list-group-item" href="../proc/slsqp.html#src">slsqp</a>
       </div>
@@ -209,23 +191,26 @@
 <h3>License</h3>
 <p>Original version copyright 1991: Dieter Kraft, FHM.
   Released under a BSD license.</p>
-<p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p><code>f</code>, <code>c</code>, <code>g</code>, <code>a</code> must all be set by the user before each call.</p></div>
+<div class="alert alert-info">
+<p class="alert-title h4">Note</p>
+<p><code>f</code>, <code>c</code>, <code>g</code>, <code>a</code> must all be set by the user before each call.</p>
+</div>
 
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-m"></span>
+              <span class="anchor" id="variable-m~10"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -241,7 +226,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-meq"></span>
+              <span class="anchor" id="variable-meq~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -257,7 +242,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-la"></span>
+              <span class="anchor" id="variable-la~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -273,7 +258,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n"></span>
+              <span class="anchor" id="variable-n~11"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -289,7 +274,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x"></span>
+              <span class="anchor" id="variable-x~10"></span>
               real(kind=wp),
             </td>
 <td>intent(inout),</td>
@@ -306,7 +291,7 @@ stores the solution vector <code>x</code> if <code>mode = 0</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xl"></span>
+              <span class="anchor" id="variable-xl~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in),</td>
@@ -321,7 +306,7 @@ stores the solution vector <code>x</code> if <code>mode = 0</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xu"></span>
+              <span class="anchor" id="variable-xu~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in),</td>
@@ -336,7 +321,7 @@ stores the solution vector <code>x</code> if <code>mode = 0</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~2"></span>
+              <span class="anchor" id="variable-f~6"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -351,7 +336,7 @@ stores the solution vector <code>x</code> if <code>mode = 0</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~2"></span>
+              <span class="anchor" id="variable-c~5"></span>
               real(kind=wp),
             </td>
 <td>intent(in),</td>
@@ -369,7 +354,7 @@ which must be greater or equal <code>max(1,m)</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-g"></span>
+              <span class="anchor" id="variable-g~5"></span>
               real(kind=wp),
             </td>
 <td>intent(in),</td>
@@ -386,7 +371,7 @@ greater or equal <code>n+1</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a"></span>
+              <span class="anchor" id="variable-a~6"></span>
               real(kind=wp),
             </td>
 <td>intent(in),</td>
@@ -404,7 +389,7 @@ which must be greater or equal <code>max(1,m)</code>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-acc"></span>
+              <span class="anchor" id="variable-acc~4"></span>
               real(kind=wp),
             </td>
 <td>intent(inout)</td>
@@ -421,7 +406,7 @@ otherwise an armijo-type linesearch is used.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iter"></span>
+              <span class="anchor" id="variable-iter~4"></span>
               integer,
             </td>
 <td>intent(inout)</td>
@@ -437,7 +422,7 @@ on exit <code>iter</code> indicates the number of iterations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-mode~2"></span>
+              <span class="anchor" id="variable-mode~3"></span>
               integer,
             </td>
 <td>intent(inout)</td>
@@ -454,7 +439,7 @@ to be called repeatedly by the user until a return
 with <code>mode /= abs(1)</code> takes place.
 if <code>mode = -1</code> gradients have to be calculated,
 while with <code>mode = 1</code> functions have to be calculated.
-mode must not be changed between subsequent calls of <a href="../proc/slsqp.html">slsqp</a>.</p>
+mode must not be changed between subsequent calls of <a href="slsqp.html">slsqp</a>.</p>
 <p><strong>evaluation modes</strong>:</p>
 <ul>
 <li>** -1 **: gradient evaluation, (<code>g</code> &amp; <code>a</code>)</li>
@@ -465,11 +450,11 @@ mode must not be changed between subsequent calls of <a href="../proc/slsqp.html
 <p><strong>failure modes</strong>:</p>
 <ul>
 <li>** 2 **: number of equality constraints larger than <code>n</code></li>
-<li>** 3 **: more than <code>3*n</code> iterations in <a href="../proc/lsq.html">lsq</a> subproblem</li>
+<li>** 3 **: more than <code>3*n</code> iterations in <a href="lsq.html">lsq</a> subproblem</li>
 <li>** 4 **: inequality constraints incompatible</li>
-<li>** 5 **: singular matrix <code>e</code> in <a href="../proc/lsq.html">lsq</a> subproblem</li>
-<li>** 6 **: singular matrix <code>c</code> in <a href="../proc/lsq.html">lsq</a> subproblem</li>
-<li>** 7 **: rank-deficient equality constraint subproblem <a href="../proc/hfti.html">hfti</a></li>
+<li>** 5 **: singular matrix <code>e</code> in <a href="lsq.html">lsq</a> subproblem</li>
+<li>** 6 **: singular matrix <code>c</code> in <a href="lsq.html">lsq</a> subproblem</li>
+<li>** 7 **: rank-deficient equality constraint subproblem <a href="hfti.html">hfti</a></li>
 <li>** 8 **: positive directional derivative for linesearch</li>
 <li>** 9 **: more than <code>iter</code> iterations in sqp</li>
 <li>** &gt;=10 **: working space <code>w</code> too small,
@@ -479,7 +464,7 @@ mode must not be changed between subsequent calls of <a href="../proc/slsqp.html
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w"></span>
+              <span class="anchor" id="variable-w~5"></span>
               real(kind=wp),
             </td>
 <td>intent(inout),</td>
@@ -491,7 +476,7 @@ mode must not be changed between subsequent calls of <a href="../proc/slsqp.html
             <td>
                 <p><code>w()</code> is a one dimensional working space.
 the first <code>m+n+n*n1/2</code> elements of <code>w</code> must not be
-changed between subsequent calls of <a href="../proc/slsqp.html">slsqp</a>.
+changed between subsequent calls of <a href="slsqp.html">slsqp</a>.
 on return <code>w(1) ... w(m)</code> contain the multipliers
 associated with the general constraints, while
 <code>w(m+1) ... w(m+n(n+1)/2)</code> store the cholesky factor
@@ -506,7 +491,7 @@ the search direction to the solution <code>x*</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l_w"></span>
+              <span class="anchor" id="variable-l_w~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -538,7 +523,7 @@ the search direction to the solution <code>x*</code></p>
             <td>::</td>
             <td><strong>sdat</strong></td>
             <td>
-                <p>data for <a href="../proc/slsqpb.html">slsqpb</a>.</p>
+                <p>data for <a href="slsqpb.html">slsqpb</a>.</p>
             </td>
         </tr>
         <tr>
@@ -553,12 +538,12 @@ the search direction to the solution <code>x*</code></p>
             <td>::</td>
             <td><strong>ldat</strong></td>
             <td>
-                <p>data for <a href="../proc/linmin.html">linmin</a>.</p>
+                <p>data for <a href="linmin.html">linmin</a>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alphamin"></span>
+              <span class="anchor" id="variable-alphamin~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -575,7 +560,7 @@ the search direction to the solution <code>x*</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alphamax"></span>
+              <span class="anchor" id="variable-alphamax~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -592,7 +577,7 @@ the search direction to the solution <code>x*</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tolf"></span>
+              <span class="anchor" id="variable-tolf~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -607,7 +592,7 @@ the search direction to the solution <code>x*</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-toldf"></span>
+              <span class="anchor" id="variable-toldf~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -622,7 +607,7 @@ the search direction to the solution <code>x*</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-toldx"></span>
+              <span class="anchor" id="variable-toldx~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -637,7 +622,7 @@ the search direction to the solution <code>x*</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iter_ls"></span>
+              <span class="anchor" id="variable-max_iter_ls~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -647,12 +632,12 @@ the search direction to the solution <code>x*</code></p>
             <td>::</td>
             <td><strong>max_iter_ls</strong></td>
             <td>
-                <p>maximum number of iterations in the <a href="../proc/nnls.html">nnls</a> problem</p>
+                <p>maximum number of iterations in the <a href="nnls.html">nnls</a> problem</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nnls_mode"></span>
+              <span class="anchor" id="variable-nnls_mode~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -667,7 +652,7 @@ the search direction to the solution <code>x*</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-infinite_bound"></span>
+              <span class="anchor" id="variable-infinite_bound~3"></span>
               real(kind=wp),
             </td>
 <td>intent(in)</td>
@@ -687,387 +672,429 @@ If <code>infinite_bound=0</code> then <code>huge()</code> is used for this.</p>
   </table>
 
     <br>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-  <h3 class="panel-title">Calls</h3>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~slsqp~~CallsGraph Pages: 1 -->
-<svg id="procslsqpCallsGraph" width="641pt" height="306pt"
- viewBox="0.00 0.00 641.00 306.23" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~slsqp~~CallsGraph" class="graph" transform="scale(1.82 1.82) rotate(0) translate(4 554)">
+<svg id="procslsqpCallsGraph" width="641pt" height="362pt"
+ viewBox="0.00 0.00 641.00 361.78" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~slsqp~~CallsGraph" class="graph" transform="scale(2 2) rotate(0) translate(4 719)">
 <title>proc~~slsqp~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-554 1164,-554 1164,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-719 1277,-719 1277,4 -4,4"/>
 <!-- proc~slsqp -->
 <g id="proc~~slsqp~~CallsGraph_node1" class="node">
 <title>proc~slsqp</title>
-<polygon fill="none" stroke="black" points="103,-154 0,-154 0,-130 103,-130 103,-154"/>
-<text text-anchor="middle" x="51.5" y="-139.6" font-family="Helvetica,sans-Serif" font-size="10.50">slsqp_core::slsqp</text>
+<polygon fill="none" stroke="black" points="103,-186 0,-186 0,-162 103,-162 103,-186"/>
+<text text-anchor="middle" x="51.5" y="-171.6" font-family="Helvetica,sans-Serif" font-size="10.50">slsqp_core::slsqp</text>
 </g>
 <!-- proc~slsqpb -->
 <g id="proc~~slsqp~~CallsGraph_node2" class="node">
 <title>proc~slsqpb</title>
-<g id="a_proc~~slsqp~~CallsGraph_node2"><a xlink:href=".././proc/slsqpb.html" xlink:title="slsqp_core::slsqpb">
-<polygon fill="#d9534f" stroke="#d9534f" points="248,-154 139,-154 139,-130 248,-130 248,-154"/>
-<text text-anchor="middle" x="193.5" y="-139.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::slsqpb</text>
+<g id="a_proc~~slsqp~~CallsGraph_node2"><a xlink:href="../proc/slsqpb.html" xlink:title="slsqp_core::slsqpb">
+<polygon fill="#d9534f" stroke="#d9534f" points="248,-186 139,-186 139,-162 248,-162 248,-186"/>
+<text text-anchor="middle" x="193.5" y="-171.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::slsqpb</text>
 </a>
 </g>
 </g>
 <!-- proc~slsqp&#45;&gt;proc~slsqpb -->
 <g id="proc~~slsqp~~CallsGraph_edge1" class="edge">
 <title>proc~slsqp&#45;&gt;proc~slsqpb</title>
-<path fill="none" stroke="#000000" d="M103.04,-142C111.37,-142 120.11,-142 128.71,-142"/>
-<polygon fill="#000000" stroke="#000000" points="128.72,-145.5 138.72,-142 128.72,-138.5 128.72,-145.5"/>
+<path fill="none" stroke="#000000" d="M103.04,-174C111.37,-174 120.11,-174 128.71,-174"/>
+<polygon fill="#000000" stroke="#000000" points="128.72,-177.5 138.72,-174 128.72,-170.5 128.72,-177.5"/>
+</g>
+<!-- proc~check_convergence -->
+<g id="proc~~slsqp~~CallsGraph_node3" class="node">
+<title>proc~check_convergence</title>
+<g id="a_proc~~slsqp~~CallsGraph_node3"><a xlink:href="../proc/check_convergence.html" xlink:title="slsqp_core::check_convergence">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="936,-265 754,-265 754,-241 936,-241 936,-265"/>
+<text text-anchor="middle" x="845" y="-250.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::check_convergence</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~check_convergence -->
+<g id="proc~~slsqp~~CallsGraph_edge2" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~check_convergence</title>
+<path fill="none" stroke="#000000" d="M207.15,-186.15C223.42,-200.88 253.25,-224.97 284,-235 439.3,-285.64 631.83,-277.59 745.91,-266.05"/>
+<polygon fill="#000000" stroke="#000000" points="746.44,-269.52 756.03,-265 745.72,-262.56 746.44,-269.52"/>
 </g>
 <!-- proc~daxpy -->
-<g id="proc~~slsqp~~CallsGraph_node3" class="node">
+<g id="proc~~slsqp~~CallsGraph_node4" class="node">
 <title>proc~daxpy</title>
-<g id="a_proc~~slsqp~~CallsGraph_node3"><a xlink:href=".././proc/daxpy.html" xlink:title="slsqp_support::daxpy">
-<polygon fill="#d9534f" stroke="#d9534f" points="1000,-408 875,-408 875,-384 1000,-384 1000,-408"/>
-<text text-anchor="middle" x="937.5" y="-393.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support::daxpy</text>
+<g id="a_proc~~slsqp~~CallsGraph_node4"><a xlink:href="../proc/daxpy.html" xlink:title="slsqp_support::daxpy">
+<polygon fill="#d9534f" stroke="#d9534f" points="1113,-421 988,-421 988,-397 1113,-397 1113,-421"/>
+<text text-anchor="middle" x="1050.5" y="-406.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support::daxpy</text>
 </a>
 </g>
 </g>
 <!-- proc~slsqpb&#45;&gt;proc~daxpy -->
-<g id="proc~~slsqp~~CallsGraph_edge2" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge3" class="edge">
 <title>proc~slsqpb&#45;&gt;proc~daxpy</title>
-<path fill="none" stroke="#000000" d="M197.61,-154.31C214.6,-218.51 302.57,-512 490,-512 490,-512 490,-512 651.5,-512 751.16,-512 766.62,-464.4 859,-427 871.29,-422.02 884.71,-416.64 896.86,-411.78"/>
-<polygon fill="#000000" stroke="#000000" points="898.31,-414.97 906.3,-408.01 895.71,-408.47 898.31,-414.97"/>
+<path fill="none" stroke="#000000" d="M201.95,-186.12C227.87,-227.24 318.51,-362.67 429,-432 505.95,-480.29 535.09,-476.98 625,-490 768.72,-510.82 937.79,-453.85 1011.71,-424.82"/>
+<polygon fill="#000000" stroke="#000000" points="1013.08,-428.04 1021.08,-421.09 1010.49,-421.54 1013.08,-428.04"/>
 </g>
 <!-- proc~dcopy -->
-<g id="proc~~slsqp~~CallsGraph_node4" class="node">
+<g id="proc~~slsqp~~CallsGraph_node5" class="node">
 <title>proc~dcopy</title>
-<g id="a_proc~~slsqp~~CallsGraph_node4"><a xlink:href=".././proc/dcopy.html" xlink:title="slsqp_support::dcopy">
-<polygon fill="#d9534f" stroke="#d9534f" points="1000,-460 875,-460 875,-436 1000,-436 1000,-460"/>
-<text text-anchor="middle" x="937.5" y="-445.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support::dcopy</text>
+<g id="a_proc~~slsqp~~CallsGraph_node5"><a xlink:href="../proc/dcopy.html" xlink:title="slsqp_support::dcopy">
+<polygon fill="#d9534f" stroke="#d9534f" points="1113,-206 988,-206 988,-182 1113,-182 1113,-206"/>
+<text text-anchor="middle" x="1050.5" y="-191.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support::dcopy</text>
 </a>
 </g>
 </g>
 <!-- proc~slsqpb&#45;&gt;proc~dcopy -->
-<g id="proc~~slsqp~~CallsGraph_edge3" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge4" class="edge">
 <title>proc~slsqpb&#45;&gt;proc~dcopy</title>
-<path fill="none" stroke="#000000" d="M195.39,-154.03C199.04,-196.3 216.11,-340.33 284,-432 346.8,-516.79 384.49,-550 490,-550 490,-550 490,-550 651.5,-550 750.74,-550 858.64,-494.5 908.43,-465.38"/>
-<polygon fill="#000000" stroke="#000000" points="910.51,-468.22 917.31,-460.1 906.93,-462.2 910.51,-468.22"/>
+<path fill="none" stroke="#000000" d="M222.42,-161.85C276.46,-139.47 399.59,-94 508,-94 508,-94 508,-94 672.5,-94 801.64,-94 947.59,-149.5 1013.64,-177.8"/>
+<polygon fill="#000000" stroke="#000000" points="1012.6,-181.17 1023.17,-181.94 1015.39,-174.75 1012.6,-181.17"/>
 </g>
 <!-- proc~ddot -->
-<g id="proc~~slsqp~~CallsGraph_node5" class="node">
+<g id="proc~~slsqp~~CallsGraph_node6" class="node">
 <title>proc~ddot</title>
-<g id="a_proc~~slsqp~~CallsGraph_node5"><a xlink:href=".././proc/ddot.html" xlink:title="slsqp_support::ddot">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="996,-180 879,-180 879,-156 996,-156 996,-180"/>
-<text text-anchor="middle" x="937.5" y="-165.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support::ddot</text>
+<g id="a_proc~~slsqp~~CallsGraph_node6"><a xlink:href="../proc/ddot.html" xlink:title="slsqp_support::ddot">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1109,-613 992,-613 992,-589 1109,-589 1109,-613"/>
+<text text-anchor="middle" x="1050.5" y="-598.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support::ddot</text>
 </a>
 </g>
 </g>
 <!-- proc~slsqpb&#45;&gt;proc~ddot -->
-<g id="proc~~slsqp~~CallsGraph_edge4" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge5" class="edge">
 <title>proc~slsqpb&#45;&gt;proc~ddot</title>
-<path fill="none" stroke="#000000" d="M217.52,-129.86C266.31,-105.3 384.35,-52 490,-52 490,-52 490,-52 651.5,-52 754.13,-52 863.23,-117.33 911.29,-149.94"/>
-<polygon fill="#000000" stroke="#000000" points="909.58,-153.01 919.8,-155.81 913.56,-147.25 909.58,-153.01"/>
+<path fill="none" stroke="#000000" d="M195.49,-186.06C202.74,-265.88 254.8,-715 508,-715 508,-715 508,-715 672.5,-715 805.18,-715 953.32,-649.51 1017.25,-617.8"/>
+<polygon fill="#000000" stroke="#000000" points="1019.05,-620.81 1026.42,-613.2 1015.91,-614.56 1019.05,-620.81"/>
 </g>
 <!-- proc~dscal -->
-<g id="proc~~slsqp~~CallsGraph_node6" class="node">
+<g id="proc~~slsqp~~CallsGraph_node7" class="node">
 <title>proc~dscal</title>
-<g id="a_proc~~slsqp~~CallsGraph_node6"><a xlink:href=".././proc/dscal.html" xlink:title="slsqp_support::dscal">
-<polygon fill="#d9534f" stroke="#d9534f" points="551.5,-104 430.5,-104 430.5,-80 551.5,-80 551.5,-104"/>
-<text text-anchor="middle" x="491" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support::dscal</text>
+<g id="a_proc~~slsqp~~CallsGraph_node7"><a xlink:href="../proc/dscal.html" xlink:title="slsqp_support::dscal">
+<polygon fill="#d9534f" stroke="#d9534f" points="569.5,-188 448.5,-188 448.5,-164 569.5,-164 569.5,-188"/>
+<text text-anchor="middle" x="509" y="-173.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support::dscal</text>
 </a>
 </g>
 </g>
 <!-- proc~slsqpb&#45;&gt;proc~dscal -->
-<g id="proc~~slsqp~~CallsGraph_edge5" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge6" class="edge">
 <title>proc~slsqpb&#45;&gt;proc~dscal</title>
-<path fill="none" stroke="#000000" d="M248.01,-132.95C296.29,-124.78 367.62,-112.71 420.33,-103.79"/>
-<polygon fill="#000000" stroke="#000000" points="421,-107.22 430.28,-102.1 419.84,-100.32 421,-107.22"/>
+<path fill="none" stroke="#000000" d="M248.04,-174.34C300.5,-174.68 380.73,-175.19 438.18,-175.55"/>
+<polygon fill="#000000" stroke="#000000" points="438.25,-179.05 448.27,-175.62 438.29,-172.06 438.25,-179.05"/>
+</g>
+<!-- proc~enforce_bounds -->
+<g id="proc~~slsqp~~CallsGraph_node8" class="node">
+<title>proc~enforce_bounds</title>
+<g id="a_proc~~slsqp~~CallsGraph_node8"><a xlink:href="../proc/enforce_bounds.html" xlink:title="slsqp_core::enforce_bounds">
+<polygon fill="#d9534f" stroke="#d9534f" points="589,-146 429,-146 429,-122 589,-122 589,-146"/>
+<text text-anchor="middle" x="509" y="-131.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::enforce_bounds</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~enforce_bounds -->
+<g id="proc~~slsqp~~CallsGraph_edge7" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~enforce_bounds</title>
+<path fill="none" stroke="#000000" d="M248.04,-167.17C294.79,-161.2 363.6,-152.42 418.69,-145.4"/>
+<polygon fill="#000000" stroke="#000000" points="419.33,-148.84 428.81,-144.1 418.44,-141.9 419.33,-148.84"/>
 </g>
 <!-- proc~ldl -->
-<g id="proc~~slsqp~~CallsGraph_node7" class="node">
+<g id="proc~~slsqp~~CallsGraph_node9" class="node">
 <title>proc~ldl</title>
-<g id="a_proc~~slsqp~~CallsGraph_node7"><a xlink:href=".././proc/ldl.html" xlink:title="slsqp_core::ldl">
-<polygon fill="#d9534f" stroke="#d9534f" points="373.5,-24 285.5,-24 285.5,0 373.5,0 373.5,-24"/>
-<text text-anchor="middle" x="329.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::ldl</text>
+<g id="a_proc~~slsqp~~CallsGraph_node9"><a xlink:href="../proc/ldl.html" xlink:title="slsqp_core::ldl">
+<polygon fill="#d9534f" stroke="#d9534f" points="382.5,-66 294.5,-66 294.5,-42 382.5,-42 382.5,-66"/>
+<text text-anchor="middle" x="338.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::ldl</text>
 </a>
 </g>
 </g>
 <!-- proc~slsqpb&#45;&gt;proc~ldl -->
-<g id="proc~~slsqp~~CallsGraph_edge6" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge8" class="edge">
 <title>proc~slsqpb&#45;&gt;proc~ldl</title>
-<path fill="none" stroke="#000000" d="M202.81,-129.95C217.45,-109.31 249.59,-66.66 284,-38 287.58,-35.02 291.54,-32.18 295.58,-29.54"/>
-<polygon fill="#000000" stroke="#000000" points="297.74,-32.32 304.44,-24.12 294.08,-26.35 297.74,-32.32"/>
+<path fill="none" stroke="#000000" d="M203.57,-162C218.59,-142.73 250.34,-104.6 284,-80 288.53,-76.69 293.55,-73.61 298.65,-70.81"/>
+<polygon fill="#000000" stroke="#000000" points="300.53,-73.79 307.82,-66.1 297.33,-67.56 300.53,-73.79"/>
+</g>
+<!-- proc~linmin -->
+<g id="proc~~slsqp~~CallsGraph_node10" class="node">
+<title>proc~linmin</title>
+<g id="a_proc~~slsqp~~CallsGraph_node10"><a xlink:href="../proc/linmin.html" xlink:title="slsqp_core::linmin">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="393,-24 284,-24 284,0 393,0 393,-24"/>
+<text text-anchor="middle" x="338.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::linmin</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~linmin -->
+<g id="proc~~slsqp~~CallsGraph_edge9" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~linmin</title>
+<path fill="none" stroke="#000000" d="M199.21,-161.6C210.1,-134.55 239.49,-69.71 284,-33 285.72,-31.58 287.55,-30.25 289.45,-29"/>
+<polygon fill="#000000" stroke="#000000" points="291.21,-32.03 298.18,-24.05 287.75,-25.94 291.21,-32.03"/>
 </g>
 <!-- proc~lsq -->
-<g id="proc~~slsqp~~CallsGraph_node8" class="node">
+<g id="proc~~slsqp~~CallsGraph_node11" class="node">
 <title>proc~lsq</title>
-<g id="a_proc~~slsqp~~CallsGraph_node8"><a xlink:href=".././proc/lsq.html" xlink:title="slsqp_core::lsq">
-<polygon fill="#d9534f" stroke="#d9534f" points="375,-174 284,-174 284,-150 375,-150 375,-174"/>
-<text text-anchor="middle" x="329.5" y="-159.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::lsq</text>
+<g id="a_proc~~slsqp~~CallsGraph_node11"><a xlink:href="../proc/lsq.html" xlink:title="slsqp_core::lsq">
+<polygon fill="#d9534f" stroke="#d9534f" points="384,-226 293,-226 293,-202 384,-202 384,-226"/>
+<text text-anchor="middle" x="338.5" y="-211.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::lsq</text>
 </a>
 </g>
 </g>
 <!-- proc~slsqpb&#45;&gt;proc~lsq -->
-<g id="proc~~slsqp~~CallsGraph_edge7" class="edge">
-<title>proc~slsqpb&#45;&gt;proc~lsq</title>
-<path fill="none" stroke="#000000" d="M248.23,-150.02C256.62,-151.27 265.29,-152.57 273.7,-153.82"/>
-<polygon fill="#000000" stroke="#000000" points="273.38,-157.31 283.79,-155.33 274.42,-150.39 273.38,-157.31"/>
-</g>
-<!-- proc~lsq&#45;&gt;proc~dcopy -->
-<g id="proc~~slsqp~~CallsGraph_edge8" class="edge">
-<title>proc~lsq&#45;&gt;proc~dcopy</title>
-<path fill="none" stroke="#000000" d="M342.84,-174.24C388.84,-218.91 556.67,-373.37 730,-427 773.48,-440.45 824.32,-445.74 864.67,-447.65"/>
-<polygon fill="#000000" stroke="#000000" points="864.56,-451.15 874.69,-448.06 864.85,-444.15 864.56,-451.15"/>
-</g>
-<!-- proc~lsq&#45;&gt;proc~ddot -->
-<g id="proc~~slsqp~~CallsGraph_edge9" class="edge">
-<title>proc~lsq&#45;&gt;proc~ddot</title>
-<path fill="none" stroke="#000000" d="M375.1,-154.81C386.75,-153.23 399.32,-151.79 411,-151 575.21,-139.83 768.79,-152.83 868.91,-161.49"/>
-<polygon fill="#000000" stroke="#000000" points="868.62,-164.98 878.89,-162.37 869.24,-158.01 868.62,-164.98"/>
-</g>
-<!-- proc~lsq&#45;&gt;proc~dscal -->
 <g id="proc~~slsqp~~CallsGraph_edge10" class="edge">
-<title>proc~lsq&#45;&gt;proc~dscal</title>
-<path fill="none" stroke="#000000" d="M350.17,-149.93C366.16,-140.44 389.52,-127.31 411,-118 419.85,-114.16 429.46,-110.56 438.83,-107.33"/>
-<polygon fill="#000000" stroke="#000000" points="440.1,-110.59 448.47,-104.1 437.87,-103.96 440.1,-110.59"/>
+<title>proc~slsqpb&#45;&gt;proc~lsq</title>
+<path fill="none" stroke="#000000" d="M237.4,-186C252.12,-190.12 268.76,-194.77 284.2,-199.09"/>
+<polygon fill="#000000" stroke="#000000" points="283.56,-202.55 294.13,-201.87 285.44,-195.8 283.56,-202.55"/>
 </g>
-<!-- proc~enforce_bounds -->
-<g id="proc~~slsqp~~CallsGraph_node9" class="node">
-<title>proc~enforce_bounds</title>
-<g id="a_proc~~slsqp~~CallsGraph_node9"><a xlink:href=".././proc/enforce_bounds.html" xlink:title="slsqp_core::enforce_bounds">
-<polygon fill="#d9534f" stroke="#d9534f" points="571,-226 411,-226 411,-202 571,-202 571,-226"/>
-<text text-anchor="middle" x="491" y="-211.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::enforce_bounds</text>
+<!-- proc~dnrm2 -->
+<g id="proc~~slsqp~~CallsGraph_node12" class="node">
+<title>proc~dnrm2</title>
+<g id="a_proc~~slsqp~~CallsGraph_node12"><a xlink:href="../proc/dnrm2.html" xlink:title="slsqp_support::dnrm2">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1114.5,-295 986.5,-295 986.5,-271 1114.5,-271 1114.5,-295"/>
+<text text-anchor="middle" x="1050.5" y="-280.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support::dnrm2</text>
 </a>
 </g>
 </g>
-<!-- proc~lsq&#45;&gt;proc~enforce_bounds -->
+<!-- proc~check_convergence&#45;&gt;proc~dnrm2 -->
 <g id="proc~~slsqp~~CallsGraph_edge11" class="edge">
+<title>proc~check_convergence&#45;&gt;proc~dnrm2</title>
+<path fill="none" stroke="#000000" d="M927.6,-265.03C943.65,-267.4 960.41,-269.87 976.17,-272.19"/>
+<polygon fill="#000000" stroke="#000000" points="975.96,-275.7 986.37,-273.69 976.99,-268.77 975.96,-275.7"/>
+</g>
+<!-- proc~lsq&#45;&gt;proc~dcopy -->
+<g id="proc~~slsqp~~CallsGraph_edge12" class="edge">
+<title>proc~lsq&#45;&gt;proc~dcopy</title>
+<path fill="none" stroke="#000000" d="M384.25,-210.99C460.22,-206.04 619.3,-196.41 754,-193 834.86,-190.95 855.11,-192.64 936,-193 949.56,-193.06 964.03,-193.16 977.94,-193.27"/>
+<polygon fill="#000000" stroke="#000000" points="977.92,-196.77 987.94,-193.36 977.98,-189.77 977.92,-196.77"/>
+</g>
+<!-- proc~lsq&#45;&gt;proc~ddot -->
+<g id="proc~~slsqp~~CallsGraph_edge13" class="edge">
+<title>proc~lsq&#45;&gt;proc~ddot</title>
+<path fill="none" stroke="#000000" d="M341.27,-226.08C347.14,-262.05 369.09,-369.85 429,-432 578.19,-586.77 853.95,-604.33 981.51,-603.53"/>
+<polygon fill="#000000" stroke="#000000" points="981.58,-607.02 991.54,-603.42 981.51,-600.03 981.58,-607.02"/>
+</g>
+<!-- proc~lsq&#45;&gt;proc~dscal -->
+<g id="proc~~slsqp~~CallsGraph_edge14" class="edge">
+<title>proc~lsq&#45;&gt;proc~dscal</title>
+<path fill="none" stroke="#000000" d="M384.21,-203.92C402.73,-199.74 424.54,-194.82 444.65,-190.29"/>
+<polygon fill="#000000" stroke="#000000" points="445.7,-193.64 454.68,-188.02 444.16,-186.81 445.7,-193.64"/>
+</g>
+<!-- proc~lsq&#45;&gt;proc~enforce_bounds -->
+<g id="proc~~slsqp~~CallsGraph_edge15" class="edge">
 <title>proc~lsq&#45;&gt;proc~enforce_bounds</title>
-<path fill="none" stroke="#000000" d="M359.67,-174.11C374.84,-180.18 393.76,-187.41 411,-193 417.53,-195.12 424.41,-197.19 431.28,-199.15"/>
-<polygon fill="#000000" stroke="#000000" points="430.72,-202.62 441.29,-201.94 432.6,-195.88 430.72,-202.62"/>
+<path fill="none" stroke="#000000" d="M354.45,-201.94C371.55,-188.69 400.81,-167.63 429,-155 433.66,-152.91 438.56,-151 443.56,-149.25"/>
+<polygon fill="#000000" stroke="#000000" points="444.81,-152.52 453.23,-146.08 442.64,-145.87 444.81,-152.52"/>
 </g>
 <!-- proc~lsei -->
-<g id="proc~~slsqp~~CallsGraph_node10" class="node">
+<g id="proc~~slsqp~~CallsGraph_node13" class="node">
 <title>proc~lsei</title>
-<g id="a_proc~~slsqp~~CallsGraph_node10"><a xlink:href=".././proc/lsei.html" xlink:title="slsqp_core::lsei">
-<polygon fill="#d9534f" stroke="#d9534f" points="538,-184 444,-184 444,-160 538,-160 538,-184"/>
-<text text-anchor="middle" x="491" y="-169.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::lsei</text>
+<g id="a_proc~~slsqp~~CallsGraph_node13"><a xlink:href="../proc/lsei.html" xlink:title="slsqp_core::lsei">
+<polygon fill="#d9534f" stroke="#d9534f" points="556,-423 462,-423 462,-399 556,-399 556,-423"/>
+<text text-anchor="middle" x="509" y="-408.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::lsei</text>
 </a>
 </g>
 </g>
 <!-- proc~lsq&#45;&gt;proc~lsei -->
-<g id="proc~~slsqp~~CallsGraph_edge12" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge16" class="edge">
 <title>proc~lsq&#45;&gt;proc~lsei</title>
-<path fill="none" stroke="#000000" d="M375.35,-164.81C393.47,-165.95 414.59,-167.27 433.72,-168.47"/>
-<polygon fill="#000000" stroke="#000000" points="433.62,-171.97 443.82,-169.1 434.06,-164.99 433.62,-171.97"/>
+<path fill="none" stroke="#000000" d="M349.79,-226.03C377.93,-258.93 456.4,-350.67 491.11,-391.26"/>
+<polygon fill="#000000" stroke="#000000" points="488.47,-393.56 497.63,-398.88 493.79,-389.01 488.47,-393.56"/>
 </g>
 <!-- proc~lsei&#45;&gt;proc~dcopy -->
-<g id="proc~~slsqp~~CallsGraph_edge13" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge17" class="edge">
 <title>proc~lsei&#45;&gt;proc~dcopy</title>
-<path fill="none" stroke="#000000" d="M538.27,-176.1C550.21,-179.19 562.16,-184.38 571,-193 611.78,-232.77 568.71,-273.83 607,-316 674.55,-390.41 789.75,-423.58 864.48,-437.86"/>
-<polygon fill="#000000" stroke="#000000" points="864.28,-441.38 874.75,-439.75 865.55,-434.5 864.28,-441.38"/>
+<path fill="none" stroke="#000000" d="M521.21,-398.89C553.45,-365.02 650.74,-269.35 754,-232 827.22,-205.51 916.51,-197.04 977.65,-194.55"/>
+<polygon fill="#000000" stroke="#000000" points="978.11,-198.04 987.97,-194.17 977.85,-191.04 978.11,-198.04"/>
 </g>
 <!-- proc~lsei&#45;&gt;proc~ddot -->
-<g id="proc~~slsqp~~CallsGraph_edge14" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge18" class="edge">
 <title>proc~lsei&#45;&gt;proc~ddot</title>
-<path fill="none" stroke="#000000" d="M538.31,-171.58C617,-170.88 777.12,-169.43 868.53,-168.61"/>
-<polygon fill="#000000" stroke="#000000" points="868.81,-172.11 878.78,-168.52 868.75,-165.11 868.81,-172.11"/>
-</g>
-<!-- proc~dnrm2 -->
-<g id="proc~~slsqp~~CallsGraph_node11" class="node">
-<title>proc~dnrm2</title>
-<g id="a_proc~~slsqp~~CallsGraph_node11"><a xlink:href=".././proc/dnrm2.html" xlink:title="slsqp_support::dnrm2">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="1001.5,-366 873.5,-366 873.5,-342 1001.5,-342 1001.5,-366"/>
-<text text-anchor="middle" x="937.5" y="-351.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support::dnrm2</text>
-</a>
-</g>
+<path fill="none" stroke="#000000" d="M524.25,-423.25C545.05,-440.53 585.57,-471.97 625,-490 744.62,-544.69 895.99,-576.1 981.86,-590.76"/>
+<polygon fill="#000000" stroke="#000000" points="981.31,-594.21 991.75,-592.42 982.47,-587.31 981.31,-594.21"/>
 </g>
 <!-- proc~lsei&#45;&gt;proc~dnrm2 -->
-<g id="proc~~slsqp~~CallsGraph_edge15" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge19" class="edge">
 <title>proc~lsei&#45;&gt;proc~dnrm2</title>
-<path fill="none" stroke="#000000" d="M538.16,-176.77C549.95,-179.88 561.87,-184.91 571,-193 603.24,-221.57 576.3,-252.77 607,-283 648.7,-324.06 673.16,-316.07 730,-330 773.53,-340.67 823.43,-346.64 863.26,-349.95"/>
-<polygon fill="#000000" stroke="#000000" points="863.18,-353.45 873.43,-350.76 863.74,-346.48 863.18,-353.45"/>
+<path fill="none" stroke="#000000" d="M531.7,-398.9C573.34,-376.34 667.94,-328.24 754,-307 828.16,-288.7 915.65,-283.55 976.09,-282.45"/>
+<polygon fill="#000000" stroke="#000000" points="976.35,-285.95 986.3,-282.3 976.25,-278.95 976.35,-285.95"/>
 </g>
 <!-- proc~h12 -->
-<g id="proc~~slsqp~~CallsGraph_node12" class="node">
+<g id="proc~~slsqp~~CallsGraph_node14" class="node">
 <title>proc~h12</title>
-<g id="a_proc~~slsqp~~CallsGraph_node12"><a xlink:href=".././proc/h12.html" xlink:title="slsqp_core::h12">
-<polygon fill="#d9534f" stroke="#d9534f" points="1154,-191 1058,-191 1058,-167 1154,-167 1154,-191"/>
-<text text-anchor="middle" x="1106" y="-176.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::h12</text>
+<g id="a_proc~~slsqp~~CallsGraph_node14"><a xlink:href="../proc/h12.html" xlink:title="slsqp_core::h12">
+<polygon fill="#d9534f" stroke="#d9534f" points="1267,-480 1171,-480 1171,-456 1267,-456 1267,-480"/>
+<text text-anchor="middle" x="1219" y="-465.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::h12</text>
 </a>
 </g>
 </g>
 <!-- proc~lsei&#45;&gt;proc~h12 -->
-<g id="proc~~slsqp~~CallsGraph_edge16" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge20" class="edge">
 <title>proc~lsei&#45;&gt;proc~h12</title>
-<path fill="none" stroke="#000000" d="M538.33,-163.04C630.22,-146.74 841.71,-116.62 1016,-147 1034.08,-150.15 1053.35,-156.65 1069.31,-162.98"/>
-<polygon fill="#000000" stroke="#000000" points="1068.2,-166.31 1078.78,-166.86 1070.86,-159.83 1068.2,-166.31"/>
+<path fill="none" stroke="#000000" d="M519.92,-423.11C538.52,-445.16 580.76,-492.24 625,-521 759.66,-608.55 812.32,-604.63 972,-622 1041.37,-629.55 1068.56,-656.88 1129,-622 1178.69,-593.33 1203.13,-525.17 1212.8,-489.93"/>
+<polygon fill="#000000" stroke="#000000" points="1216.22,-490.69 1215.34,-480.13 1209.44,-488.94 1216.22,-490.69"/>
 </g>
 <!-- proc~hfti -->
-<g id="proc~~slsqp~~CallsGraph_node13" class="node">
+<g id="proc~~slsqp~~CallsGraph_node15" class="node">
 <title>proc~hfti</title>
-<g id="a_proc~~slsqp~~CallsGraph_node13"><a xlink:href=".././proc/hfti.html" xlink:title="slsqp_core::hfti">
-<polygon fill="#d9534f" stroke="#d9534f" points="823,-24 730,-24 730,0 823,0 823,-24"/>
-<text text-anchor="middle" x="776.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::hfti</text>
+<g id="a_proc~~slsqp~~CallsGraph_node15"><a xlink:href="../proc/hfti.html" xlink:title="slsqp_core::hfti">
+<polygon fill="#d9534f" stroke="#d9534f" points="718,-481 625,-481 625,-457 718,-457 718,-481"/>
+<text text-anchor="middle" x="671.5" y="-466.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::hfti</text>
 </a>
 </g>
 </g>
 <!-- proc~lsei&#45;&gt;proc~hfti -->
-<g id="proc~~slsqp~~CallsGraph_edge17" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge21" class="edge">
 <title>proc~lsei&#45;&gt;proc~hfti</title>
-<path fill="none" stroke="#000000" d="M513.31,-159.97C563.08,-131.89 687.11,-61.89 744.93,-29.25"/>
-<polygon fill="#000000" stroke="#000000" points="746.96,-32.13 753.94,-24.17 743.52,-26.03 746.96,-32.13"/>
+<path fill="none" stroke="#000000" d="M543.26,-423.02C567.79,-431.88 601.37,-444.02 627.87,-453.6"/>
+<polygon fill="#000000" stroke="#000000" points="626.69,-456.89 637.29,-457 629.07,-450.31 626.69,-456.89"/>
 </g>
 <!-- proc~lsi -->
-<g id="proc~~slsqp~~CallsGraph_node14" class="node">
+<g id="proc~~slsqp~~CallsGraph_node16" class="node">
 <title>proc~lsi</title>
-<g id="a_proc~~slsqp~~CallsGraph_node14"><a xlink:href=".././proc/lsi.html" xlink:title="slsqp_core::lsi">
-<polygon fill="#d9534f" stroke="#d9534f" points="694,-274 607,-274 607,-250 694,-250 694,-274"/>
-<text text-anchor="middle" x="650.5" y="-259.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::lsi</text>
+<g id="a_proc~~slsqp~~CallsGraph_node16"><a xlink:href="../proc/lsi.html" xlink:title="slsqp_core::lsi">
+<polygon fill="#d9534f" stroke="#d9534f" points="715,-423 628,-423 628,-399 715,-399 715,-423"/>
+<text text-anchor="middle" x="671.5" y="-408.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::lsi</text>
 </a>
 </g>
 </g>
 <!-- proc~lsei&#45;&gt;proc~lsi -->
-<g id="proc~~slsqp~~CallsGraph_edge18" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge22" class="edge">
 <title>proc~lsei&#45;&gt;proc~lsi</title>
-<path fill="none" stroke="#000000" d="M538.06,-180.43C549.23,-183.5 560.86,-187.59 571,-193 594.72,-205.66 617.28,-226.78 632.07,-242.33"/>
-<polygon fill="#000000" stroke="#000000" points="629.7,-244.92 639.07,-249.87 634.84,-240.16 629.7,-244.92"/>
+<path fill="none" stroke="#000000" d="M556.42,-411C575.58,-411 597.89,-411 617.67,-411"/>
+<polygon fill="#000000" stroke="#000000" points="617.75,-414.5 627.75,-411 617.75,-407.5 617.75,-414.5"/>
 </g>
 <!-- proc~hfti&#45;&gt;proc~h12 -->
-<g id="proc~~slsqp~~CallsGraph_edge19" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge23" class="edge">
 <title>proc~hfti&#45;&gt;proc~h12</title>
-<path fill="none" stroke="#000000" d="M812.23,-24.03C859.73,-41.09 946.92,-74.68 1016,-114 1040.01,-127.66 1065.24,-146.59 1082.69,-160.5"/>
-<polygon fill="#000000" stroke="#000000" points="1080.6,-163.31 1090.58,-166.88 1085,-157.87 1080.6,-163.31"/>
+<path fill="none" stroke="#000000" d="M718.07,-468.92C817.05,-468.74 1051.51,-468.31 1160.48,-468.11"/>
+<polygon fill="#000000" stroke="#000000" points="1160.63,-471.61 1170.62,-468.09 1160.62,-464.61 1160.63,-471.61"/>
 </g>
 <!-- proc~lsi&#45;&gt;proc~daxpy -->
-<g id="proc~~slsqp~~CallsGraph_edge20" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge24" class="edge">
 <title>proc~lsi&#45;&gt;proc~daxpy</title>
-<path fill="none" stroke="#000000" d="M662.64,-274.14C676.95,-289.11 703.16,-314.46 730,-330 772.37,-354.53 824.99,-371.17 866.51,-381.61"/>
-<polygon fill="#000000" stroke="#000000" points="865.73,-385.02 876.27,-384 867.39,-378.22 865.73,-385.02"/>
+<path fill="none" stroke="#000000" d="M715.01,-410.77C778.78,-410.44 899.97,-409.79 977.64,-409.38"/>
+<polygon fill="#000000" stroke="#000000" points="977.85,-412.88 987.83,-409.33 977.81,-405.88 977.85,-412.88"/>
 </g>
 <!-- proc~lsi&#45;&gt;proc~ddot -->
-<g id="proc~~slsqp~~CallsGraph_edge21" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge25" class="edge">
 <title>proc~lsi&#45;&gt;proc~ddot</title>
-<path fill="none" stroke="#000000" d="M676.98,-249.99C692.18,-243.08 711.97,-234.49 730,-228 779.59,-210.14 837.29,-193.73 879.07,-182.6"/>
-<polygon fill="#000000" stroke="#000000" points="880.02,-185.97 888.8,-180.03 878.24,-179.2 880.02,-185.97"/>
+<path fill="none" stroke="#000000" d="M689.9,-423.05C706.13,-434.05 731.2,-450.47 754,-463 843.6,-512.23 953.8,-560.66 1010.98,-584.93"/>
+<polygon fill="#000000" stroke="#000000" points="1009.78,-588.23 1020.35,-588.9 1012.51,-581.78 1009.78,-588.23"/>
 </g>
 <!-- proc~lsi&#45;&gt;proc~dnrm2 -->
-<g id="proc~~slsqp~~CallsGraph_edge22" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge26" class="edge">
 <title>proc~lsi&#45;&gt;proc~dnrm2</title>
-<path fill="none" stroke="#000000" d="M671.54,-274.18C687.04,-283.17 709.29,-295.16 730,-303 773.14,-319.32 823.35,-331.86 863.45,-340.42"/>
-<polygon fill="#000000" stroke="#000000" points="862.92,-343.88 873.42,-342.51 864.35,-337.03 862.92,-343.88"/>
+<path fill="none" stroke="#000000" d="M684.95,-398.99C700.05,-385.1 726.88,-362.53 754,-350 764.5,-345.15 900.01,-315.35 983.83,-297.16"/>
+<polygon fill="#000000" stroke="#000000" points="984.75,-300.55 993.78,-295.01 983.27,-293.7 984.75,-300.55"/>
 </g>
 <!-- proc~lsi&#45;&gt;proc~h12 -->
-<g id="proc~~slsqp~~CallsGraph_edge23" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge27" class="edge">
 <title>proc~lsi&#45;&gt;proc~h12</title>
-<path fill="none" stroke="#000000" d="M694.16,-254.19C776.09,-239.2 955.48,-206.36 1047.73,-189.48"/>
-<polygon fill="#000000" stroke="#000000" points="1048.52,-192.9 1057.72,-187.65 1047.26,-186.01 1048.52,-192.9"/>
+<path fill="none" stroke="#000000" d="M715.15,-418.33C727.64,-420.33 741.35,-422.39 754,-424 900.13,-442.56 1073.06,-456.98 1160.79,-463.75"/>
+<polygon fill="#000000" stroke="#000000" points="1160.56,-467.25 1170.8,-464.52 1161.1,-460.27 1160.56,-467.25"/>
 </g>
 <!-- proc~ldp -->
-<g id="proc~~slsqp~~CallsGraph_node15" class="node">
+<g id="proc~~slsqp~~CallsGraph_node17" class="node">
 <title>proc~ldp</title>
-<g id="a_proc~~slsqp~~CallsGraph_node15"><a xlink:href=".././proc/ldp.html" xlink:title="slsqp_core::ldp">
-<polygon fill="#d9534f" stroke="#d9534f" points="822.5,-294 730.5,-294 730.5,-270 822.5,-270 822.5,-294"/>
-<text text-anchor="middle" x="776.5" y="-279.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::ldp</text>
+<g id="a_proc~~slsqp~~CallsGraph_node17"><a xlink:href="../proc/ldp.html" xlink:title="slsqp_core::ldp">
+<polygon fill="#d9534f" stroke="#d9534f" points="891,-383 799,-383 799,-359 891,-359 891,-383"/>
+<text text-anchor="middle" x="845" y="-368.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::ldp</text>
 </a>
 </g>
 </g>
 <!-- proc~lsi&#45;&gt;proc~ldp -->
-<g id="proc~~slsqp~~CallsGraph_edge24" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge28" class="edge">
 <title>proc~lsi&#45;&gt;proc~ldp</title>
-<path fill="none" stroke="#000000" d="M694.17,-268.88C702.53,-270.23 711.41,-271.66 720.12,-273.07"/>
-<polygon fill="#000000" stroke="#000000" points="719.78,-276.56 730.21,-274.7 720.89,-269.65 719.78,-276.56"/>
+<path fill="none" stroke="#000000" d="M715.33,-401.01C737.56,-395.83 764.96,-389.43 788.76,-383.88"/>
+<polygon fill="#000000" stroke="#000000" points="789.77,-387.24 798.72,-381.56 788.18,-380.42 789.77,-387.24"/>
 </g>
 <!-- proc~ldp&#45;&gt;proc~daxpy -->
-<g id="proc~~slsqp~~CallsGraph_edge26" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge30" class="edge">
 <title>proc~ldp&#45;&gt;proc~daxpy</title>
-<path fill="none" stroke="#000000" d="M784.85,-294.32C797.45,-314.34 825.12,-353.86 859,-375 861.93,-376.83 865.01,-378.5 868.2,-380.02"/>
-<polygon fill="#000000" stroke="#000000" points="866.82,-383.24 877.39,-383.95 869.58,-376.8 866.82,-383.24"/>
+<path fill="none" stroke="#000000" d="M891.16,-379.43C916.62,-384.19 949,-390.23 977.83,-395.62"/>
+<polygon fill="#000000" stroke="#000000" points="977.4,-399.1 987.87,-397.49 978.68,-392.22 977.4,-399.1"/>
 </g>
 <!-- proc~ldp&#45;&gt;proc~dcopy -->
-<g id="proc~~slsqp~~CallsGraph_edge27" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge31" class="edge">
 <title>proc~ldp&#45;&gt;proc~dcopy</title>
-<path fill="none" stroke="#000000" d="M781.79,-294.25C791.52,-320.34 817.68,-381.91 859,-417 866.06,-422.99 874.42,-427.93 882.99,-431.95"/>
-<polygon fill="#000000" stroke="#000000" points="881.76,-435.23 892.33,-435.98 884.53,-428.81 881.76,-435.23"/>
+<path fill="none" stroke="#000000" d="M859.99,-358.83C894.92,-328.45 986.2,-249.06 1028.01,-212.69"/>
+<polygon fill="#000000" stroke="#000000" points="1030.44,-215.22 1035.68,-206.02 1025.84,-209.94 1030.44,-215.22"/>
 </g>
 <!-- proc~ldp&#45;&gt;proc~ddot -->
-<g id="proc~~slsqp~~CallsGraph_edge28" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge32" class="edge">
 <title>proc~ldp&#45;&gt;proc~ddot</title>
-<path fill="none" stroke="#000000" d="M794.52,-269.8C822.61,-249.66 878.82,-209.35 911.46,-185.95"/>
-<polygon fill="#000000" stroke="#000000" points="913.52,-188.78 919.61,-180.11 909.44,-183.09 913.52,-188.78"/>
+<path fill="none" stroke="#000000" d="M856.65,-383.04C889.75,-420.45 991.01,-534.9 1032,-581.22"/>
+<polygon fill="#000000" stroke="#000000" points="1029.46,-583.63 1038.71,-588.8 1034.7,-578.99 1029.46,-583.63"/>
 </g>
 <!-- proc~ldp&#45;&gt;proc~dnrm2 -->
-<g id="proc~~slsqp~~CallsGraph_edge29" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge33" class="edge">
 <title>proc~ldp&#45;&gt;proc~dnrm2</title>
-<path fill="none" stroke="#000000" d="M799.49,-294.05C807.03,-298.32 815.46,-303.24 823,-308 839.47,-318.4 841.34,-324.78 859,-333 863.35,-335.03 867.94,-336.89 872.61,-338.59"/>
-<polygon fill="#000000" stroke="#000000" points="871.69,-341.98 882.29,-341.87 873.94,-335.35 871.69,-341.98"/>
+<path fill="none" stroke="#000000" d="M891.15,-363.28C906.2,-359.36 922.54,-353.54 936,-345 956.47,-332 951.42,-316.83 972,-304 974.93,-302.17 978.01,-300.51 981.2,-298.98"/>
+<polygon fill="#000000" stroke="#000000" points="982.58,-302.2 990.4,-295.05 979.83,-295.76 982.58,-302.2"/>
 </g>
 <!-- proc~bvls_wrapper -->
-<g id="proc~~slsqp~~CallsGraph_node16" class="node">
+<g id="proc~~slsqp~~CallsGraph_node18" class="node">
 <title>proc~bvls_wrapper</title>
-<g id="a_proc~~slsqp~~CallsGraph_node16"><a xlink:href=".././proc/bvls_wrapper.html" xlink:title="bvls_module::bvls_wrapper">
-<polygon fill="#d9534f" stroke="#d9534f" points="1016,-324 859,-324 859,-300 1016,-300 1016,-324"/>
-<text text-anchor="middle" x="937.5" y="-309.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_module::bvls_wrapper</text>
+<g id="a_proc~~slsqp~~CallsGraph_node18"><a xlink:href="../proc/bvls_wrapper.html" xlink:title="bvls_module::bvls_wrapper">
+<polygon fill="#d9534f" stroke="#d9534f" points="1129,-337 972,-337 972,-313 1129,-313 1129,-337"/>
+<text text-anchor="middle" x="1050.5" y="-322.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_module::bvls_wrapper</text>
 </a>
 </g>
 </g>
 <!-- proc~ldp&#45;&gt;proc~bvls_wrapper -->
-<g id="proc~~slsqp~~CallsGraph_edge25" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge29" class="edge">
 <title>proc~ldp&#45;&gt;proc~bvls_wrapper</title>
-<path fill="none" stroke="#000000" d="M822.64,-290.52C835.2,-292.89 849.17,-295.52 862.91,-298.12"/>
-<polygon fill="#000000" stroke="#000000" points="862.38,-301.58 872.85,-299.99 863.67,-294.7 862.38,-301.58"/>
+<path fill="none" stroke="#000000" d="M891.16,-360.79C919.16,-354.46 955.55,-346.24 986.37,-339.27"/>
+<polygon fill="#000000" stroke="#000000" points="987.19,-342.67 996.17,-337.05 985.64,-335.85 987.19,-342.67"/>
 </g>
 <!-- proc~nnls -->
-<g id="proc~~slsqp~~CallsGraph_node17" class="node">
+<g id="proc~~slsqp~~CallsGraph_node19" class="node">
 <title>proc~nnls</title>
-<g id="a_proc~~slsqp~~CallsGraph_node17"><a xlink:href=".././proc/nnls.html" xlink:title="slsqp_core::nnls">
-<polygon fill="#d9534f" stroke="#d9534f" points="986,-282 889,-282 889,-258 986,-258 986,-282"/>
-<text text-anchor="middle" x="937.5" y="-267.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::nnls</text>
+<g id="a_proc~~slsqp~~CallsGraph_node19"><a xlink:href="../proc/nnls.html" xlink:title="slsqp_core::nnls">
+<polygon fill="#d9534f" stroke="#d9534f" points="1099,-379 1002,-379 1002,-355 1099,-355 1099,-379"/>
+<text text-anchor="middle" x="1050.5" y="-364.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::nnls</text>
 </a>
 </g>
 </g>
 <!-- proc~ldp&#45;&gt;proc~nnls -->
-<g id="proc~~slsqp~~CallsGraph_edge30" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge34" class="edge">
 <title>proc~ldp&#45;&gt;proc~nnls</title>
-<path fill="none" stroke="#000000" d="M822.64,-278.59C840.07,-277.28 860.23,-275.76 878.69,-274.36"/>
-<polygon fill="#000000" stroke="#000000" points="879.04,-277.85 888.75,-273.6 878.52,-270.87 879.04,-277.85"/>
+<path fill="none" stroke="#000000" d="M891.16,-370.11C920.85,-369.53 959.97,-368.76 991.89,-368.13"/>
+<polygon fill="#000000" stroke="#000000" points="992.06,-371.63 1001.98,-367.93 991.92,-364.63 992.06,-371.63"/>
 </g>
 <!-- proc~bvls -->
-<g id="proc~~slsqp~~CallsGraph_node18" class="node">
+<g id="proc~~slsqp~~CallsGraph_node20" class="node">
 <title>proc~bvls</title>
-<g id="a_proc~~slsqp~~CallsGraph_node18"><a xlink:href=".././proc/bvls.html" xlink:title="bvls_module::bvls">
-<polygon fill="#d9534f" stroke="#d9534f" points="1160,-324 1052,-324 1052,-300 1160,-300 1160,-324"/>
-<text text-anchor="middle" x="1106" y="-309.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_module::bvls</text>
+<g id="a_proc~~slsqp~~CallsGraph_node20"><a xlink:href="../proc/bvls.html" xlink:title="bvls_module::bvls">
+<polygon fill="#d9534f" stroke="#d9534f" points="1273,-337 1165,-337 1165,-313 1273,-313 1273,-337"/>
+<text text-anchor="middle" x="1219" y="-322.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_module::bvls</text>
 </a>
 </g>
 </g>
 <!-- proc~bvls_wrapper&#45;&gt;proc~bvls -->
-<g id="proc~~slsqp~~CallsGraph_edge31" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge35" class="edge">
 <title>proc~bvls_wrapper&#45;&gt;proc~bvls</title>
-<path fill="none" stroke="#000000" d="M1016.39,-312C1024.84,-312 1033.36,-312 1041.61,-312"/>
-<polygon fill="#000000" stroke="#000000" points="1041.88,-315.5 1051.88,-312 1041.88,-308.5 1041.88,-315.5"/>
+<path fill="none" stroke="#000000" d="M1129.39,-325C1137.84,-325 1146.36,-325 1154.61,-325"/>
+<polygon fill="#000000" stroke="#000000" points="1154.88,-328.5 1164.88,-325 1154.88,-321.5 1154.88,-328.5"/>
 </g>
 <!-- proc~nnls&#45;&gt;proc~h12 -->
-<g id="proc~~slsqp~~CallsGraph_edge33" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge37" class="edge">
 <title>proc~nnls&#45;&gt;proc~h12</title>
-<path fill="none" stroke="#000000" d="M982.1,-257.98C993.43,-254.16 1005.41,-249.48 1016,-244 1040.83,-231.16 1066.3,-211.81 1083.6,-197.56"/>
-<polygon fill="#000000" stroke="#000000" points="1085.98,-200.13 1091.4,-191.02 1081.49,-194.76 1085.98,-200.13"/>
+<path fill="none" stroke="#000000" d="M1099.17,-376.15C1109.36,-379.13 1119.82,-383 1129,-388 1157.48,-403.5 1184.32,-429.84 1200.93,-448.04"/>
+<polygon fill="#000000" stroke="#000000" points="1198.54,-450.62 1207.81,-455.76 1203.77,-445.97 1198.54,-450.62"/>
 </g>
 <!-- proc~g1 -->
-<g id="proc~~slsqp~~CallsGraph_node19" class="node">
+<g id="proc~~slsqp~~CallsGraph_node21" class="node">
 <title>proc~g1</title>
-<g id="a_proc~~slsqp~~CallsGraph_node19"><a xlink:href=".././proc/g1.html" xlink:title="slsqp_core::g1">
-<polygon fill="#d9534f" stroke="#d9534f" points="1150.5,-282 1061.5,-282 1061.5,-258 1150.5,-258 1150.5,-282"/>
-<text text-anchor="middle" x="1106" y="-267.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::g1</text>
+<g id="a_proc~~slsqp~~CallsGraph_node21"><a xlink:href="../proc/g1.html" xlink:title="slsqp_core::g1">
+<polygon fill="#d9534f" stroke="#d9534f" points="1263.5,-379 1174.5,-379 1174.5,-355 1263.5,-355 1263.5,-379"/>
+<text text-anchor="middle" x="1219" y="-364.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core::g1</text>
 </a>
 </g>
 </g>
 <!-- proc~nnls&#45;&gt;proc~g1 -->
-<g id="proc~~slsqp~~CallsGraph_edge32" class="edge">
+<g id="proc~~slsqp~~CallsGraph_edge36" class="edge">
 <title>proc~nnls&#45;&gt;proc~g1</title>
-<path fill="none" stroke="#000000" d="M986.21,-270C1006.53,-270 1030.32,-270 1051.25,-270"/>
-<polygon fill="#000000" stroke="#000000" points="1051.27,-273.5 1061.27,-270 1051.27,-266.5 1051.27,-273.5"/>
+<path fill="none" stroke="#000000" d="M1099.21,-367C1119.53,-367 1143.32,-367 1164.25,-367"/>
+<polygon fill="#000000" stroke="#000000" points="1164.27,-370.5 1174.27,-367 1164.27,-363.5 1164.27,-370.5"/>
 </g>
 </g>
 </svg>
@@ -1075,17 +1102,17 @@ If <code>infinite_bound=0</code> then <code>huge()</code> is used for this.</p>
                   var panprocslsqpCallsGraph = svgPanZoom('#procslsqpCallsGraph',
                     {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
                   );
-                </script>        <div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div>
-          <div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog">
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
                   <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              <div class="modal-body">
+                <div class="modal-body">
 <p>Nodes of different colours represent the following: </p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
@@ -1093,11 +1120,11 @@ If <code>infinite_bound=0</code> then <code>huge()</code> is used for this.</p>
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="597pt" height="32pt"
- viewBox="0.00 0.00 596.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1.16 1.16) rotate(0) translate(4 28)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 592.5,-28 592.5,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
@@ -1116,23 +1143,29 @@ If <code>infinite_bound=0</code> then <code>huge()</code> is used for this.</p>
 <polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
 <text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
-<!-- Unknown Procedure Type -->
+<!-- Type Bound Procedure -->
 <g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="388.5,-24 243.5,-24 243.5,0 388.5,0 388.5,-24"/>
-<text text-anchor="middle" x="316" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
-<g id="node5" class="node">
+<g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="465,-24 407,-24 407,0 465,0 465,-24"/>
-<text text-anchor="middle" x="436" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
-<g id="node6" class="node">
+<g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="588.5,-24 483.5,-24 483.5,0 588.5,0 588.5,-24"/>
-<text text-anchor="middle" x="536" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -1148,11 +1181,11 @@ implementation in a submodule of an interface in a parent module.
         </div>
       </div>
     </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-  <h3 class="panel-title">Called by</h3>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
@@ -1173,7 +1206,7 @@ implementation in a submodule of an interface in a parent module.
 <!-- proc~slsqp_wrapper -->
 <g id="proc~~slsqp~~CalledByGraph_node2" class="node">
 <title>proc~slsqp_wrapper</title>
-<g id="a_proc~~slsqp~~CalledByGraph_node2"><a xlink:href=".././proc/slsqp_wrapper.html" xlink:title="slsqp_module::slsqp_solver%slsqp_wrapper">
+<g id="a_proc~~slsqp~~CalledByGraph_node2"><a xlink:href="../proc/slsqp_wrapper.html" xlink:title="slsqp_module::slsqp_solver%slsqp_wrapper">
 <polygon fill="#d9534f" stroke="#d9534f" points="244,-24 0,-24 0,0 244,0 244,-24"/>
 <text text-anchor="middle" x="122" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_module::slsqp_solver%slsqp_wrapper</text>
 </a>
@@ -1187,17 +1220,17 @@ implementation in a submodule of an interface in a parent module.
 </g>
 </g>
 </svg>
-</div>        <div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div>
-          <div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog">
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
                   <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              <div class="modal-body">
+                <div class="modal-body">
 <p>Nodes of different colours represent the following: </p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
@@ -1205,11 +1238,11 @@ implementation in a submodule of an interface in a parent module.
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="597pt" height="32pt"
- viewBox="0.00 0.00 596.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1.16 1.16) rotate(0) translate(4 28)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 592.5,-28 592.5,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
@@ -1228,23 +1261,29 @@ implementation in a submodule of an interface in a parent module.
 <polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
 <text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
-<!-- Unknown Procedure Type -->
+<!-- Type Bound Procedure -->
 <g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="388.5,-24 243.5,-24 243.5,0 388.5,0 388.5,-24"/>
-<text text-anchor="middle" x="316" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
-<g id="node5" class="node">
+<g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="465,-24 407,-24 407,0 465,0 465,-24"/>
-<text text-anchor="middle" x="436" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
-<g id="node6" class="node">
+<g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="588.5,-24 483.5,-24 483.5,0 588.5,0 588.5,-24"/>
-<text text-anchor="middle" x="536" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -1262,52 +1301,21 @@ implementation in a submodule of an interface in a parent module.
     </div>
     <br>
 
-    <section class="visible-xs visible-sm hidden-md">
-        <h3>Contents</h3>
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-    <div class="panel panel-primary">
-      <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
-      <div class="list-group">
-        <a class="list-group-item" href="../proc/slsqp.html#src">slsqp</a>
-      </div>
-    </div>
-
-
-    </section>
-    <br class="visible-xs visible-sm hidden-md">
-
 
     
     
 
     
     
+
 
 
     
     <section>
     <h2><span class="anchor" id="src"></span>Source Code</h2>
-    <div class="highlight"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">slsqp</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">meq</span><span class="p">,</span><span class="n">la</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">xl</span><span class="p">,</span><span class="n">xu</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">acc</span><span class="p">,</span><span class="n">iter</span><span class="p">,</span><span class="n">mode</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">l_w</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span><span class="w"></span>
-<span class="w">                     </span><span class="n">sdat</span><span class="p">,</span><span class="n">ldat</span><span class="p">,</span><span class="n">alphamin</span><span class="p">,</span><span class="n">alphamax</span><span class="p">,</span><span class="n">tolf</span><span class="p">,</span><span class="n">toldf</span><span class="p">,</span><span class="n">toldx</span><span class="p">,&amp;</span><span class="w"></span>
-<span class="w">                     </span><span class="n">max_iter_ls</span><span class="p">,</span><span class="n">nnls_mode</span><span class="p">,</span><span class="n">infinite_bound</span><span class="p">)</span><span class="w"></span>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">slsqp</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">meq</span><span class="p">,</span><span class="n">la</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">xl</span><span class="p">,</span><span class="n">xu</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">acc</span><span class="p">,</span><span class="n">iter</span><span class="p">,</span><span class="n">mode</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">l_w</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                     </span><span class="n">sdat</span><span class="p">,</span><span class="n">ldat</span><span class="p">,</span><span class="n">alphamin</span><span class="p">,</span><span class="n">alphamax</span><span class="p">,</span><span class="n">tolf</span><span class="p">,</span><span class="n">toldf</span><span class="p">,</span><span class="n">toldx</span><span class="p">,&amp;</span>
+<span class="w">                     </span><span class="n">max_iter_ls</span><span class="p">,</span><span class="n">nnls_mode</span><span class="p">,</span><span class="n">infinite_bound</span><span class="p">)</span>
 
 <span class="w">    </span><span class="k">implicit none</span>
 
@@ -1403,59 +1411,59 @@ implementation in a submodule of an interface in a parent module.
 <span class="w">                                          </span><span class="c">!! then these bounds are considered nonexistant.</span>
 <span class="w">                                          </span><span class="c">!! If `infinite_bound=0` then `huge()` is used for this.</span>
 
-<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">il</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">im</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">ir</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">iu</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">iv</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">iw</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">ix</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">mineq</span><span class="p">,</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">il</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">im</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">ir</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">iu</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">iv</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">iw</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">ix</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">mineq</span><span class="p">,</span><span class="w"> </span><span class="n">n1</span>
 <span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">infBnd</span><span class="w"> </span><span class="c">!! local copy of `infinite_bound`</span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">infinite_bound</span><span class="o">==</span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
-<span class="k">        </span><span class="n">infBnd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">huge</span><span class="p">(</span><span class="n">one</span><span class="p">)</span><span class="w"></span>
+<span class="k">        </span><span class="n">infBnd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">huge</span><span class="p">(</span><span class="n">one</span><span class="p">)</span>
 <span class="w">    </span><span class="k">else</span>
-<span class="k">        </span><span class="n">infBnd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">infinite_bound</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="k">end if</span><span class="w"></span>
+<span class="k">        </span><span class="n">infBnd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">infinite_bound</span><span class="p">)</span>
+<span class="w">    </span><span class="k">end if</span>
 
 <span class="w">    </span><span class="c">! check length of working arrays</span>
-<span class="w">    </span><span class="n">n1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="w">    </span><span class="n">mineq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">meq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
-<span class="w">    </span><span class="n">il</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">n1</span><span class="o">+</span><span class="n">m</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">n1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">n1</span><span class="o">-</span><span class="n">meq</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">mineq</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">mineq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">n1</span><span class="o">+</span><span class="n">mineq</span><span class="p">)&amp;</span><span class="w"></span>
-<span class="w">         </span><span class="o">*</span><span class="p">(</span><span class="n">n1</span><span class="o">-</span><span class="n">meq</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">meq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span><span class="o">*</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">m</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">4</span><span class="o">*</span><span class="n">n1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="w">    </span><span class="n">im</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="n">mineq</span><span class="p">,</span><span class="n">n1</span><span class="o">-</span><span class="n">meq</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">n1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="n">mineq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">meq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span>
+<span class="w">    </span><span class="n">il</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">n1</span><span class="o">+</span><span class="n">m</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">n1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">n1</span><span class="o">-</span><span class="n">meq</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">mineq</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">mineq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">n1</span><span class="o">+</span><span class="n">mineq</span><span class="p">)&amp;</span>
+<span class="w">         </span><span class="o">*</span><span class="p">(</span><span class="n">n1</span><span class="o">-</span><span class="n">meq</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">meq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span><span class="o">*</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">m</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">4</span><span class="o">*</span><span class="n">n1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="n">im</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="n">mineq</span><span class="p">,</span><span class="n">n1</span><span class="o">-</span><span class="n">meq</span><span class="p">)</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">l_w</span><span class="o">&lt;</span><span class="n">il</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
-<span class="k">        </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">il</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">im</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="k">        </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">il</span><span class="p">)</span>
+<span class="w">        </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">im</span><span class="p">)</span>
+<span class="w">        </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
 <span class="w">        </span><span class="k">return</span>
 <span class="k">    end if</span>
-<span class="k">    if</span><span class="w"> </span><span class="p">(</span><span class="n">meq</span><span class="o">&gt;</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"></span>
+<span class="k">    if</span><span class="w"> </span><span class="p">(</span><span class="n">meq</span><span class="o">&gt;</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
 <span class="w">        </span><span class="c">! note: calling lsq when meq&gt;n is corrupting the</span>
 <span class="w">        </span><span class="c">! memory in some way, so just catch this here.</span>
-<span class="w">        </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-<span class="w">        </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">        </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">        </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
 <span class="w">        </span><span class="k">return</span>
-<span class="k">    end if</span><span class="w"></span>
+<span class="k">    end if</span>
 
 <span class="w">    </span><span class="c">! prepare data for calling sqpbdy  -  initial addresses in w</span>
 
-<span class="w">    </span><span class="n">im</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="w">    </span><span class="n">il</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">im</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="n">il</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">im</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">la</span><span class="w"></span>
-<span class="w">    </span><span class="n">ix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">il</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span><span class="o">*</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="w">    </span><span class="n">ir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"></span>
-<span class="w">    </span><span class="k">is</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="k">is</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">la</span><span class="w"></span>
-<span class="w">    </span><span class="n">iu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
-<span class="w">    </span><span class="n">iv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iu</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
-<span class="w">    </span><span class="n">iw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iv</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
+<span class="w">    </span><span class="n">im</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="n">il</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">im</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="w">    </span><span class="n">il</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">im</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">la</span>
+<span class="w">    </span><span class="n">ix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">il</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span><span class="o">*</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="n">ir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span>
+<span class="w">    </span><span class="k">is</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<span class="w">    </span><span class="k">is</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">la</span>
+<span class="w">    </span><span class="n">iu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span>
+<span class="w">    </span><span class="n">iv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iu</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span>
+<span class="w">    </span><span class="n">iw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iv</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span>
 
-<span class="w">    </span><span class="n">sdat</span><span class="p">%</span><span class="n">n1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n1</span><span class="w"></span>
+<span class="w">    </span><span class="n">sdat</span><span class="p">%</span><span class="n">n1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n1</span>
 
-<span class="w">    </span><span class="k">call </span><span class="n">slsqpb</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">meq</span><span class="p">,</span><span class="n">la</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">xl</span><span class="p">,</span><span class="n">xu</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">acc</span><span class="p">,</span><span class="n">iter</span><span class="p">,</span><span class="n">mode</span><span class="p">,&amp;</span><span class="w"></span>
-<span class="w">                </span><span class="n">w</span><span class="p">(</span><span class="n">ir</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">il</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">ix</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">im</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="k">is</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">iu</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">iv</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">iw</span><span class="p">),&amp;</span><span class="w"></span>
-<span class="w">                </span><span class="n">sdat</span><span class="p">%</span><span class="n">t</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">f0</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">h1</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">h2</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">h3</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">h4</span><span class="p">,&amp;</span><span class="w"></span>
-<span class="w">                </span><span class="n">sdat</span><span class="p">%</span><span class="n">n1</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">n2</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">n3</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">t0</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">gs</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">tol</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">line</span><span class="p">,&amp;</span><span class="w"></span>
-<span class="w">                </span><span class="n">sdat</span><span class="p">%</span><span class="n">alpha</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">iexact</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">incons</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">ireset</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">itermx</span><span class="p">,&amp;</span><span class="w"></span>
-<span class="w">                </span><span class="n">ldat</span><span class="p">,</span><span class="n">alphamin</span><span class="p">,</span><span class="n">alphamax</span><span class="p">,</span><span class="n">tolf</span><span class="p">,</span><span class="n">toldf</span><span class="p">,</span><span class="n">toldx</span><span class="p">,&amp;</span><span class="w"></span>
-<span class="w">                </span><span class="n">max_iter_ls</span><span class="p">,</span><span class="n">nnls_mode</span><span class="p">,</span><span class="n">infBnd</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">call </span><span class="n">slsqpb</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">meq</span><span class="p">,</span><span class="n">la</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">xl</span><span class="p">,</span><span class="n">xu</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">acc</span><span class="p">,</span><span class="n">iter</span><span class="p">,</span><span class="n">mode</span><span class="p">,&amp;</span>
+<span class="w">                </span><span class="n">w</span><span class="p">(</span><span class="n">ir</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">il</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">ix</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">im</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="k">is</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">iu</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">iv</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">iw</span><span class="p">),&amp;</span>
+<span class="w">                </span><span class="n">sdat</span><span class="p">%</span><span class="n">t</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">f0</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">h1</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">h2</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">h3</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">h4</span><span class="p">,&amp;</span>
+<span class="w">                </span><span class="n">sdat</span><span class="p">%</span><span class="n">n1</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">n2</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">n3</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">t0</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">gs</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">tol</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">line</span><span class="p">,&amp;</span>
+<span class="w">                </span><span class="n">sdat</span><span class="p">%</span><span class="n">alpha</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">iexact</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">incons</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">ireset</span><span class="p">,</span><span class="n">sdat</span><span class="p">%</span><span class="n">itermx</span><span class="p">,&amp;</span>
+<span class="w">                </span><span class="n">ldat</span><span class="p">,</span><span class="n">alphamin</span><span class="p">,</span><span class="n">alphamax</span><span class="p">,</span><span class="n">tolf</span><span class="p">,</span><span class="n">toldf</span><span class="p">,</span><span class="n">toldx</span><span class="p">,&amp;</span>
+<span class="w">                </span><span class="n">max_iter_ls</span><span class="p">,</span><span class="n">nnls_mode</span><span class="p">,</span><span class="n">infBnd</span><span class="p">)</span>
 
-<span class="w">    </span><span class="k">end subroutine </span><span class="n">slsqp</span><span class="w"></span>
+<span class="w">    </span><span class="k">end subroutine </span><span class="n">slsqp</span>
 </pre></div>
 
     </section>
@@ -1468,12 +1476,12 @@ implementation in a submodule of an interface in a parent module.
     </div> <!-- /container -->
     <footer>
       <div class="container">
-        <div class="row">
-          <div class="col-xs-6 col-md-6"><p>slsqp was developed by Jacob Williams<br>&copy; 2023 
+        <div class="row justify-content-between">
+          <div class="col"><p>slsqp was developed by Jacob Williams<br>&copy; 2024 
 </p>
           </div>
-          <div class="col-xs-6 col-md-6">
-            <p class="text-right">
+          <div class="col">
+            <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
             </p>
@@ -1483,17 +1491,12 @@ implementation in a submodule of an interface in a parent module.
       </div> <!-- /container -->
     </footer>
 
-    <!-- Bootstrap core JavaScript
-         ================================================== -->
-         <!-- Placed at the end of the document so the pages load faster -->
-    <!--
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        -->
-        <script src="../js/bootstrap.min.js"></script>
-        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-        <script src="../js/ie10-viewport-bug-workaround.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
 
-        <!-- MathJax JavaScript
+    <!-- MathJax JavaScript
              ================================================== -->
              <!-- Placed at the end of the document so the pages load faster -->
         <script type="text/x-mathjax-config">
