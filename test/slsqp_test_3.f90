@@ -40,6 +40,7 @@
         call solver%initialize(n,m,meq,max_iter,acc,rosenbrock_func,dummy_grad,&
                                 xl,xu,linesearch_mode=linesearch_mode,status_ok=status_ok,&
                                 report=report_iteration,&
+                                iprint=0,report_msg=message_function,& ! don't print, but send messages to the message function
                                 gradient_mode=gradient_mode,gradient_delta=gradient_delta)
 
         if (status_ok) then
@@ -115,6 +116,13 @@
         write(output_unit,'(I20,1X,(*(F20.16,1X)))') iter,x,f,c
 
     end subroutine report_iteration
+
+    subroutine message_function(me,str)
+        !! receives messages from the solver.
+        class(slsqp_solver),intent(inout) :: me
+        character(len=*),intent(in)       :: str  !! the message to report.
+        write(*,*) 'SLSQP MESSAGE: '//trim(str)
+    end subroutine message_function
 
     end program slsqp_test_3
 !*******************************************************************************
