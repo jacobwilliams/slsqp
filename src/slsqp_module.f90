@@ -55,9 +55,10 @@
         integer :: l_w = 0 !! size of `w`
         real(wp),dimension(:),allocatable :: w !! real work array
 
-        procedure(func),pointer     :: f      => null()         !! problem function subroutine
-        procedure(grad),pointer     :: g      => null()         !! gradient subroutine
-        procedure(iterfunc),pointer :: report => null()         !! for reporting an iteration
+        procedure(func),pointer     :: f          => null() !! problem function subroutine
+        procedure(grad),pointer     :: g          => null() !! gradient subroutine
+        procedure(iterfunc),pointer :: report     => null() !! for reporting an iteration
+        procedure(msgfunc),pointer  :: report_msg => null() !! for reporting a string message from slsqp to the user
 
         integer :: linesearch_mode = 1  !! linesearch mode:
                                         !!
@@ -125,6 +126,12 @@
             real(wp),dimension(:),intent(in)  :: c     !! the constraint vector `dimension(m)`,
                                                        !! equality constraints (if any) first.
         end subroutine iterfunc
+        subroutine msgfunc(me,str)  !! for reporting a message to the user
+            import :: slsqp_solver
+            implicit none
+            class(slsqp_solver),intent(inout) :: me
+            character(len=*),intent(in)       :: str  !! the message to report.
+        end subroutine msgfunc
     end interface
 
     contains
@@ -154,7 +161,7 @@
     subroutine initialize_slsqp(me,n,m,meq,max_iter,acc,f,g,xl,xu,status_ok,&
                                 linesearch_mode,iprint,report,alphamin,alphamax,&
                                 gradient_mode,gradient_delta,tolf,toldf,toldx,&
-                                max_iter_ls,nnls_mode,infinite_bound)
+                                max_iter_ls,nnls_mode,infinite_bound,report_msg)
 
     implicit none
 
@@ -201,6 +208,8 @@
                                                    !! if `xl<=-infinite_bound` or `xu>=infinite_bound`
                                                    !! then these bounds are considered nonexistant.
                                                    !! If not present then `huge()` is used for this.
+    procedure(msgfunc),optional  :: report_msg  !! user-defined procedure that will be called
+                                                !! with any warning or error messages.
 
     integer :: n1,mineq,i
 
@@ -208,6 +217,8 @@
     call me%destroy()
 
     if (present(iprint)) me%iprint = iprint
+
+    if (present(report_msg)) me%report_msg => report_msg
 
     if (size(xl)/=size(xu) .or. size(xl)/=n) then
         call me%report_message('error: invalid upper or lower bound vector size')
@@ -534,7 +545,7 @@
 
     implicit none
 
-    class(slsqp_solver),intent(in) :: me
+    class(slsqp_solver),intent(inout) :: me
     character(len=*),intent(in)    :: str    !! the message to report.
     integer,intent(in),optional    :: ival   !! optional integer to print after the message.
     real(wp),intent(in),optional   :: rval   !! optional real to print after the message.
@@ -545,7 +556,7 @@
     character(len=10) :: istr  !! string version of `ival`
     character(len=30) :: rstr  !! string version of `rval`
     character(len=:),allocatable :: str_to_write  !! the actual message to the printed
-    integer :: istat  !! iostat for integer to string conversion
+    integer :: istat  !! iostat for `write` statements
 
     !fatal error check:
     if (present(fatal)) then
@@ -555,7 +566,7 @@
     end if
 
     !note: if stopping program, then the message is always printed:
-    write_message = me%iprint/=0 .or. stop_program
+    write_message = me%iprint/=0 .or. stop_program .or. associated(me%report_msg)
 
     if (write_message) then
 
@@ -571,11 +582,20 @@
             str_to_write = str
         end if
 
-        if (me%iprint==0) then
+        if (me%iprint==0 .and. stop_program) then
             write(error_unit,'(A)') str_to_write  !in this case, use the error unit
-        else
-            write(me%iprint,'(A)') str_to_write   !user specified unit number
+        elseif (me%iprint/=0) then
+            write(me%iprint,'(A)',iostat=istat) str_to_write   !user specified unit number
+            if (istat/=0) then
+                ! attempt to write to error unit if above failed:
+                write(istr,fmt='(I10)',iostat=istat) me%iprint
+                write(error_unit,'(A)') 'Error writing to unit '//trim(adjustl(istr))
+                write(error_unit,'(A)') str_to_write
+            end if
         end if
+
+        if (associated(me%report_msg)) call me%report_msg(str_to_write)
+
         deallocate(str_to_write)
 
         if (stop_program) error stop 'Fatal Error'
