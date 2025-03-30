@@ -1,0 +1,1061 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran Implementation of the SLSQP Optimization Method">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>slsqp_wrapper &ndash; slsqp</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">slsqp </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>slsqp_wrapper
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 6.5% of total for procedures.">144 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/slsqp_module.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/slsqp_module.f90.html'>slsqp_module.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/slsqp_module.html'>slsqp_module</a></li>
+            <li class="breadcrumb-item active" aria-current="page">slsqp_wrapper</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/slsqp_wrapper.html#src">slsqp_wrapper</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>private  subroutine slsqp_wrapper(me, x, istat, iterations, status_message)  
+</h2>
+    
+
+    <p>main routine for calling <a href="../proc/slsqp.html">slsqp</a>.</p>
+
+    <h3>Type Bound</h3>
+    <p><a href='../type/slsqp_solver.html'>slsqp_solver</a></p>
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~12"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~19"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p><strong>in:</strong>  initial optimization variables,
+<strong>out:</strong> solution.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-istat"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>istat</strong></td>
+            <td>
+                <p>status code (see <code>mode</code> in <a href="../proc/slsqp.html">slsqp</a>).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iterations"></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iterations</strong></td>
+            <td>
+                <p>number of iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-status_message"></span>
+              character(len=:),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>status_message</strong></td>
+            <td>
+                <p>string status message
+corresponding to <code>istat</code></p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~slsqp_wrapper~~CallsGraph Pages: 1 -->
+<svg id="procslsqp_wrapperCallsGraph" width="641pt" height="398pt"
+ viewBox="0.00 0.00 641.00 397.81" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~slsqp_wrapper~~CallsGraph" class="graph" transform="scale(0.55 0.55) rotate(0) translate(4 719)">
+<title>proc~~slsqp_wrapper~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-719 1161,-719 1161,4 -4,4"/>
+<!-- proc~slsqp_wrapper -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node1" class="node">
+<title>proc~slsqp_wrapper</title>
+<polygon fill="none" stroke="black" points="163,-249 0,-249 0,-225 163,-225 163,-249"/>
+<text text-anchor="middle" x="81.5" y="-234.6" font-family="Helvetica,sans-Serif" font-size="10.50">slsqp_solver%slsqp_wrapper</text>
+</g>
+<!-- proc~destroy_linmin_data -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node2" class="node">
+<title>proc~destroy_linmin_data</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node2"><a xlink:href="../proc/destroy_linmin_data.html" xlink:title="linmin_data%destroy_linmin_data">
+<polygon fill="#d9534f" stroke="#d9534f" points="390,-312 199,-312 199,-288 390,-288 390,-312"/>
+<text text-anchor="middle" x="294.5" y="-297.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">linmin_data%destroy_linmin_data</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqp_wrapper&#45;&gt;proc~destroy_linmin_data -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge1" class="edge">
+<title>proc~slsqp_wrapper&#45;&gt;proc~destroy_linmin_data</title>
+<path fill="none" stroke="#000000" d="M112.81,-249.13C136.12,-258.16 169.27,-270.37 199,-279 207.06,-281.34 215.58,-283.56 224.06,-285.63"/>
+<polygon fill="#000000" stroke="#000000" points="223.44,-289.08 233.97,-287.98 225.05,-282.27 223.44,-289.08"/>
+</g>
+<!-- proc~mode_to_status_message -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node3" class="node">
+<title>proc~mode_to_status_message</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node3"><a xlink:href="../proc/mode_to_status_message.html" xlink:title="mode_to_status_message">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="369,-270 220,-270 220,-246 369,-246 369,-270"/>
+<text text-anchor="middle" x="294.5" y="-255.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">mode_to_status_message</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqp_wrapper&#45;&gt;proc~mode_to_status_message -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge2" class="edge">
+<title>proc~slsqp_wrapper&#45;&gt;proc~mode_to_status_message</title>
+<path fill="none" stroke="#000000" d="M163.17,-245.03C178.44,-246.55 194.45,-248.14 209.81,-249.67"/>
+<polygon fill="#000000" stroke="#000000" points="209.5,-253.16 219.8,-250.66 210.19,-246.19 209.5,-253.16"/>
+</g>
+<!-- proc~report_message -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node4" class="node">
+<title>proc~report_message</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node4"><a xlink:href="../proc/report_message.html" xlink:title="slsqp_solver%report_message">
+<polygon fill="#d9534f" stroke="#d9534f" points="380.5,-228 208.5,-228 208.5,-204 380.5,-204 380.5,-228"/>
+<text text-anchor="middle" x="294.5" y="-213.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_solver%report_message</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqp_wrapper&#45;&gt;proc~report_message -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge3" class="edge">
+<title>proc~slsqp_wrapper&#45;&gt;proc~report_message</title>
+<path fill="none" stroke="#000000" d="M163.17,-228.97C174.6,-227.83 186.44,-226.66 198.11,-225.49"/>
+<polygon fill="#000000" stroke="#000000" points="198.71,-228.95 208.31,-224.48 198.02,-221.99 198.71,-228.95"/>
+</g>
+<!-- proc~slsqp -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node5" class="node">
+<title>proc~slsqp</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node5"><a xlink:href="../proc/slsqp.html" xlink:title="slsqp">
+<polygon fill="#d9534f" stroke="#d9534f" points="321.5,-186 267.5,-186 267.5,-162 321.5,-162 321.5,-186"/>
+<text text-anchor="middle" x="294.5" y="-171.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqp_wrapper&#45;&gt;proc~slsqp -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge4" class="edge">
+<title>proc~slsqp_wrapper&#45;&gt;proc~slsqp</title>
+<path fill="none" stroke="#000000" d="M112.81,-224.87C136.12,-215.84 169.27,-203.63 199,-195 218.02,-189.48 239.56,-184.59 257.27,-180.92"/>
+<polygon fill="#000000" stroke="#000000" points="258.1,-184.33 267.2,-178.91 256.71,-177.47 258.1,-184.33"/>
+</g>
+<!-- proc~slsqpb -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node6" class="node">
+<title>proc~slsqpb</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node6"><a xlink:href="../proc/slsqpb.html" xlink:title="slsqpb">
+<polygon fill="#d9534f" stroke="#d9534f" points="480,-186 426,-186 426,-162 480,-162 480,-186"/>
+<text text-anchor="middle" x="453" y="-171.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqpb</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqp&#45;&gt;proc~slsqpb -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge5" class="edge">
+<title>proc~slsqp&#45;&gt;proc~slsqpb</title>
+<path fill="none" stroke="#000000" d="M321.69,-174C347.5,-174 387.13,-174 415.91,-174"/>
+<polygon fill="#000000" stroke="#000000" points="415.98,-177.5 425.98,-174 415.98,-170.5 415.98,-177.5"/>
+</g>
+<!-- proc~check_convergence -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node7" class="node">
+<title>proc~check_convergence</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node7"><a xlink:href="../proc/check_convergence.html" xlink:title="check_convergence">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="948,-265 829,-265 829,-241 948,-241 948,-265"/>
+<text text-anchor="middle" x="888.5" y="-250.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">check_convergence</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~check_convergence -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge6" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~check_convergence</title>
+<path fill="none" stroke="#000000" d="M461.96,-186.03C472.4,-200.63 492.21,-224.58 516,-235 614.35,-278.08 741.68,-272.79 818.84,-263.79"/>
+<polygon fill="#000000" stroke="#000000" points="819.42,-267.25 828.92,-262.56 818.57,-260.3 819.42,-267.25"/>
+</g>
+<!-- proc~daxpy -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node8" class="node">
+<title>proc~daxpy</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node8"><a xlink:href="../proc/daxpy.html" xlink:title="daxpy">
+<polygon fill="#d9534f" stroke="#d9534f" points="1052.5,-421 998.5,-421 998.5,-397 1052.5,-397 1052.5,-421"/>
+<text text-anchor="middle" x="1025.5" y="-406.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daxpy</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~daxpy -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge7" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~daxpy</title>
+<path fill="none" stroke="#000000" d="M458.01,-186.03C471.99,-226.29 522.32,-357.9 606,-432 654.28,-474.75 675.87,-476.83 739,-490 834.91,-510 945.87,-455.59 996.6,-426.28"/>
+<polygon fill="#000000" stroke="#000000" points="998.51,-429.22 1005.35,-421.13 994.96,-423.19 998.51,-429.22"/>
+</g>
+<!-- proc~dcopy -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node9" class="node">
+<title>proc~dcopy</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node9"><a xlink:href="../proc/dcopy.html" xlink:title="dcopy">
+<polygon fill="#d9534f" stroke="#d9534f" points="1052.5,-206 998.5,-206 998.5,-182 1052.5,-182 1052.5,-206"/>
+<text text-anchor="middle" x="1025.5" y="-191.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dcopy</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~dcopy -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge8" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~dcopy</title>
+<path fill="none" stroke="#000000" d="M471.21,-161.85C504.66,-139.47 581.48,-94 653.5,-94 653.5,-94 653.5,-94 767,-94 856.96,-94 953.33,-147.69 998.43,-176.39"/>
+<polygon fill="#000000" stroke="#000000" points="996.7,-179.44 1007,-181.94 1000.51,-173.56 996.7,-179.44"/>
+</g>
+<!-- proc~ddot -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node10" class="node">
+<title>proc~ddot</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node10"><a xlink:href="../proc/ddot.html" xlink:title="ddot">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1052.5,-613 998.5,-613 998.5,-589 1052.5,-589 1052.5,-613"/>
+<text text-anchor="middle" x="1025.5" y="-598.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ddot</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~ddot -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge9" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~ddot</title>
+<path fill="none" stroke="#000000" d="M455.68,-186.06C467.13,-265.88 536.75,-715 653.5,-715 653.5,-715 653.5,-715 767,-715 860.31,-715 957.61,-651.64 1001.09,-619.39"/>
+<polygon fill="#000000" stroke="#000000" points="1003.42,-622.02 1009.29,-613.2 999.2,-616.43 1003.42,-622.02"/>
+</g>
+<!-- proc~dscal -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node11" class="node">
+<title>proc~dscal</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node11"><a xlink:href="../proc/dscal.html" xlink:title="dscal">
+<polygon fill="#d9534f" stroke="#d9534f" points="681.5,-188 627.5,-188 627.5,-164 681.5,-164 681.5,-188"/>
+<text text-anchor="middle" x="654.5" y="-173.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dscal</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~dscal -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge10" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~dscal</title>
+<path fill="none" stroke="#000000" d="M480.08,-174.26C515.18,-174.61 577.77,-175.24 617.38,-175.64"/>
+<polygon fill="#000000" stroke="#000000" points="617.38,-179.14 627.41,-175.74 617.45,-172.14 617.38,-179.14"/>
+</g>
+<!-- proc~enforce_bounds -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node12" class="node">
+<title>proc~enforce_bounds</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node12"><a xlink:href="../proc/enforce_bounds.html" xlink:title="enforce_bounds">
+<polygon fill="#d9534f" stroke="#d9534f" points="703,-146 606,-146 606,-122 703,-122 703,-146"/>
+<text text-anchor="middle" x="654.5" y="-131.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">enforce_bounds</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~enforce_bounds -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge11" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~enforce_bounds</title>
+<path fill="none" stroke="#000000" d="M480.08,-168.77C509.26,-162.92 557.46,-153.26 595.64,-145.6"/>
+<polygon fill="#000000" stroke="#000000" points="596.5,-149 605.62,-143.6 595.12,-142.14 596.5,-149"/>
+</g>
+<!-- proc~ldl -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node13" class="node">
+<title>proc~ldl</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node13"><a xlink:href="../proc/ldl.html" xlink:title="ldl">
+<polygon fill="#d9534f" stroke="#d9534f" points="570,-66 516,-66 516,-42 570,-42 570,-66"/>
+<text text-anchor="middle" x="543" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ldl</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~ldl -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge12" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~ldl</title>
+<path fill="none" stroke="#000000" d="M460.91,-161.89C471.66,-143.45 493.51,-107.57 516,-80 517.69,-77.92 519.53,-75.83 521.42,-73.77"/>
+<polygon fill="#000000" stroke="#000000" points="524.31,-75.82 528.77,-66.21 519.29,-70.95 524.31,-75.82"/>
+</g>
+<!-- proc~linmin -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node14" class="node">
+<title>proc~linmin</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node14"><a xlink:href="../proc/linmin.html" xlink:title="linmin">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="570,-24 516,-24 516,0 570,0 570,-24"/>
+<text text-anchor="middle" x="543" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">linmin</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~linmin -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge13" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~linmin</title>
+<path fill="none" stroke="#000000" d="M457.26,-161.65C464.54,-135.79 484,-74.85 516,-33 516.46,-32.4 516.95,-31.8 517.45,-31.21"/>
+<polygon fill="#000000" stroke="#000000" points="520.04,-33.57 524.68,-24.04 515.11,-28.59 520.04,-33.57"/>
+</g>
+<!-- proc~lsq -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node15" class="node">
+<title>proc~lsq</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node15"><a xlink:href="../proc/lsq.html" xlink:title="lsq">
+<polygon fill="#d9534f" stroke="#d9534f" points="570,-226 516,-226 516,-202 570,-202 570,-226"/>
+<text text-anchor="middle" x="543" y="-211.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsq</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~lsq -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge14" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~lsq</title>
+<path fill="none" stroke="#000000" d="M480.4,-186C488.66,-189.75 497.9,-193.95 506.66,-197.94"/>
+<polygon fill="#000000" stroke="#000000" points="505.37,-201.19 515.92,-202.14 508.26,-194.82 505.37,-201.19"/>
+</g>
+<!-- proc~dnrm2 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node16" class="node">
+<title>proc~dnrm2</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node16"><a xlink:href="../proc/dnrm2.html" xlink:title="dnrm2">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1052.5,-295 998.5,-295 998.5,-271 1052.5,-271 1052.5,-295"/>
+<text text-anchor="middle" x="1025.5" y="-280.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dnrm2</text>
+</a>
+</g>
+</g>
+<!-- proc~check_convergence&#45;&gt;proc~dnrm2 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge15" class="edge">
+<title>proc~check_convergence&#45;&gt;proc~dnrm2</title>
+<path fill="none" stroke="#000000" d="M943.63,-265.03C958.6,-268.35 974.47,-271.88 988.16,-274.92"/>
+<polygon fill="#000000" stroke="#000000" points="987.63,-278.39 998.15,-277.14 989.15,-271.56 987.63,-278.39"/>
+</g>
+<!-- proc~lsq&#45;&gt;proc~dcopy -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge16" class="edge">
+<title>proc~lsq&#45;&gt;proc~dcopy</title>
+<path fill="none" stroke="#000000" d="M570.3,-211.7C620.53,-207.44 733.6,-198.42 829,-195 884.46,-193.01 948.83,-193.16 988.1,-193.52"/>
+<polygon fill="#000000" stroke="#000000" points="988.21,-197.02 998.24,-193.62 988.28,-190.02 988.21,-197.02"/>
+</g>
+<!-- proc~lsq&#45;&gt;proc~ddot -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge17" class="edge">
+<title>proc~lsq&#45;&gt;proc~ddot</title>
+<path fill="none" stroke="#000000" d="M544.53,-226.15C546.62,-261.43 556.86,-365.57 606,-432 675.46,-525.89 718.98,-531.81 829,-571 882.45,-590.04 948.35,-597 988.36,-599.54"/>
+<polygon fill="#000000" stroke="#000000" points="988.25,-603.04 998.43,-600.12 988.65,-596.05 988.25,-603.04"/>
+</g>
+<!-- proc~lsq&#45;&gt;proc~dscal -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge18" class="edge">
+<title>proc~lsq&#45;&gt;proc~dscal</title>
+<path fill="none" stroke="#000000" d="M570.23,-204.9C584.45,-199.96 602.23,-193.79 617.71,-188.42"/>
+<polygon fill="#000000" stroke="#000000" points="619.19,-191.61 627.49,-185.03 616.89,-185 619.19,-191.61"/>
+</g>
+<!-- proc~lsq&#45;&gt;proc~enforce_bounds -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge19" class="edge">
+<title>proc~lsq&#45;&gt;proc~enforce_bounds</title>
+<path fill="none" stroke="#000000" d="M554.41,-201.86C565.99,-188.94 585.73,-168.53 606,-155 608.24,-153.5 610.61,-152.07 613.04,-150.7"/>
+<polygon fill="#000000" stroke="#000000" points="614.74,-153.77 622.02,-146.07 611.53,-147.55 614.74,-153.77"/>
+</g>
+<!-- proc~lsei -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node17" class="node">
+<title>proc~lsei</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node17"><a xlink:href="../proc/lsei.html" xlink:title="lsei">
+<polygon fill="#d9534f" stroke="#d9534f" points="681.5,-423 627.5,-423 627.5,-399 681.5,-399 681.5,-423"/>
+<text text-anchor="middle" x="654.5" y="-408.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsei</text>
+</a>
+</g>
+</g>
+<!-- proc~lsq&#45;&gt;proc~lsei -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge20" class="edge">
+<title>proc~lsq&#45;&gt;proc~lsei</title>
+<path fill="none" stroke="#000000" d="M550.68,-226.03C568.78,-258.59 618.91,-348.76 641.81,-389.97"/>
+<polygon fill="#000000" stroke="#000000" points="638.85,-391.84 646.76,-398.88 644.96,-388.44 638.85,-391.84"/>
+</g>
+<!-- proc~lsei&#45;&gt;proc~dcopy -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge21" class="edge">
+<title>proc~lsei&#45;&gt;proc~dcopy</title>
+<path fill="none" stroke="#000000" d="M663.07,-398.82C684.43,-365.59 748.92,-273.12 829,-232 880.21,-205.7 947.51,-197.54 988.3,-195.04"/>
+<polygon fill="#000000" stroke="#000000" points="988.53,-198.54 998.33,-194.51 988.16,-191.55 988.53,-198.54"/>
+</g>
+<!-- proc~lsei&#45;&gt;proc~ddot -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge22" class="edge">
+<title>proc~lsei&#45;&gt;proc~ddot</title>
+<path fill="none" stroke="#000000" d="M665.67,-423.24C680.34,-440.23 708.98,-471 739,-490 821.28,-542.08 931.92,-576.44 988.25,-591.79"/>
+<polygon fill="#000000" stroke="#000000" points="987.55,-595.23 998.12,-594.44 989.37,-588.47 987.55,-595.23"/>
+</g>
+<!-- proc~lsei&#45;&gt;proc~dnrm2 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge23" class="edge">
+<title>proc~lsei&#45;&gt;proc~dnrm2</title>
+<path fill="none" stroke="#000000" d="M670.65,-398.86C699.52,-376.46 765.23,-328.92 829,-307 882.43,-288.63 948.34,-283.98 988.35,-282.99"/>
+<polygon fill="#000000" stroke="#000000" points="988.5,-286.48 998.43,-282.8 988.37,-279.48 988.5,-286.48"/>
+</g>
+<!-- proc~h12 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node18" class="node">
+<title>proc~h12</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node18"><a xlink:href="../proc/h12.html" xlink:title="h12">
+<polygon fill="#d9534f" stroke="#d9534f" points="1157,-480 1103,-480 1103,-456 1157,-456 1157,-480"/>
+<text text-anchor="middle" x="1130" y="-465.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">h12</text>
+</a>
+</g>
+</g>
+<!-- proc~lsei&#45;&gt;proc~h12 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge24" class="edge">
+<title>proc~lsei&#45;&gt;proc~h12</title>
+<path fill="none" stroke="#000000" d="M662.79,-423.12C675.96,-444.3 705.52,-488.63 739,-518 827.92,-596.02 867.2,-603.28 984,-622 1020.42,-627.84 1036.43,-642.65 1067,-622 1110.97,-592.31 1123.76,-525.69 1127.48,-490.6"/>
+<polygon fill="#000000" stroke="#000000" points="1130.99,-490.68 1128.4,-480.41 1124.01,-490.05 1130.99,-490.68"/>
+</g>
+<!-- proc~hfti -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node19" class="node">
+<title>proc~hfti</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node19"><a xlink:href="../proc/hfti.html" xlink:title="hfti">
+<polygon fill="#d9534f" stroke="#d9534f" points="793,-481 739,-481 739,-457 793,-457 793,-481"/>
+<text text-anchor="middle" x="766" y="-466.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hfti</text>
+</a>
+</g>
+</g>
+<!-- proc~lsei&#45;&gt;proc~hfti -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge25" class="edge">
+<title>proc~lsei&#45;&gt;proc~hfti</title>
+<path fill="none" stroke="#000000" d="M678.19,-423.02C694.04,-431.42 715.44,-442.75 733.02,-452.06"/>
+<polygon fill="#000000" stroke="#000000" points="731.87,-455.41 742.34,-457 735.14,-449.22 731.87,-455.41"/>
+</g>
+<!-- proc~lsi -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node20" class="node">
+<title>proc~lsi</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node20"><a xlink:href="../proc/lsi.html" xlink:title="lsi">
+<polygon fill="#d9534f" stroke="#d9534f" points="793,-423 739,-423 739,-399 793,-399 793,-423"/>
+<text text-anchor="middle" x="766" y="-408.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsi</text>
+</a>
+</g>
+</g>
+<!-- proc~lsei&#45;&gt;proc~lsi -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge26" class="edge">
+<title>proc~lsei&#45;&gt;proc~lsi</title>
+<path fill="none" stroke="#000000" d="M681.73,-411C695.81,-411 713.39,-411 728.77,-411"/>
+<polygon fill="#000000" stroke="#000000" points="728.99,-414.5 738.99,-411 728.99,-407.5 728.99,-414.5"/>
+</g>
+<!-- proc~hfti&#45;&gt;proc~h12 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge27" class="edge">
+<title>proc~hfti&#45;&gt;proc~h12</title>
+<path fill="none" stroke="#000000" d="M793.03,-468.93C856.54,-468.75 1019.54,-468.3 1092.61,-468.1"/>
+<polygon fill="#000000" stroke="#000000" points="1092.73,-471.6 1102.72,-468.07 1092.71,-464.6 1092.73,-471.6"/>
+</g>
+<!-- proc~lsi&#45;&gt;proc~daxpy -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge28" class="edge">
+<title>proc~lsi&#45;&gt;proc~daxpy</title>
+<path fill="none" stroke="#000000" d="M793.11,-410.8C839.28,-410.44 935.43,-409.69 988.09,-409.28"/>
+<polygon fill="#000000" stroke="#000000" points="988.35,-412.78 998.32,-409.2 988.3,-405.78 988.35,-412.78"/>
+</g>
+<!-- proc~lsi&#45;&gt;proc~ddot -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge29" class="edge">
+<title>proc~lsi&#45;&gt;proc~ddot</title>
+<path fill="none" stroke="#000000" d="M781.01,-423.32C793.4,-434.08 812.08,-449.97 829,-463 887.81,-508.29 959.76,-557.59 997.86,-583.23"/>
+<polygon fill="#000000" stroke="#000000" points="996.1,-586.26 1006.35,-588.93 1000,-580.45 996.1,-586.26"/>
+</g>
+<!-- proc~lsi&#45;&gt;proc~dnrm2 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge30" class="edge">
+<title>proc~lsi&#45;&gt;proc~dnrm2</title>
+<path fill="none" stroke="#000000" d="M776.7,-398.57C787.94,-384.92 807.68,-363.18 829,-350 842.9,-341.4 936.1,-311.09 988.64,-294.34"/>
+<polygon fill="#000000" stroke="#000000" points="989.79,-297.64 998.26,-291.28 987.67,-290.97 989.79,-297.64"/>
+</g>
+<!-- proc~lsi&#45;&gt;proc~h12 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge31" class="edge">
+<title>proc~lsi&#45;&gt;proc~h12</title>
+<path fill="none" stroke="#000000" d="M793.18,-416.86C804.21,-419.23 817.2,-421.9 829,-424 923.7,-440.86 1036.05,-456.07 1092.61,-463.39"/>
+<polygon fill="#000000" stroke="#000000" points="1092.46,-466.9 1102.83,-464.71 1093.36,-459.96 1092.46,-466.9"/>
+</g>
+<!-- proc~ldp -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node21" class="node">
+<title>proc~ldp</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node21"><a xlink:href="../proc/ldp.html" xlink:title="ldp">
+<polygon fill="#d9534f" stroke="#d9534f" points="915.5,-383 861.5,-383 861.5,-359 915.5,-359 915.5,-383"/>
+<text text-anchor="middle" x="888.5" y="-368.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~lsi&#45;&gt;proc~ldp -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge32" class="edge">
+<title>proc~lsi&#45;&gt;proc~ldp</title>
+<path fill="none" stroke="#000000" d="M793.15,-402.32C810.28,-396.63 832.9,-389.13 851.69,-382.89"/>
+<polygon fill="#000000" stroke="#000000" points="853.02,-386.13 861.4,-379.66 850.81,-379.49 853.02,-386.13"/>
+</g>
+<!-- proc~ldp&#45;&gt;proc~daxpy -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge34" class="edge">
+<title>proc~ldp&#45;&gt;proc~daxpy</title>
+<path fill="none" stroke="#000000" d="M915.53,-378.33C936.22,-384.15 965.4,-392.36 988.35,-398.83"/>
+<polygon fill="#000000" stroke="#000000" points="987.52,-402.23 998.09,-401.57 989.41,-395.49 987.52,-402.23"/>
+</g>
+<!-- proc~ldp&#45;&gt;proc~dcopy -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge35" class="edge">
+<title>proc~ldp&#45;&gt;proc~dcopy</title>
+<path fill="none" stroke="#000000" d="M898.78,-358.83C921.61,-328.9 980.71,-251.41 1008.98,-214.34"/>
+<polygon fill="#000000" stroke="#000000" points="1011.87,-216.32 1015.16,-206.25 1006.31,-212.08 1011.87,-216.32"/>
+</g>
+<!-- proc~ldp&#45;&gt;proc~ddot -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge36" class="edge">
+<title>proc~ldp&#45;&gt;proc~ddot</title>
+<path fill="none" stroke="#000000" d="M896.57,-383.04C918.34,-420.14 984.59,-533.01 1012.21,-580.06"/>
+<polygon fill="#000000" stroke="#000000" points="1009.26,-581.95 1017.34,-588.8 1015.3,-578.4 1009.26,-581.95"/>
+</g>
+<!-- proc~ldp&#45;&gt;proc~dnrm2 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge37" class="edge">
+<title>proc~ldp&#45;&gt;proc~dnrm2</title>
+<path fill="none" stroke="#000000" d="M915.56,-362.23C926.19,-357.96 938.24,-352.18 948,-345 967.53,-330.63 964.91,-318.95 984,-304 985.77,-302.61 987.65,-301.27 989.59,-299.99"/>
+<polygon fill="#000000" stroke="#000000" points="991.57,-302.88 998.34,-294.74 987.97,-296.88 991.57,-302.88"/>
+</g>
+<!-- proc~bvls_wrapper -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node22" class="node">
+<title>proc~bvls_wrapper</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node22"><a xlink:href="../proc/bvls_wrapper.html" xlink:title="bvls_wrapper">
+<polygon fill="#d9534f" stroke="#d9534f" points="1067,-337 984,-337 984,-313 1067,-313 1067,-337"/>
+<text text-anchor="middle" x="1025.5" y="-322.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_wrapper</text>
+</a>
+</g>
+</g>
+<!-- proc~ldp&#45;&gt;proc~bvls_wrapper -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge33" class="edge">
+<title>proc~ldp&#45;&gt;proc~bvls_wrapper</title>
+<path fill="none" stroke="#000000" d="M915.53,-362.13C933.67,-355.95 958.33,-347.55 979.61,-340.3"/>
+<polygon fill="#000000" stroke="#000000" points="980.77,-343.6 989.11,-337.06 978.51,-336.97 980.77,-343.6"/>
+</g>
+<!-- proc~nnls -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node23" class="node">
+<title>proc~nnls</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node23"><a xlink:href="../proc/nnls.html" xlink:title="nnls">
+<polygon fill="#d9534f" stroke="#d9534f" points="1052.5,-379 998.5,-379 998.5,-355 1052.5,-355 1052.5,-379"/>
+<text text-anchor="middle" x="1025.5" y="-364.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">nnls</text>
+</a>
+</g>
+</g>
+<!-- proc~ldp&#45;&gt;proc~nnls -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge38" class="edge">
+<title>proc~ldp&#45;&gt;proc~nnls</title>
+<path fill="none" stroke="#000000" d="M915.53,-370.23C936.13,-369.62 965.14,-368.76 988.05,-368.08"/>
+<polygon fill="#000000" stroke="#000000" points="988.2,-371.58 998.09,-367.78 987.99,-364.58 988.2,-371.58"/>
+</g>
+<!-- proc~bvls -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node24" class="node">
+<title>proc~bvls</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node24"><a xlink:href="../proc/bvls.html" xlink:title="bvls">
+<polygon fill="#d9534f" stroke="#d9534f" points="1157,-337 1103,-337 1103,-313 1157,-313 1157,-337"/>
+<text text-anchor="middle" x="1130" y="-322.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls</text>
+</a>
+</g>
+</g>
+<!-- proc~bvls_wrapper&#45;&gt;proc~bvls -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge39" class="edge">
+<title>proc~bvls_wrapper&#45;&gt;proc~bvls</title>
+<path fill="none" stroke="#000000" d="M1067.01,-325C1075.51,-325 1084.42,-325 1092.75,-325"/>
+<polygon fill="#000000" stroke="#000000" points="1092.92,-328.5 1102.92,-325 1092.92,-321.5 1092.92,-328.5"/>
+</g>
+<!-- proc~nnls&#45;&gt;proc~h12 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge41" class="edge">
+<title>proc~nnls&#45;&gt;proc~h12</title>
+<path fill="none" stroke="#000000" d="M1052.83,-378.53C1057.78,-381.27 1062.74,-384.45 1067,-388 1087.27,-404.9 1105.1,-429.5 1116.37,-446.96"/>
+<polygon fill="#000000" stroke="#000000" points="1113.65,-449.21 1121.93,-455.82 1119.58,-445.49 1113.65,-449.21"/>
+</g>
+<!-- proc~g1 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_node25" class="node">
+<title>proc~g1</title>
+<g id="a_proc~~slsqp_wrapper~~CallsGraph_node25"><a xlink:href="../proc/g1.html" xlink:title="g1">
+<polygon fill="#d9534f" stroke="#d9534f" points="1157,-379 1103,-379 1103,-355 1157,-355 1157,-379"/>
+<text text-anchor="middle" x="1130" y="-364.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">g1</text>
+</a>
+</g>
+</g>
+<!-- proc~nnls&#45;&gt;proc~g1 -->
+<g id="proc~~slsqp_wrapper~~CallsGraph_edge40" class="edge">
+<title>proc~nnls&#45;&gt;proc~g1</title>
+<path fill="none" stroke="#000000" d="M1052.63,-367C1064.8,-367 1079.48,-367 1092.7,-367"/>
+<polygon fill="#000000" stroke="#000000" points="1092.92,-370.5 1102.92,-367 1092.92,-363.5 1092.92,-370.5"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocslsqp_wrapperCallsGraph = svgPanZoom('#procslsqp_wrapperCallsGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">slsqp_wrapper</span><span class="p">(</span><span class="n">me</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">istat</span><span class="p">,</span><span class="n">iterations</span><span class="p">,</span><span class="n">status_message</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">implicit none</span>
+
+<span class="k">    class</span><span class="p">(</span><span class="n">slsqp_solver</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">me</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="w">          </span><span class="c">!! **in:**  initial optimization variables,</span>
+<span class="w">                                                      </span><span class="c">!! **out:** solution.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w">                 </span><span class="kd">::</span><span class="w"> </span><span class="n">istat</span><span class="w">      </span><span class="c">!! status code (see `mode` in [[slsqp]]).</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="k">optional</span><span class="w">        </span><span class="kd">::</span><span class="w"> </span><span class="n">iterations</span><span class="w"> </span><span class="c">!! number of iterations</span>
+<span class="w">    </span><span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="p">:),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="k">allocatable</span><span class="p">,</span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">status_message</span>
+<span class="w">                                                      </span><span class="c">!! string status message</span>
+<span class="w">                                                      </span><span class="c">!! corresponding to `istat`</span>
+
+<span class="w">    </span><span class="c">! local variables:</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">c</span><span class="w">        </span><span class="c">!! constraint vector -- `dimension(max(1,me%m))`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:,:),</span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="w">        </span><span class="c">!! a matrix for [[slsqp]] -- `dimension(max(1,me%m),me%n+1)`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">g</span><span class="w">        </span><span class="c">!! g matrix for [[slsqp]] -- `dimension(me%n+1)`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">cvec</span><span class="w">     </span><span class="c">!! constraint vector -- `dimension(me%m)`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">dfdx</span><span class="w">     </span><span class="c">!! objective function partials -- `dimension(me%n)`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:,:),</span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dcdx</span><span class="w">     </span><span class="c">!! constraint partials -- `dimension(me%m,me%n)`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">delta</span><span class="w">    </span><span class="c">!! perturbation step size to approximate gradient -- `dimension(me%n)`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">cvecr</span><span class="w">    </span><span class="c">!! right function value to approximate constraints vector&#39;s gradient -- `dimension(me%m)`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">allocatable</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">cvecl</span><span class="w">    </span><span class="c">!! left function value to approximate constraints vector&#39;s gradient -- `dimension(me%m)`</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">                            </span><span class="kd">::</span><span class="w"> </span><span class="n">f</span><span class="w">        </span><span class="c">!! objective function</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w">                             </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="w">        </span><span class="c">!! iteration counter</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w">                             </span><span class="kd">::</span><span class="w"> </span><span class="n">mode</span><span class="w">     </span><span class="c">!! reverse communication flag for [[slsqp]]</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w">                             </span><span class="kd">::</span><span class="w"> </span><span class="n">la</span><span class="w">       </span><span class="c">!! input to [[slsqp]]</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w">                             </span><span class="kd">::</span><span class="w"> </span><span class="n">iter</span><span class="w">     </span><span class="c">!! in/out for [[slsqp]]</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">                            </span><span class="kd">::</span><span class="w"> </span><span class="n">acc</span><span class="w">      </span><span class="c">!! in/out for [[slsqp]]</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w">                             </span><span class="kd">::</span><span class="w"> </span><span class="n">ig</span><span class="w">       </span><span class="c">!! loop index to approximate gradient</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">                            </span><span class="kd">::</span><span class="w"> </span><span class="n">fr</span><span class="w">       </span><span class="c">!! right function value to approximate objective function&#39;s gradient</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">                            </span><span class="kd">::</span><span class="w"> </span><span class="n">fl</span><span class="w">       </span><span class="c">!! left function value to approximate objective function&#39;s gradient</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">                            </span><span class="kd">::</span><span class="w"> </span><span class="n">fact</span><span class="w">     </span><span class="c">!! denominator factor for finite difference approximation</span>
+
+<span class="w">    </span><span class="c">!initialize:</span>
+<span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="p">))</span><span class="w">       </span><span class="p">)</span>
+<span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="p">),</span><span class="n">me</span><span class="p">%</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w">            </span><span class="p">)</span>
+<span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">cvec</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="p">)</span><span class="w">           </span><span class="p">)</span>
+<span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">dfdx</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">n</span><span class="p">)</span><span class="w">           </span><span class="p">)</span>
+<span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">dcdx</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">n</span><span class="p">)</span><span class="w">      </span><span class="p">)</span>
+<span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">delta</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">n</span><span class="p">)</span><span class="w">          </span><span class="p">)</span>
+<span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">cvecr</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="p">)</span><span class="w">          </span><span class="p">)</span>
+<span class="w">    </span><span class="k">allocate</span><span class="p">(</span><span class="n">cvecl</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="p">)</span><span class="w">          </span><span class="p">)</span>
+<span class="w">    </span><span class="n">i</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">max_iter</span>
+<span class="w">    </span><span class="n">la</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="p">)</span>
+<span class="w">    </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="n">a</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">    </span><span class="n">g</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">    </span><span class="n">c</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">iterations</span><span class="p">))</span><span class="w"> </span><span class="n">iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">linmin</span><span class="p">%</span><span class="n">destroy</span><span class="p">()</span>
+<span class="w">    </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">slsqpb</span><span class="p">%</span><span class="n">destroy</span><span class="p">()</span>
+
+<span class="w">    </span><span class="c">!check setup:</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/=</span><span class="n">me</span><span class="p">%</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">istat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">100</span>
+<span class="w">        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">))</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">status_message</span><span class="p">))</span><span class="w"> </span><span class="n">status_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">    end if</span>
+
+<span class="w">    </span><span class="c">!linesearch:</span>
+<span class="w">    </span><span class="k">select case</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">linesearch_mode</span><span class="p">)</span>
+<span class="w">    </span><span class="k">case</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w">     </span><span class="c">!inexact (armijo-type linesearch)</span>
+<span class="w">        </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">acc</span><span class="p">)</span>
+<span class="w">    </span><span class="k">case</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w">     </span><span class="c">!exact</span>
+<span class="w">        </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="nb">abs</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">acc</span><span class="p">)</span>
+<span class="w">    </span><span class="k">case </span><span class="n">default</span>
+<span class="w">        </span><span class="n">istat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">101</span>
+<span class="w">        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">))</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">status_message</span><span class="p">))</span><span class="w"> </span><span class="n">status_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">    end select</span>
+
+<span class="w">    </span><span class="c">!make sure the functions have been associated:</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="nb">associated</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">f</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">istat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">102</span>
+<span class="w">        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">))</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">status_message</span><span class="p">))</span><span class="w"> </span><span class="n">status_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">    end if</span>
+<span class="k">    if</span><span class="w"> </span><span class="p">((</span><span class="n">me</span><span class="p">%</span><span class="n">gradient_mode</span><span class="o">==</span><span class="mi">0</span><span class="p">).</span><span class="nb">and</span><span class="p">.(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="nb">associated</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">g</span><span class="p">)))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">istat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">103</span>
+<span class="w">        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">))</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">status_message</span><span class="p">))</span><span class="w"> </span><span class="n">status_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">    end if</span>
+<span class="k">    if</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">gradient_mode</span><span class="o">&lt;</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">gradient_mode</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">istat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">104</span>
+<span class="w">        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">))</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">status_message</span><span class="p">))</span><span class="w"> </span><span class="n">status_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">    end if</span>
+<span class="k">    if</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">gradient_mode</span><span class="o">/=</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">gradient_delta</span><span class="o">&lt;=</span><span class="n">epmach</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">istat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">105</span>
+<span class="w">        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">))</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">status_message</span><span class="p">))</span><span class="w"> </span><span class="n">status_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">    end if</span>
+
+<span class="w">    </span><span class="c">!main solver loop:</span>
+<span class="w">    </span><span class="k">do</span>
+
+<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="n">mode</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">mode</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">  </span><span class="c">!function evaluation (f&amp;c)</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">cvec</span><span class="p">)</span>
+<span class="w">            </span><span class="n">c</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cvec</span>
+<span class="w">        </span><span class="k">end if</span>
+
+<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="n">mode</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">mode</span><span class="o">==-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">  </span><span class="c">!gradient evaluation (g&amp;a)</span>
+<span class="w">            </span><span class="k">select case</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">gradient_mode</span><span class="p">)</span>
+<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="c">! user supplied gradients</span>
+<span class="w">                </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">dfdx</span><span class="p">,</span><span class="n">dcdx</span><span class="p">)</span>
+<span class="w">                </span><span class="n">g</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">me</span><span class="p">%</span><span class="n">n</span><span class="p">)</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="n">dfdx</span>
+<span class="w">                </span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">me</span><span class="p">%</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dcdx</span>
+<span class="w">            </span><span class="k">case </span><span class="n">default</span><span class="w"> </span><span class="c">! approximate using finite differences</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">gradient_mode</span><span class="o">==</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">                    </span><span class="n">fact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">two</span><span class="w">  </span><span class="c">! central differences</span>
+<span class="w">                </span><span class="k">else</span>
+<span class="k">                    </span><span class="n">fact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">one</span><span class="w">  </span><span class="c">! forward/backward differences</span>
+<span class="w">                </span><span class="k">end if</span>
+<span class="k">                do </span><span class="n">ig</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">n</span>
+<span class="w">                    </span><span class="c">!initialize a delta to perturb the objective</span>
+<span class="w">                    </span><span class="c">!function and the constraint vector</span>
+<span class="w">                    </span><span class="n">delta</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">                    </span><span class="n">delta</span><span class="p">(</span><span class="n">ig</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">gradient_delta</span>
+<span class="w">                    </span><span class="c">!get the right and left value of the objective</span>
+<span class="w">                    </span><span class="c">!function and the constraint vector</span>
+<span class="w">                    </span><span class="k">select case</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">gradient_mode</span><span class="p">)</span>
+<span class="w">                    </span><span class="k">case</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c">! backward difference</span>
+<span class="w">                        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">fr</span><span class="p">,</span><span class="n">cvecr</span><span class="p">)</span>
+<span class="w">                        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">delta</span><span class="p">,</span><span class="n">fl</span><span class="p">,</span><span class="n">cvecl</span><span class="p">)</span>
+<span class="w">                    </span><span class="k">case</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c">! forward difference</span>
+<span class="w">                        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span><span class="n">fr</span><span class="p">,</span><span class="n">cvecr</span><span class="p">)</span>
+<span class="w">                        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">fl</span><span class="p">,</span><span class="n">cvecl</span><span class="p">)</span>
+<span class="w">                    </span><span class="k">case</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c">! central difference</span>
+<span class="w">                        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span><span class="n">fr</span><span class="p">,</span><span class="n">cvecr</span><span class="p">)</span>
+<span class="w">                        </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">delta</span><span class="p">,</span><span class="n">fl</span><span class="p">,</span><span class="n">cvecl</span><span class="p">)</span>
+<span class="w">                    </span><span class="k">end select</span>
+<span class="w">                    </span><span class="c">!compute the gradients by first-order finite differences</span>
+<span class="w">                    </span><span class="n">g</span><span class="p">(</span><span class="n">ig</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">fr</span><span class="o">-</span><span class="n">fl</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">fact</span><span class="o">*</span><span class="n">delta</span><span class="p">(</span><span class="n">ig</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">                        </span><span class="n">a</span><span class="p">(:,</span><span class="n">ig</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">cvecr</span><span class="o">-</span><span class="n">cvecl</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">fact</span><span class="o">*</span><span class="n">delta</span><span class="p">(</span><span class="n">ig</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="w">                    </span><span class="k">end if</span>
+<span class="k">                end do</span>
+<span class="k">            end select</span>
+<span class="w">            </span><span class="c">!this is an iteration:</span>
+<span class="w">            </span><span class="c">!note: the initial guess is reported as iteration 0:</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">associated</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">report</span><span class="p">))</span><span class="w"> </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="c">!report iteration</span>
+<span class="w">            </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="c">! iteration counter</span>
+<span class="w">        </span><span class="k">end if</span>
+
+<span class="w">        </span><span class="c">!main routine:</span>
+<span class="w">        </span><span class="k">call </span><span class="n">slsqp</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">m</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">meq</span><span class="p">,</span><span class="n">la</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">xl</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">xu</span><span class="p">,&amp;</span>
+<span class="w">                   </span><span class="n">f</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">acc</span><span class="p">,</span><span class="n">iter</span><span class="p">,</span><span class="n">mode</span><span class="p">,&amp;</span>
+<span class="w">                   </span><span class="n">me</span><span class="p">%</span><span class="n">w</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">l_w</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                   </span><span class="n">me</span><span class="p">%</span><span class="n">slsqpb</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">linmin</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">alphamin</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">alphamax</span><span class="p">,&amp;</span>
+<span class="w">                   </span><span class="n">me</span><span class="p">%</span><span class="n">tolf</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">toldf</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">toldx</span><span class="p">,&amp;</span>
+<span class="w">                   </span><span class="n">me</span><span class="p">%</span><span class="n">max_iter_ls</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">nnls_mode</span><span class="p">,&amp;</span>
+<span class="w">                   </span><span class="n">me</span><span class="p">%</span><span class="n">infinite_bound</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mode</span><span class="o">==</span><span class="mi">1</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">mode</span><span class="o">==-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">            </span><span class="c">!continue to next call</span>
+<span class="w">        </span><span class="k">else</span>
+<span class="k">            if</span><span class="w"> </span><span class="p">(</span><span class="n">mode</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="nb">associated</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">report</span><span class="p">))</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="c">!report solution</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+<span class="w">            </span><span class="k">exit</span>
+<span class="k">        end if</span>
+
+<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">user_triggered_stop</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">report_message</span><span class="p">(</span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+<span class="w">            </span><span class="n">me</span><span class="p">%</span><span class="n">user_triggered_stop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w">    </span><span class="c">!have to reset in case</span>
+<span class="w">                                                </span><span class="c">!method is called again.</span>
+<span class="w">            </span><span class="k">exit</span>
+<span class="k">        end if</span>
+
+<span class="k">    end do</span>
+
+<span class="k">    </span><span class="n">istat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mode</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">iterations</span><span class="p">))</span><span class="w"> </span><span class="n">iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iter</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">status_message</span><span class="p">))</span><span class="w"> </span><span class="n">status_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mode_to_status_message</span><span class="p">(</span><span class="n">istat</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">end subroutine </span><span class="n">slsqp_wrapper</span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              slsqp
+ was developed by Jacob Williams<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

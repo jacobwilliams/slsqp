@@ -1,0 +1,1255 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran Implementation of the SLSQP Optimization Method">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>lsq &ndash; slsqp</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">slsqp </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>lsq
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 5.4% of total for procedures.">119 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/slsqp_core.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/slsqp_core.f90.html'>slsqp_core.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/slsqp_core.html'>slsqp_core</a></li>
+            <li class="breadcrumb-item active" aria-current="page">lsq</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/lsq.html#src">lsq</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>private  subroutine lsq(m, meq, n, nl, la, l, g, a, b, xl, xu, x, y, w, mode, max_iter_ls, nnls_mode, infbnd)  
+</h2>
+    
+
+    <p>Minimize <script type="math/tex"> || e x - f || </script> with respect to <script type="math/tex">x</script>,
+  with upper triangular matrix <script type="math/tex"> e = + d ^{1/2} l^T </script>,
+  and vector <script type="math/tex"> f = -d^{-1/2} l^{-1} g </script>,
+  where the unit lower tridiangular matrix <script type="math/tex">l</script> is stored columnwise
+  dense in the <script type="math/tex">n*(n+1)/2</script> array <script type="math/tex">l</script> with vector <script type="math/tex">d</script> stored in its
+  'diagonal' thus substituting the one-elements of <script type="math/tex">l</script>
+</p>
+<p>subject to:</p>
+<ul>
+<li>
+<script type="math/tex"> a(j)*x - b(j) = 0,              j=1,...,meq  </script>,</li>
+<li>
+<script type="math/tex"> a(j)*x - b(j) \ge 0,            j=meq+1,...,m</script>,</li>
+<li>
+<script type="math/tex"> x_l(i) \le x(i) \le x_u(i),     i=1,...,n    </script>,</li>
+</ul>
+<p>On entry, the user has to provide the arrays <code>l</code>, <code>g</code>, <code>a</code>, <code>b</code>, <code>xl</code>, <code>xu</code>.
+  with dimensions: <code>l(n*(n+1)/2)</code>, <code>g(n)</code>, <code>a(la,n)</code>, <code>b(m)</code>, <code>xl(n)</code>, <code>xu(n)</code>.</p>
+<p>The working array <code>w</code> must have at least the following dimension: dim(w) =</p>
+<ul>
+<li><code>(3*n+m)*(n+1)</code>                    for <a href="../proc/lsq.html">lsq</a></li>
+<li><code>+(n-meq+1)*(mineq+2) + 2*mineq</code>   for <a href="../proc/lsi.html">lsi</a></li>
+<li><code>+(n+mineq)*(n-meq) + 2*meq + n</code>   for <a href="../proc/lsei.html">lsei</a></li>
+</ul>
+<p>with <code>mineq = m - meq + 2*n</code></p>
+<p>On return, no array will be changed by the subroutine.</p>
+<h3>History</h3>
+<ul>
+<li>coded dieter kraft, april 1987</li>
+<li>revised march 1989</li>
+</ul>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~4"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-meq~3"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>meq</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~4"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nl"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nl</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-la~3"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>la</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l~2"></span>
+              real(kind=wp),
+            </td>
+<td></td>
+              <td></td>            <td>
+              dimension(nl)
+            </td>
+            <td>::</td>
+            <td><strong>l</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g~3"></span>
+              real(kind=wp),
+            </td>
+<td></td>
+              <td></td>            <td>
+              dimension(n)
+            </td>
+            <td>::</td>
+            <td><strong>g</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~4"></span>
+              real(kind=wp),
+            </td>
+<td></td>
+              <td></td>            <td>
+              dimension(la,n)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~2"></span>
+              real(kind=wp),
+            </td>
+<td></td>
+              <td></td>            <td>
+              dimension(la)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xl~3"></span>
+              real(kind=wp),
+            </td>
+<td></td>
+              <td></td>            <td>
+              dimension(n)
+            </td>
+            <td>::</td>
+            <td><strong>xl</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xu~3"></span>
+              real(kind=wp),
+            </td>
+<td></td>
+              <td></td>            <td>
+              dimension(n)
+            </td>
+            <td>::</td>
+            <td><strong>xu</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~5"></span>
+              real(kind=wp),
+            </td>
+<td></td>
+              <td></td>            <td>
+              dimension(n)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p>stores the n-dimensional solution vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y"></span>
+              real(kind=wp),
+            </td>
+<td></td>
+              <td></td>            <td>
+              dimension(m+n+n)
+            </td>
+            <td>::</td>
+            <td><strong>y</strong></td>
+            <td>
+                <p>stores the vector of lagrange multipliers of dimension
+m+n+n (constraints+lower+upper bounds)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w~4"></span>
+              real(kind=wp),
+            </td>
+<td></td>
+              <td></td>            <td>
+              dimension(*)
+            </td>
+            <td>::</td>
+            <td><strong>w</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mode~4"></span>
+              integer
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>mode</strong></td>
+            <td>
+                <p>is a success-failure flag with the following meanings:</p>
+<ul>
+<li><strong>1:</strong> successful computation,</li>
+<li><strong>2:</strong> error return because of wrong dimensions (<code>n&lt;1</code>),</li>
+<li><strong>3:</strong> iteration count exceeded by <a href="../proc/nnls.html">nnls</a>,</li>
+<li><strong>4:</strong> inequality constraints incompatible,</li>
+<li><strong>5:</strong> matrix <code>e</code> is not of full rank,</li>
+<li><strong>6:</strong> matrix <code>c</code> is not of full rank,</li>
+<li><strong>7:</strong> rank defect in <a href="../proc/hfti.html">hfti</a></li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iter_ls~3"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iter_ls</strong></td>
+            <td>
+                <p>maximum number of iterations in the <a href="../proc/nnls.html">nnls</a> problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nnls_mode~3"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nnls_mode</strong></td>
+            <td>
+                <p>which NNLS method to use</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-infbnd"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>infbnd</strong></td>
+            <td>
+                <p>"infinity" for the upper and lower bounds.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~lsq~~CallsGraph Pages: 1 -->
+<svg id="proclsqCallsGraph" width="584pt" height="388pt"
+ viewBox="0.00 0.00 584.00 387.67" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~lsq~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 383.67)">
+<title>proc~~lsq~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-383.67 580,-383.67 580,4 -4,4"/>
+<!-- proc~lsq -->
+<g id="proc~~lsq~~CallsGraph_node1" class="node">
+<title>proc~lsq</title>
+<polygon fill="none" stroke="black" points="54,-230 0,-230 0,-206 54,-206 54,-230"/>
+<text text-anchor="middle" x="27" y="-215.6" font-family="Helvetica,sans-Serif" font-size="10.50">lsq</text>
+</g>
+<!-- proc~dcopy -->
+<g id="proc~~lsq~~CallsGraph_node2" class="node">
+<title>proc~dcopy</title>
+<g id="a_proc~~lsq~~CallsGraph_node2"><a xlink:href="../proc/dcopy.html" xlink:title="dcopy">
+<polygon fill="#d9534f" stroke="#d9534f" points="471.5,-348 417.5,-348 417.5,-324 471.5,-324 471.5,-348"/>
+<text text-anchor="middle" x="444.5" y="-333.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dcopy</text>
+</a>
+</g>
+</g>
+<!-- proc~lsq&#45;&gt;proc~dcopy -->
+<g id="proc~~lsq~~CallsGraph_edge1" class="edge">
+<title>proc~lsq&#45;&gt;proc~dcopy</title>
+<path fill="none" stroke="#000000" d="M37.14,-230.19C48.17,-244.05 68,-266.38 90,-279 193.39,-338.31 340.21,-340.75 407.41,-338.24"/>
+<polygon fill="#000000" stroke="#000000" points="407.65,-341.73 417.49,-337.8 407.35,-334.74 407.65,-341.73"/>
+</g>
+<!-- proc~ddot -->
+<g id="proc~~lsq~~CallsGraph_node3" class="node">
+<title>proc~ddot</title>
+<g id="a_proc~~lsq~~CallsGraph_node3"><a xlink:href="../proc/ddot.html" xlink:title="ddot">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="471.5,-230 417.5,-230 417.5,-206 471.5,-206 471.5,-230"/>
+<text text-anchor="middle" x="444.5" y="-215.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ddot</text>
+</a>
+</g>
+</g>
+<!-- proc~lsq&#45;&gt;proc~ddot -->
+<g id="proc~~lsq~~CallsGraph_edge2" class="edge">
+<title>proc~lsq&#45;&gt;proc~ddot</title>
+<path fill="none" stroke="#000000" d="M54.31,-218C126,-218 324.93,-218 407.19,-218"/>
+<polygon fill="#000000" stroke="#000000" points="407.31,-221.5 417.31,-218 407.31,-214.5 407.31,-221.5"/>
+</g>
+<!-- proc~dscal -->
+<g id="proc~~lsq~~CallsGraph_node4" class="node">
+<title>proc~dscal</title>
+<g id="a_proc~~lsq~~CallsGraph_node4"><a xlink:href="../proc/dscal.html" xlink:title="dscal">
+<polygon fill="#d9534f" stroke="#d9534f" points="165.5,-190 111.5,-190 111.5,-166 165.5,-166 165.5,-190"/>
+<text text-anchor="middle" x="138.5" y="-175.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dscal</text>
+</a>
+</g>
+</g>
+<!-- proc~lsq&#45;&gt;proc~dscal -->
+<g id="proc~~lsq~~CallsGraph_edge3" class="edge">
+<title>proc~lsq&#45;&gt;proc~dscal</title>
+<path fill="none" stroke="#000000" d="M54.23,-208.42C68.45,-203.22 86.23,-196.73 101.71,-191.07"/>
+<polygon fill="#000000" stroke="#000000" points="103.29,-194.22 111.49,-187.5 100.89,-187.65 103.29,-194.22"/>
+</g>
+<!-- proc~enforce_bounds -->
+<g id="proc~~lsq~~CallsGraph_node5" class="node">
+<title>proc~enforce_bounds</title>
+<g id="a_proc~~lsq~~CallsGraph_node5"><a xlink:href="../proc/enforce_bounds.html" xlink:title="enforce_bounds">
+<polygon fill="#d9534f" stroke="#d9534f" points="187,-148 90,-148 90,-124 187,-124 187,-148"/>
+<text text-anchor="middle" x="138.5" y="-133.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">enforce_bounds</text>
+</a>
+</g>
+</g>
+<!-- proc~lsq&#45;&gt;proc~enforce_bounds -->
+<g id="proc~~lsq~~CallsGraph_edge4" class="edge">
+<title>proc~lsq&#45;&gt;proc~enforce_bounds</title>
+<path fill="none" stroke="#000000" d="M37.91,-205.91C49.35,-192.55 69.27,-171.09 90,-157 92.23,-155.48 94.59,-154.04 97.01,-152.66"/>
+<polygon fill="#000000" stroke="#000000" points="98.72,-155.72 105.98,-148.01 95.49,-149.51 98.72,-155.72"/>
+</g>
+<!-- proc~lsei -->
+<g id="proc~~lsq~~CallsGraph_node6" class="node">
+<title>proc~lsei</title>
+<g id="a_proc~~lsq~~CallsGraph_node6"><a xlink:href="../proc/lsei.html" xlink:title="lsei">
+<polygon fill="#d9534f" stroke="#d9534f" points="165.5,-270 111.5,-270 111.5,-246 165.5,-246 165.5,-270"/>
+<text text-anchor="middle" x="138.5" y="-255.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsei</text>
+</a>
+</g>
+</g>
+<!-- proc~lsq&#45;&gt;proc~lsei -->
+<g id="proc~~lsq~~CallsGraph_edge5" class="edge">
+<title>proc~lsq&#45;&gt;proc~lsei</title>
+<path fill="none" stroke="#000000" d="M54.23,-227.58C68.45,-232.78 86.23,-239.27 101.71,-244.93"/>
+<polygon fill="#000000" stroke="#000000" points="100.89,-248.35 111.49,-248.5 103.29,-241.78 100.89,-248.35"/>
+</g>
+<!-- proc~lsei&#45;&gt;proc~dcopy -->
+<g id="proc~~lsq~~CallsGraph_edge6" class="edge">
+<title>proc~lsei&#45;&gt;proc~dcopy</title>
+<path fill="none" stroke="#000000" d="M165.84,-270.13C182.1,-277.34 203.51,-286.35 223,-293 262.18,-306.37 272.45,-308.67 313,-317 344.54,-323.48 380.81,-328.57 407.09,-331.85"/>
+<polygon fill="#000000" stroke="#000000" points="407,-335.36 417.35,-333.1 407.84,-328.41 407,-335.36"/>
+</g>
+<!-- proc~lsei&#45;&gt;proc~ddot -->
+<g id="proc~~lsq~~CallsGraph_edge7" class="edge">
+<title>proc~lsei&#45;&gt;proc~ddot</title>
+<path fill="none" stroke="#000000" d="M165.5,-255.6C207.84,-251.57 294.25,-242.8 367,-232 380.15,-230.05 394.49,-227.53 407.17,-225.16"/>
+<polygon fill="#000000" stroke="#000000" points="408.2,-228.53 417.37,-223.23 406.9,-221.65 408.2,-228.53"/>
+</g>
+<!-- proc~dnrm2 -->
+<g id="proc~~lsq~~CallsGraph_node7" class="node">
+<title>proc~dnrm2</title>
+<g id="a_proc~~lsq~~CallsGraph_node7"><a xlink:href="../proc/dnrm2.html" xlink:title="dnrm2">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="471.5,-24 417.5,-24 417.5,0 471.5,0 471.5,-24"/>
+<text text-anchor="middle" x="444.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dnrm2</text>
+</a>
+</g>
+</g>
+<!-- proc~lsei&#45;&gt;proc~dnrm2 -->
+<g id="proc~~lsq~~CallsGraph_edge8" class="edge">
+<title>proc~lsei&#45;&gt;proc~dnrm2</title>
+<path fill="none" stroke="#000000" d="M151.36,-245.76C161.86,-234.4 177.03,-216.63 187,-199 209.85,-158.62 195.63,-138.47 223,-101 252.89,-60.08 266.38,-50.86 313,-31 343.12,-18.16 380.32,-13.74 407.28,-12.34"/>
+<polygon fill="#000000" stroke="#000000" points="407.59,-15.83 417.44,-11.92 407.3,-8.83 407.59,-15.83"/>
+</g>
+<!-- proc~h12 -->
+<g id="proc~~lsq~~CallsGraph_node8" class="node">
+<title>proc~h12</title>
+<g id="a_proc~~lsq~~CallsGraph_node8"><a xlink:href="../proc/h12.html" xlink:title="h12">
+<polygon fill="#d9534f" stroke="#d9534f" points="576,-240 522,-240 522,-216 576,-216 576,-240"/>
+<text text-anchor="middle" x="549" y="-225.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">h12</text>
+</a>
+</g>
+</g>
+<!-- proc~lsei&#45;&gt;proc~h12 -->
+<g id="proc~~lsq~~CallsGraph_edge9" class="edge">
+<title>proc~lsei&#45;&gt;proc~h12</title>
+<path fill="none" stroke="#000000" d="M154.2,-270.04C204.35,-309.56 371.87,-428.78 486,-357 523.47,-333.44 538.81,-280.21 544.68,-250.01"/>
+<polygon fill="#000000" stroke="#000000" points="548.15,-250.48 546.44,-240.02 541.26,-249.26 548.15,-250.48"/>
+</g>
+<!-- proc~hfti -->
+<g id="proc~~lsq~~CallsGraph_node9" class="node">
+<title>proc~hfti</title>
+<g id="a_proc~~lsq~~CallsGraph_node9"><a xlink:href="../proc/hfti.html" xlink:title="hfti">
+<polygon fill="#d9534f" stroke="#d9534f" points="367,-308 313,-308 313,-284 367,-284 367,-308"/>
+<text text-anchor="middle" x="340" y="-293.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hfti</text>
+</a>
+</g>
+</g>
+<!-- proc~lsei&#45;&gt;proc~hfti -->
+<g id="proc~~lsq~~CallsGraph_edge10" class="edge">
+<title>proc~lsei&#45;&gt;proc~hfti</title>
+<path fill="none" stroke="#000000" d="M165.58,-262.97C200.68,-269.65 263.27,-281.58 302.88,-289.12"/>
+<polygon fill="#000000" stroke="#000000" points="302.43,-292.6 312.91,-291.03 303.74,-285.72 302.43,-292.6"/>
+</g>
+<!-- proc~lsi -->
+<g id="proc~~lsq~~CallsGraph_node10" class="node">
+<title>proc~lsi</title>
+<g id="a_proc~~lsq~~CallsGraph_node10"><a xlink:href="../proc/lsi.html" xlink:title="lsi">
+<polygon fill="#d9534f" stroke="#d9534f" points="277,-134 223,-134 223,-110 277,-110 277,-134"/>
+<text text-anchor="middle" x="250" y="-119.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsi</text>
+</a>
+</g>
+</g>
+<!-- proc~lsei&#45;&gt;proc~lsi -->
+<g id="proc~~lsq~~CallsGraph_edge11" class="edge">
+<title>proc~lsei&#45;&gt;proc~lsi</title>
+<path fill="none" stroke="#000000" d="M149.22,-245.93C168,-222.6 209.48,-171.09 232.6,-142.36"/>
+<polygon fill="#000000" stroke="#000000" points="235.6,-144.22 239.15,-134.24 230.15,-139.83 235.6,-144.22"/>
+</g>
+<!-- proc~hfti&#45;&gt;proc~h12 -->
+<g id="proc~~lsq~~CallsGraph_edge12" class="edge">
+<title>proc~hfti&#45;&gt;proc~h12</title>
+<path fill="none" stroke="#000000" d="M367.22,-287.39C404,-275.3 471.04,-253.28 512.34,-239.71"/>
+<polygon fill="#000000" stroke="#000000" points="513.59,-242.99 522,-236.54 511.4,-236.34 513.59,-242.99"/>
+</g>
+<!-- proc~lsi&#45;&gt;proc~ddot -->
+<g id="proc~~lsq~~CallsGraph_edge14" class="edge">
+<title>proc~lsi&#45;&gt;proc~ddot</title>
+<path fill="none" stroke="#000000" d="M272.36,-134.11C284.23,-140.75 299.34,-149.02 313,-156 344.83,-172.27 381.66,-189.64 408.06,-201.84"/>
+<polygon fill="#000000" stroke="#000000" points="406.74,-205.08 417.28,-206.09 409.67,-198.73 406.74,-205.08"/>
+</g>
+<!-- proc~lsi&#45;&gt;proc~dnrm2 -->
+<g id="proc~~lsq~~CallsGraph_edge15" class="edge">
+<title>proc~lsi&#45;&gt;proc~dnrm2</title>
+<path fill="none" stroke="#000000" d="M260.77,-109.68C272.08,-96.13 291.87,-74.49 313,-61 342.39,-42.23 380.04,-29.07 407.34,-21.15"/>
+<polygon fill="#000000" stroke="#000000" points="408.57,-24.44 417.26,-18.37 406.68,-17.7 408.57,-24.44"/>
+</g>
+<!-- proc~lsi&#45;&gt;proc~h12 -->
+<g id="proc~~lsq~~CallsGraph_edge16" class="edge">
+<title>proc~lsi&#45;&gt;proc~h12</title>
+<path fill="none" stroke="#000000" d="M277.27,-128.74C321.3,-140.4 412.36,-166.06 486,-197 496.17,-201.27 507.01,-206.46 516.74,-211.36"/>
+<polygon fill="#000000" stroke="#000000" points="515.16,-214.49 525.66,-215.94 518.36,-208.26 515.16,-214.49"/>
+</g>
+<!-- proc~daxpy -->
+<g id="proc~~lsq~~CallsGraph_node11" class="node">
+<title>proc~daxpy</title>
+<g id="a_proc~~lsq~~CallsGraph_node11"><a xlink:href="../proc/daxpy.html" xlink:title="daxpy">
+<polygon fill="#d9534f" stroke="#d9534f" points="471.5,-66 417.5,-66 417.5,-42 471.5,-42 471.5,-66"/>
+<text text-anchor="middle" x="444.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daxpy</text>
+</a>
+</g>
+</g>
+<!-- proc~lsi&#45;&gt;proc~daxpy -->
+<g id="proc~~lsq~~CallsGraph_edge13" class="edge">
+<title>proc~lsi&#45;&gt;proc~daxpy</title>
+<path fill="none" stroke="#000000" d="M265.87,-109.8C277.88,-100.55 295.6,-88.24 313,-81 343.46,-68.33 380.47,-61.4 407.28,-57.74"/>
+<polygon fill="#000000" stroke="#000000" points="407.91,-61.19 417.38,-56.46 407.02,-54.25 407.91,-61.19"/>
+</g>
+<!-- proc~ldp -->
+<g id="proc~~lsq~~CallsGraph_node12" class="node">
+<title>proc~ldp</title>
+<g id="a_proc~~lsq~~CallsGraph_node12"><a xlink:href="../proc/ldp.html" xlink:title="ldp">
+<polygon fill="#d9534f" stroke="#d9534f" points="367,-114 313,-114 313,-90 367,-90 367,-114"/>
+<text text-anchor="middle" x="340" y="-99.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~lsi&#45;&gt;proc~ldp -->
+<g id="proc~~lsq~~CallsGraph_edge17" class="edge">
+<title>proc~lsi&#45;&gt;proc~ldp</title>
+<path fill="none" stroke="#000000" d="M277.4,-116C285.48,-114.16 294.51,-112.11 303.1,-110.16"/>
+<polygon fill="#000000" stroke="#000000" points="303.94,-113.56 312.92,-107.93 302.39,-106.73 303.94,-113.56"/>
+</g>
+<!-- proc~ldp&#45;&gt;proc~dcopy -->
+<g id="proc~~lsq~~CallsGraph_edge20" class="edge">
+<title>proc~ldp&#45;&gt;proc~dcopy</title>
+<path fill="none" stroke="#000000" d="M346.37,-114.25C362.87,-151.92 413.01,-266.4 434.05,-314.43"/>
+<polygon fill="#000000" stroke="#000000" points="430.97,-316.11 438.19,-323.87 437.38,-313.31 430.97,-316.11"/>
+</g>
+<!-- proc~ldp&#45;&gt;proc~ddot -->
+<g id="proc~~lsq~~CallsGraph_edge21" class="edge">
+<title>proc~ldp&#45;&gt;proc~ddot</title>
+<path fill="none" stroke="#000000" d="M351.97,-114.41C369.62,-134.39 404.48,-173.84 425.72,-197.87"/>
+<polygon fill="#000000" stroke="#000000" points="423.37,-200.5 432.61,-205.68 428.61,-195.86 423.37,-200.5"/>
+</g>
+<!-- proc~ldp&#45;&gt;proc~dnrm2 -->
+<g id="proc~~lsq~~CallsGraph_edge22" class="edge">
+<title>proc~ldp&#45;&gt;proc~dnrm2</title>
+<path fill="none" stroke="#000000" d="M349.76,-89.8C360.87,-74.98 381.22,-49.85 403,-33 404.78,-31.62 406.67,-30.29 408.61,-29.01"/>
+<polygon fill="#000000" stroke="#000000" points="410.59,-31.91 417.37,-23.77 406.99,-25.9 410.59,-31.91"/>
+</g>
+<!-- proc~ldp&#45;&gt;proc~daxpy -->
+<g id="proc~~lsq~~CallsGraph_edge19" class="edge">
+<title>proc~ldp&#45;&gt;proc~daxpy</title>
+<path fill="none" stroke="#000000" d="M366.87,-89.89C379.49,-83.98 394.86,-76.78 408.52,-70.38"/>
+<polygon fill="#000000" stroke="#000000" points="410.07,-73.52 417.64,-66.11 407.1,-67.18 410.07,-73.52"/>
+</g>
+<!-- proc~bvls_wrapper -->
+<g id="proc~~lsq~~CallsGraph_node13" class="node">
+<title>proc~bvls_wrapper</title>
+<g id="a_proc~~lsq~~CallsGraph_node13"><a xlink:href="../proc/bvls_wrapper.html" xlink:title="bvls_wrapper">
+<polygon fill="#d9534f" stroke="#d9534f" points="486,-108 403,-108 403,-84 486,-84 486,-108"/>
+<text text-anchor="middle" x="444.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_wrapper</text>
+</a>
+</g>
+</g>
+<!-- proc~ldp&#45;&gt;proc~bvls_wrapper -->
+<g id="proc~~lsq~~CallsGraph_edge18" class="edge">
+<title>proc~ldp&#45;&gt;proc~bvls_wrapper</title>
+<path fill="none" stroke="#000000" d="M367.13,-100.47C374.89,-100.02 383.67,-99.5 392.44,-98.99"/>
+<polygon fill="#000000" stroke="#000000" points="392.89,-102.47 402.67,-98.39 392.49,-95.48 392.89,-102.47"/>
+</g>
+<!-- proc~nnls -->
+<g id="proc~~lsq~~CallsGraph_node14" class="node">
+<title>proc~nnls</title>
+<g id="a_proc~~lsq~~CallsGraph_node14"><a xlink:href="../proc/nnls.html" xlink:title="nnls">
+<polygon fill="#d9534f" stroke="#d9534f" points="471.5,-150 417.5,-150 417.5,-126 471.5,-126 471.5,-150"/>
+<text text-anchor="middle" x="444.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">nnls</text>
+</a>
+</g>
+</g>
+<!-- proc~ldp&#45;&gt;proc~nnls -->
+<g id="proc~~lsq~~CallsGraph_edge23" class="edge">
+<title>proc~ldp&#45;&gt;proc~nnls</title>
+<path fill="none" stroke="#000000" d="M367.13,-111.18C379.42,-115.49 394.27,-120.71 407.59,-125.39"/>
+<polygon fill="#000000" stroke="#000000" points="406.82,-128.83 417.42,-128.84 409.14,-122.22 406.82,-128.83"/>
+</g>
+<!-- proc~bvls -->
+<g id="proc~~lsq~~CallsGraph_node15" class="node">
+<title>proc~bvls</title>
+<g id="a_proc~~lsq~~CallsGraph_node15"><a xlink:href="../proc/bvls.html" xlink:title="bvls">
+<polygon fill="#d9534f" stroke="#d9534f" points="576,-108 522,-108 522,-84 576,-84 576,-108"/>
+<text text-anchor="middle" x="549" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls</text>
+</a>
+</g>
+</g>
+<!-- proc~bvls_wrapper&#45;&gt;proc~bvls -->
+<g id="proc~~lsq~~CallsGraph_edge24" class="edge">
+<title>proc~bvls_wrapper&#45;&gt;proc~bvls</title>
+<path fill="none" stroke="#000000" d="M486.01,-96C494.51,-96 503.42,-96 511.75,-96"/>
+<polygon fill="#000000" stroke="#000000" points="511.92,-99.5 521.92,-96 511.92,-92.5 511.92,-99.5"/>
+</g>
+<!-- proc~nnls&#45;&gt;proc~h12 -->
+<g id="proc~~lsq~~CallsGraph_edge26" class="edge">
+<title>proc~nnls&#45;&gt;proc~h12</title>
+<path fill="none" stroke="#000000" d="M466.33,-150.08C472.85,-154.2 479.92,-159.02 486,-164 502.46,-177.47 519.12,-194.93 531.02,-208.21"/>
+<polygon fill="#000000" stroke="#000000" points="528.53,-210.68 537.77,-215.86 533.78,-206.05 528.53,-210.68"/>
+</g>
+<!-- proc~g1 -->
+<g id="proc~~lsq~~CallsGraph_node16" class="node">
+<title>proc~g1</title>
+<g id="a_proc~~lsq~~CallsGraph_node16"><a xlink:href="../proc/g1.html" xlink:title="g1">
+<polygon fill="#d9534f" stroke="#d9534f" points="576,-150 522,-150 522,-126 576,-126 576,-150"/>
+<text text-anchor="middle" x="549" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">g1</text>
+</a>
+</g>
+</g>
+<!-- proc~nnls&#45;&gt;proc~g1 -->
+<g id="proc~~lsq~~CallsGraph_edge25" class="edge">
+<title>proc~nnls&#45;&gt;proc~g1</title>
+<path fill="none" stroke="#000000" d="M471.63,-138C483.8,-138 498.48,-138 511.7,-138"/>
+<polygon fill="#000000" stroke="#000000" points="511.92,-141.5 521.92,-138 511.92,-134.5 511.92,-141.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~lsq~~CalledByGraph Pages: 1 -->
+<svg id="proclsqCalledByGraph" width="441pt" height="32pt"
+ viewBox="0.00 0.00 441.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~lsq~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>proc~~lsq~~CalledByGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 437,-28 437,4 -4,4"/>
+<!-- proc~lsq -->
+<g id="proc~~lsq~~CalledByGraph_node1" class="node">
+<title>proc~lsq</title>
+<polygon fill="none" stroke="black" points="433,-24 379,-24 379,0 433,0 433,-24"/>
+<text text-anchor="middle" x="406" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">lsq</text>
+</g>
+<!-- proc~slsqpb -->
+<g id="proc~~lsq~~CalledByGraph_node2" class="node">
+<title>proc~slsqpb</title>
+<g id="a_proc~~lsq~~CalledByGraph_node2"><a xlink:href="../proc/slsqpb.html" xlink:title="slsqpb">
+<polygon fill="#d9534f" stroke="#d9534f" points="343,-24 289,-24 289,0 343,0 343,-24"/>
+<text text-anchor="middle" x="316" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqpb</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~lsq -->
+<g id="proc~~lsq~~CalledByGraph_edge1" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~lsq</title>
+<path fill="none" stroke="#000000" d="M343.4,-12C351.39,-12 360.31,-12 368.82,-12"/>
+<polygon fill="#000000" stroke="#000000" points="368.92,-15.5 378.92,-12 368.92,-8.5 368.92,-15.5"/>
+</g>
+<!-- proc~slsqp -->
+<g id="proc~~lsq~~CalledByGraph_node3" class="node">
+<title>proc~slsqp</title>
+<g id="a_proc~~lsq~~CalledByGraph_node3"><a xlink:href="../proc/slsqp.html" xlink:title="slsqp">
+<polygon fill="#d9534f" stroke="#d9534f" points="253,-24 199,-24 199,0 253,0 253,-24"/>
+<text text-anchor="middle" x="226" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqp&#45;&gt;proc~slsqpb -->
+<g id="proc~~lsq~~CalledByGraph_edge2" class="edge">
+<title>proc~slsqp&#45;&gt;proc~slsqpb</title>
+<path fill="none" stroke="#000000" d="M253.4,-12C261.39,-12 270.31,-12 278.82,-12"/>
+<polygon fill="#000000" stroke="#000000" points="278.92,-15.5 288.92,-12 278.92,-8.5 278.92,-15.5"/>
+</g>
+<!-- proc~slsqp_wrapper -->
+<g id="proc~~lsq~~CalledByGraph_node4" class="node">
+<title>proc~slsqp_wrapper</title>
+<g id="a_proc~~lsq~~CalledByGraph_node4"><a xlink:href="../proc/slsqp_wrapper.html" xlink:title="slsqp_solver%slsqp_wrapper">
+<polygon fill="#d9534f" stroke="#d9534f" points="163,-24 0,-24 0,0 163,0 163,-24"/>
+<text text-anchor="middle" x="81.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_solver%slsqp_wrapper</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqp_wrapper&#45;&gt;proc~slsqp -->
+<g id="proc~~lsq~~CalledByGraph_edge3" class="edge">
+<title>proc~slsqp_wrapper&#45;&gt;proc~slsqp</title>
+<path fill="none" stroke="#000000" d="M163.33,-12C172.14,-12 180.75,-12 188.61,-12"/>
+<polygon fill="#000000" stroke="#000000" points="188.81,-15.5 198.81,-12 188.81,-8.5 188.81,-15.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">lsq</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">meq</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">nl</span><span class="p">,</span><span class="n">la</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">xl</span><span class="p">,</span><span class="n">xu</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">mode</span><span class="p">,</span><span class="n">max_iter_ls</span><span class="p">,</span><span class="n">nnls_mode</span><span class="p">,</span><span class="n">infBnd</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">implicit none</span>
+
+<span class="k">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">        </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">        </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">        </span><span class="kd">::</span><span class="w"> </span><span class="n">meq</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">        </span><span class="kd">::</span><span class="w"> </span><span class="n">nl</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">        </span><span class="kd">::</span><span class="w"> </span><span class="n">la</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w">     </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="w">  </span><span class="c">!! stores the n-dimensional solution vector</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="n">n</span><span class="o">+</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">y</span><span class="w">  </span><span class="c">!! stores the vector of lagrange multipliers of dimension</span>
+<span class="w">                                    </span><span class="c">!! m+n+n (constraints+lower+upper bounds)</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mode</span><span class="w">                 </span><span class="c">!! is a success-failure flag with the following meanings:</span>
+<span class="w">                                    </span><span class="c">!!</span>
+<span class="w">                                    </span><span class="c">!! * **1:** successful computation,</span>
+<span class="w">                                    </span><span class="c">!! * **2:** error return because of wrong dimensions (`n&lt;1`),</span>
+<span class="w">                                    </span><span class="c">!! * **3:** iteration count exceeded by [[nnls]],</span>
+<span class="w">                                    </span><span class="c">!! * **4:** inequality constraints incompatible,</span>
+<span class="w">                                    </span><span class="c">!! * **5:** matrix `e` is not of full rank,</span>
+<span class="w">                                    </span><span class="c">!! * **6:** matrix `c` is not of full rank,</span>
+<span class="w">                                    </span><span class="c">!! * **7:** rank defect in [[hfti]]</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">max_iter_ls</span><span class="w"> </span><span class="c">!! maximum number of iterations in the [[nnls]] problem</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nnls_mode</span><span class="w"> </span><span class="c">!! which NNLS method to use</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">infbnd</span><span class="w"> </span><span class="c">!! &quot;infinity&quot; for the upper and lower bounds.</span>
+
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">nl</span><span class="p">)</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">l</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">g</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">la</span><span class="p">,</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">la</span><span class="p">)</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">b</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">xl</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">xu</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">diag</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">xnorm</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">ic</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">ie</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">iff</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">ig</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">ih</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">il</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">               </span><span class="n">iw</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">i2</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">i3</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">i4</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">mineq</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">               </span><span class="n">m1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">n2</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">n3</span><span class="p">,</span><span class="w"> </span><span class="n">num_unbounded</span><span class="p">,</span><span class="w"> </span><span class="n">j</span>
+
+<span class="w">      </span><span class="n">n1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="n">mineq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">meq</span>
+<span class="w">      </span><span class="n">m1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mineq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span>
+
+<span class="w">      </span><span class="c">!  determine whether to solve problem</span>
+<span class="w">      </span><span class="c">!  with inconsistent linerarization (n2=1)</span>
+<span class="w">      </span><span class="c">!  or not (n2=0)</span>
+
+<span class="w">      </span><span class="n">n2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n1</span><span class="o">*</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n2</span><span class="o">==</span><span class="n">nl</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">n2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="k">else</span>
+<span class="k">         </span><span class="n">n2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="k">end if</span>
+<span class="k">      </span><span class="n">n3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">n2</span>
+
+<span class="w">      </span><span class="c">!  recover matrix e and vector f from l and g</span>
+
+<span class="w">      </span><span class="n">i2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="n">i3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="n">i4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="n">ie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="n">iff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">n3</span>
+<span class="w">         </span><span class="n">i1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">i</span>
+<span class="w">         </span><span class="n">diag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">l</span><span class="p">(</span><span class="n">i2</span><span class="p">))</span>
+<span class="w">         </span><span class="n">w</span><span class="p">(</span><span class="n">i3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">         </span><span class="k">call </span><span class="n">dcopy</span><span class="p">(</span><span class="n">i1</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">i3</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">i3</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">         </span><span class="k">call </span><span class="n">dcopy</span><span class="p">(</span><span class="n">i1</span><span class="o">-</span><span class="n">n2</span><span class="p">,</span><span class="n">l</span><span class="p">(</span><span class="n">i2</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">i3</span><span class="p">),</span><span class="n">n</span><span class="p">)</span>
+<span class="w">         </span><span class="k">call </span><span class="n">dscal</span><span class="p">(</span><span class="n">i1</span><span class="o">-</span><span class="n">n2</span><span class="p">,</span><span class="n">diag</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">i3</span><span class="p">),</span><span class="n">n</span><span class="p">)</span>
+<span class="w">         </span><span class="n">w</span><span class="p">(</span><span class="n">i3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">diag</span>
+<span class="w">         </span><span class="n">w</span><span class="p">(</span><span class="n">iff</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">-</span><span class="n">ddot</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">i4</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">iff</span><span class="p">),</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="n">diag</span>
+<span class="w">         </span><span class="n">i2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">n2</span>
+<span class="w">         </span><span class="n">i3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n1</span>
+<span class="w">         </span><span class="n">i4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span>
+<span class="w">      </span><span class="k">end do</span>
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n2</span><span class="o">==</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">w</span><span class="p">(</span><span class="n">i3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">l</span><span class="p">(</span><span class="n">nl</span><span class="p">)</span>
+<span class="w">         </span><span class="n">w</span><span class="p">(</span><span class="n">i4</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">         </span><span class="k">call </span><span class="n">dcopy</span><span class="p">(</span><span class="n">n3</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">i4</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">i4</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">         </span><span class="n">w</span><span class="p">(</span><span class="n">iff</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">      </span><span class="k">end if</span>
+<span class="k">      call </span><span class="n">dscal</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="o">-</span><span class="n">one</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">iff</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="w">      </span><span class="n">ic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iff</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span>
+<span class="w">      </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ic</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">meq</span><span class="o">*</span><span class="n">n</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">meq</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+
+<span class="w">         </span><span class="c">!  recover matrix c from upper part of a</span>
+
+<span class="w">         </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">meq</span>
+<span class="w">            </span><span class="k">call </span><span class="n">dcopy</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">a</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">la</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">ic</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">i</span><span class="p">),</span><span class="n">meq</span><span class="p">)</span>
+<span class="w">         </span><span class="k">end do</span>
+
+<span class="w">         </span><span class="c">!  recover vector d from upper part of b</span>
+
+<span class="w">         </span><span class="k">call </span><span class="n">dcopy</span><span class="p">(</span><span class="n">meq</span><span class="p">,</span><span class="n">b</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">         </span><span class="k">call </span><span class="n">dscal</span><span class="p">(</span><span class="n">meq</span><span class="p">,</span><span class="o">-</span><span class="n">one</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="w">      </span><span class="k">end if</span>
+
+<span class="k">      </span><span class="n">ig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">meq</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">mineq</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">         </span><span class="c">! recover matrix g from lower part of a</span>
+<span class="w">         </span><span class="c">! The matrix G(mineq+2*n,m1) is stored at w(ig)</span>
+<span class="w">         </span><span class="c">! Not all rows will be filled if some of the upper/lower</span>
+<span class="w">         </span><span class="c">! bounds are unbounded.</span>
+<span class="w">         </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">mineq</span>
+<span class="w">            </span><span class="k">call </span><span class="n">dcopy</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">a</span><span class="p">(</span><span class="n">meq</span><span class="o">+</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">la</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">ig</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">i</span><span class="p">),</span><span class="n">m1</span><span class="p">)</span>
+<span class="w">         </span><span class="k">end do</span>
+<span class="k">      end if</span>
+
+<span class="k">      </span><span class="n">ih</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ig</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m1</span><span class="o">*</span><span class="n">n</span>
+<span class="w">      </span><span class="n">iw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ih</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">mineq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">n</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">mineq</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">         </span><span class="c">! recover h from lower part of b</span>
+<span class="w">         </span><span class="c">! The vector H(mineq+2*n) is stored at w(ih)</span>
+<span class="w">         </span><span class="k">call </span><span class="n">dcopy</span><span class="p">(</span><span class="n">mineq</span><span class="p">,</span><span class="n">b</span><span class="p">(</span><span class="n">meq</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">ih</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">         </span><span class="k">call </span><span class="n">dscal</span><span class="p">(</span><span class="n">mineq</span><span class="p">,</span><span class="o">-</span><span class="n">one</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">ih</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="k">end if</span>
+
+<span class="w">      </span><span class="c">!  augment matrix g by +i and -i, and,</span>
+<span class="w">      </span><span class="c">!  augment vector h by xl and xu</span>
+<span class="w">      </span><span class="c">!  NaN or infBnd value indicates no bound</span>
+
+<span class="w">      </span><span class="n">ip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ig</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">mineq</span>
+<span class="w">      </span><span class="n">il</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ih</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">mineq</span>
+<span class="w">      </span><span class="n">num_unbounded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ieee_is_nan</span><span class="p">(</span><span class="n">xl</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">xl</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">&lt;=-</span><span class="n">infbnd</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">num_unbounded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">num_unbounded</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">         </span><span class="k">else</span>
+<span class="k">            call </span><span class="n">update_w</span><span class="p">(</span><span class="n">xl</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="n">one</span><span class="p">)</span>
+<span class="w">         </span><span class="k">end if</span>
+<span class="k">      end do</span>
+
+<span class="k">      do </span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ieee_is_nan</span><span class="p">(</span><span class="n">xu</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">xu</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">&gt;=</span><span class="n">infbnd</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">num_unbounded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">num_unbounded</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">         </span><span class="k">else</span>
+<span class="k">            call </span><span class="n">update_w</span><span class="p">(</span><span class="n">xu</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="o">-</span><span class="n">one</span><span class="p">)</span>
+<span class="w">         </span><span class="k">end if</span>
+<span class="k">      end do</span>
+
+<span class="k">      call </span><span class="n">lsei</span><span class="p">(</span><span class="n">w</span><span class="p">(</span><span class="n">ic</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">ie</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">iff</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">ig</span><span class="p">),</span><span class="n">w</span><span class="p">(</span><span class="n">ih</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">meq</span><span class="p">),</span><span class="n">meq</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                </span><span class="n">m1</span><span class="p">,</span><span class="n">m1</span><span class="o">-</span><span class="n">num_unbounded</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">xnorm</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">iw</span><span class="p">),</span><span class="n">mode</span><span class="p">,</span><span class="n">max_iter_ls</span><span class="p">,</span><span class="n">nnls_mode</span><span class="p">)</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">mode</span><span class="o">==</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">         </span><span class="c">! restore lagrange multipliers (only for user-defined variables)</span>
+<span class="w">         </span><span class="k">call </span><span class="n">dcopy</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">w</span><span class="p">(</span><span class="n">iw</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n3</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">            </span><span class="c">!set rest of the multipliers to nan (they are not used)</span>
+<span class="w">            </span><span class="n">y</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ieee_value</span><span class="p">(</span><span class="n">one</span><span class="p">,</span><span class="w"> </span><span class="n">ieee_quiet_nan</span><span class="p">)</span>
+<span class="w">            </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="n">m</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">m</span><span class="o">+</span><span class="n">n3</span><span class="o">+</span><span class="n">n3</span>
+<span class="w">                </span><span class="n">y</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">            </span><span class="k">end do</span>
+<span class="k">         end if</span>
+<span class="k">         call </span><span class="n">enforce_bounds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">xl</span><span class="p">,</span><span class="n">xu</span><span class="p">,</span><span class="n">infbnd</span><span class="p">)</span><span class="w">  </span><span class="c">! to ensure that bounds are not violated</span>
+<span class="w">      </span><span class="k">end if</span>
+
+<span class="k">      contains</span>
+
+<span class="k">      subroutine </span><span class="n">update_w</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">fact</span><span class="p">)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">val</span><span class="w">  </span><span class="c">!! xu(i) or xl(i)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">fact</span><span class="w"> </span><span class="c">!! -1 or 1</span>
+<span class="w">        </span><span class="n">w</span><span class="p">(</span><span class="n">il</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fact</span><span class="o">*</span><span class="n">val</span>
+<span class="w">        </span><span class="k">do </span><span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span>
+<span class="w">           </span><span class="n">w</span><span class="p">(</span><span class="n">ip</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m1</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">        </span><span class="k">end do</span>
+<span class="k">        </span><span class="n">w</span><span class="p">(</span><span class="n">ip</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m1</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fact</span>
+<span class="w">        </span><span class="n">ip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="n">il</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">il</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="k">end subroutine </span><span class="n">update_w</span>
+
+<span class="w">      </span><span class="k">end subroutine </span><span class="n">lsq</span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              slsqp
+ was developed by Jacob Williams<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,2153 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran Implementation of the SLSQP Optimization Method">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>slsqp_module &ndash; slsqp</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">slsqp </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>slsqp_module
+      <small>Module</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-author"><i class="fa fa-pencil"></i> Jacob Williams</li>
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> BSD</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="18.5% of total for modules and submodules.">439 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/slsqp_module.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/slsqp_module.f90.html'>slsqp_module.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">slsqp_module</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+        <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#absints-0"
+         aria-expanded="false" aria-controls="absints-0">
+         <h4 class="card-header bg-primary text-white">Abstract Interfaces</h4>
+      </a>
+      <div id="absints-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/slsqp_module.html#interface-func">func</a>
+            <a class="list-group-item" href="../module/slsqp_module.html#interface-grad">grad</a>
+            <a class="list-group-item" href="../module/slsqp_module.html#interface-iterfunc">iterfunc</a>
+            <a class="list-group-item" href="../module/slsqp_module.html#interface-msgfunc">msgfunc</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/slsqp_module.html#type-slsqp_solver">slsqp_solver</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#funcs-0"
+         aria-expanded="false" aria-controls="funcs-0">
+         <h4 class="card-header bg-primary text-white">Functions</h4>
+      </a>
+      <div id="funcs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/slsqp_module.html#proc-mode_to_status_message">mode_to_status_message</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/slsqp_module.html#proc-stop_iterations">stop_iterations</a>
+            <a class="list-group-item" href="../module/slsqp_module.html#proc-initialize_slsqp">initialize_slsqp</a>
+            <a class="list-group-item" href="../module/slsqp_module.html#proc-destroy_slsqp">destroy_slsqp</a>
+            <a class="list-group-item" href="../module/slsqp_module.html#proc-slsqp_wrapper">slsqp_wrapper</a>
+            <a class="list-group-item" href="../module/slsqp_module.html#proc-report_message">report_message</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+
+    <div class="col-md-9" id='text'>
+      <p>Module containing the object-oriented interface to the SLSQP method.
+It is called using the <a href="../type/slsqp_solver.html">slsqp_solver</a> class, which
+is the only public entity in this module.</p>
+<br>          <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='slsqp_support.html'>slsqp_support</a></li>
+                  <li class="list-inline-item"><a href='slsqp_core.html'>slsqp_core</a></li>
+                  <li class="list-inline-item"><a href='slsqp_kinds.html'>slsqp_kinds</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: module~~slsqp_module~~UsesGraph Pages: 1 -->
+<svg id="moduleslsqp_moduleUsesGraph" width="641pt" height="175pt"
+ viewBox="0.00 0.00 641.00 175.04" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~slsqp_module~~UsesGraph" class="graph" transform="scale(0.93 0.93) rotate(0) translate(4 184.14)">
+<title>module~~slsqp_module~~UsesGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-184.14 685,-184.14 685,4 -4,4"/>
+<!-- module~slsqp_module -->
+<g id="module~~slsqp_module~~UsesGraph_node1" class="node">
+<title>module~slsqp_module</title>
+<polygon fill="none" stroke="black" points="681,-53.18 596,-53.18 596,-29.18 681,-29.18 681,-53.18"/>
+<text text-anchor="middle" x="638.5" y="-38.78" font-family="Helvetica,sans-Serif" font-size="10.50">slsqp_module</text>
+</g>
+<!-- ieee_arithmetic -->
+<g id="module~~slsqp_module~~UsesGraph_node2" class="node">
+<title>ieee_arithmetic</title>
+<g id="a_module~~slsqp_module~~UsesGraph_node2"><a xlink:href="http://fortranwiki.org/fortran/show/ieee_arithmetic" xlink:title="ieee_arithmetic">
+<polygon fill="#337ab7" stroke="#337ab7" points="456,-133.18 360,-133.18 360,-109.18 456,-109.18 456,-133.18"/>
+<text text-anchor="middle" x="408" y="-118.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ieee_arithmetic</text>
+</a>
+</g>
+</g>
+<!-- module~slsqp_module&#45;&gt;ieee_arithmetic -->
+<g id="module~~slsqp_module~~UsesGraph_edge1" class="edge">
+<title>module~slsqp_module&#45;&gt;ieee_arithmetic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M631.66,-53.3C617.93,-80.03 580.68,-143.1 527,-161.18"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M525,-161.18C509.45,-166.42 470.59,-150.86 442.12,-137.65"/>
+<polygon fill="#000000" stroke="#000000" points="443.45,-134.4 432.91,-133.29 440.45,-140.73 443.45,-134.4"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~slsqp_module~~UsesGraph_node3" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~slsqp_module~~UsesGraph_node3"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-133.18 0,-133.18 0,-109.18 94,-109.18 94,-133.18"/>
+<text text-anchor="middle" x="47" y="-118.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~slsqp_module&#45;&gt;iso_fortran_env -->
+<g id="module~~slsqp_module~~UsesGraph_edge2" class="edge">
+<title>module~slsqp_module&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M280.5,-161.18C220.51,-149.86 151.55,-138.16 104.41,-130.36"/>
+<polygon fill="#000000" stroke="#000000" points="104.83,-126.88 94.4,-128.71 103.7,-133.79 104.83,-126.88"/>
+</g>
+<!-- module~slsqp_core -->
+<g id="module~~slsqp_module~~UsesGraph_node4" class="node">
+<title>module~slsqp_core</title>
+<g id="a_module~~slsqp_module~~UsesGraph_node4"><a xlink:href="../module/slsqp_core.html" xlink:title="slsqp_core">
+<polygon fill="#337ab7" stroke="#337ab7" points="560,-53.18 492,-53.18 492,-29.18 560,-29.18 560,-53.18"/>
+<text text-anchor="middle" x="526" y="-38.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core</text>
+</a>
+</g>
+</g>
+<!-- module~slsqp_module&#45;&gt;module~slsqp_core -->
+<g id="module~~slsqp_module~~UsesGraph_edge3" class="edge">
+<title>module~slsqp_module&#45;&gt;module~slsqp_core</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M595.72,-41.18C587.47,-41.18 578.8,-41.18 570.49,-41.18"/>
+<polygon fill="#000000" stroke="#000000" points="570.23,-37.68 560.23,-41.18 570.23,-44.68 570.23,-37.68"/>
+</g>
+<!-- module~slsqp_kinds -->
+<g id="module~~slsqp_module~~UsesGraph_node5" class="node">
+<title>module~slsqp_kinds</title>
+<g id="a_module~~slsqp_module~~UsesGraph_node5"><a xlink:href="../module/slsqp_kinds.html" xlink:title="slsqp_kinds">
+<polygon fill="#337ab7" stroke="#337ab7" points="203,-113.18 130,-113.18 130,-89.18 203,-89.18 203,-113.18"/>
+<text text-anchor="middle" x="166.5" y="-98.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_kinds</text>
+</a>
+</g>
+</g>
+<!-- module~slsqp_module&#45;&gt;module~slsqp_kinds -->
+<g id="module~~slsqp_module~~UsesGraph_edge4" class="edge">
+<title>module~slsqp_module&#45;&gt;module~slsqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M525,-161.18C422.86,-195.58 389.4,-174.9 282.5,-161.18"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M280.5,-161.18C246.93,-154.84 212.91,-134.46 191.09,-119.2"/>
+<polygon fill="#000000" stroke="#000000" points="192.97,-116.24 182.81,-113.24 188.88,-121.92 192.97,-116.24"/>
+</g>
+<!-- module~slsqp_support -->
+<g id="module~~slsqp_module~~UsesGraph_node6" class="node">
+<title>module~slsqp_support</title>
+<g id="a_module~~slsqp_module~~UsesGraph_node6"><a xlink:href="../module/slsqp_support.html" xlink:title="slsqp_support">
+<polygon fill="#337ab7" stroke="#337ab7" points="324,-53.18 239,-53.18 239,-29.18 324,-29.18 324,-53.18"/>
+<text text-anchor="middle" x="281.5" y="-38.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support</text>
+</a>
+</g>
+</g>
+<!-- module~slsqp_module&#45;&gt;module~slsqp_support -->
+<g id="module~~slsqp_module~~UsesGraph_edge5" class="edge">
+<title>module~slsqp_module&#45;&gt;module~slsqp_support</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M600.59,-29.07C555.65,-15.64 477.3,3.55 409,-1.18"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M407,-1.18C375.17,-2.67 340.81,-14.55 316.27,-24.98"/>
+<polygon fill="#000000" stroke="#000000" points="314.8,-21.81 307.05,-29.03 317.61,-28.22 314.8,-21.81"/>
+</g>
+<!-- module~slsqp_core&#45;&gt;ieee_arithmetic -->
+<g id="module~~slsqp_module~~UsesGraph_edge6" class="edge">
+<title>module~slsqp_core&#45;&gt;ieee_arithmetic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M510.96,-53.25C497.36,-64.68 475.92,-82 456,-95.18 451.55,-98.13 446.73,-101.06 441.94,-103.83"/>
+<polygon fill="#000000" stroke="#000000" points="439.87,-100.99 432.86,-108.94 443.29,-107.09 439.87,-100.99"/>
+</g>
+<!-- module~slsqp_core&#45;&gt;module~slsqp_kinds -->
+<g id="module~~slsqp_module~~UsesGraph_edge8" class="edge">
+<title>module~slsqp_core&#45;&gt;module~slsqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M491.98,-52.6C480.69,-56.14 467.9,-59.74 456,-62.18 380.01,-77.77 359.02,-68.48 282.5,-81.18"/>
+</g>
+<!-- module~slsqp_core&#45;&gt;module~slsqp_support -->
+<g id="module~~slsqp_module~~UsesGraph_edge9" class="edge">
+<title>module~slsqp_core&#45;&gt;module~slsqp_support</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M505.56,-29.15C483.04,-16.5 444.49,1.28 409,-1.18"/>
+</g>
+<!-- module~bvls_module -->
+<g id="module~~slsqp_module~~UsesGraph_node7" class="node">
+<title>module~bvls_module</title>
+<g id="a_module~~slsqp_module~~UsesGraph_node7"><a xlink:href="../module/bvls_module.html" xlink:title="bvls_module">
+<polygon fill="#337ab7" stroke="#337ab7" points="447.5,-53.18 368.5,-53.18 368.5,-29.18 447.5,-29.18 447.5,-53.18"/>
+<text text-anchor="middle" x="408" y="-38.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_module</text>
+</a>
+</g>
+</g>
+<!-- module~slsqp_core&#45;&gt;module~bvls_module -->
+<g id="module~~slsqp_module~~UsesGraph_edge7" class="edge">
+<title>module~slsqp_core&#45;&gt;module~bvls_module</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M491.76,-41.18C481.2,-41.18 469.29,-41.18 457.87,-41.18"/>
+<polygon fill="#000000" stroke="#000000" points="457.57,-37.68 447.57,-41.18 457.57,-44.68 457.57,-37.68"/>
+</g>
+<!-- module~slsqp_kinds&#45;&gt;iso_fortran_env -->
+<g id="module~~slsqp_module~~UsesGraph_edge10" class="edge">
+<title>module~slsqp_kinds&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.93,-107.24C121.87,-108.61 113.12,-110.1 104.43,-111.58"/>
+<polygon fill="#000000" stroke="#000000" points="103.58,-108.17 94.31,-113.3 104.76,-115.07 103.58,-108.17"/>
+</g>
+<!-- module~slsqp_support&#45;&gt;module~slsqp_kinds -->
+<g id="module~~slsqp_module~~UsesGraph_edge11" class="edge">
+<title>module~slsqp_support&#45;&gt;module~slsqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M257.63,-53.33C240.86,-62.23 217.87,-74.44 199.31,-84.29"/>
+<polygon fill="#000000" stroke="#000000" points="197.52,-81.28 190.33,-89.06 200.81,-87.46 197.52,-81.28"/>
+</g>
+<!-- module~bvls_module&#45;&gt;module~slsqp_kinds -->
+<g id="module~~slsqp_module~~UsesGraph_edge12" class="edge">
+<title>module~bvls_module&#45;&gt;module~slsqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M377.92,-53.21C353.06,-62.83 316.09,-75.61 282.5,-81.18"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M280.5,-81.18C258.31,-84.87 233.71,-89.19 213.14,-92.88"/>
+<polygon fill="#000000" stroke="#000000" points="212.31,-89.47 203.09,-94.68 213.55,-96.36 212.31,-89.47"/>
+</g>
+<!-- module~bvls_module&#45;&gt;module~slsqp_support -->
+<g id="module~~slsqp_module~~UsesGraph_edge13" class="edge">
+<title>module~bvls_module&#45;&gt;module~slsqp_support</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M368.29,-41.18C357.58,-41.18 345.78,-41.18 334.44,-41.18"/>
+<polygon fill="#000000" stroke="#000000" points="334.21,-37.68 324.21,-41.18 334.21,-44.68 334.21,-37.68"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panmoduleslsqp_moduleUsesGraph = svgPanZoom('#moduleslsqp_moduleUsesGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+      
+      <br>
+
+
+
+
+
+        <section>
+          <h2>Abstract Interfaces</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="interface-func"></span><h3>abstract interface
+        
+    </h3></div>
+    <ul class="list-group">
+      <li class="list-group-item">
+            <h3>
+    private  subroutine func(me, x, f, c)  
+
+    </h3>
+  <p>for computing the function</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~5"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~16"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p>optimization variable vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~8"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f</strong></td>
+            <td>
+                <p>value of the objective function</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c~8"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>c</strong></td>
+            <td>
+                <p>the constraint vector <code>dimension(m)</code>,
+equality constraints (if any) first.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+      </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="interface-grad"></span><h3>abstract interface
+        
+    </h3></div>
+    <ul class="list-group">
+      <li class="list-group-item">
+            <h3>
+    private  subroutine grad(me, x, g, a)  
+
+    </h3>
+  <p>for computing the gradients</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~6"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~17"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p>optimization variable vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g~9"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>g</strong></td>
+            <td>
+                <p>objective function partials w.r.t x <code>dimension(n)</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~12"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>gradient matrix of constraints w.r.t. x <code>dimension(m,n)</code></p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+      </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="interface-iterfunc"></span><h3>abstract interface
+        
+    </h3></div>
+    <ul class="list-group">
+      <li class="list-group-item">
+            <h3>
+    private  subroutine iterfunc(me, iter, x, f, c)  
+
+    </h3>
+  <p>for reporting an iteration</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~7"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iter~5"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iter</strong></td>
+            <td>
+                <p>iteration number</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~18"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p>optimization variable vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~9"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f</strong></td>
+            <td>
+                <p>value of the objective function</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c~9"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>c</strong></td>
+            <td>
+                <p>the constraint vector <code>dimension(m)</code>,
+equality constraints (if any) first.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+      </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="interface-msgfunc"></span><h3>abstract interface
+        
+    </h3></div>
+    <ul class="list-group">
+      <li class="list-group-item">
+            <h3>
+    private  subroutine msgfunc(me, str)  
+
+    </h3>
+  <p>for reporting a message to the user</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~8"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-str"></span>
+              character(len=*),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>str</strong></td>
+            <td>
+                <p>the message to report.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+      </li>
+    </ul>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-slsqp_solver"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/slsqp_solver.html'>slsqp_solver</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>The main class used to interface with the SLSQP solver.</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~19"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of optimization variables (<script type="math/tex"> n > 0 </script>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~16"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of constraints (<script type="math/tex"> m \ge 0 </script>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-meq~4"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>meq</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of equality constraints (<script type="math/tex"> m \ge m_{eq} \ge 0 </script>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iter~4"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iter</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>maximum number of iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-acc~4"></span>
+              real(kind=wp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>acc</strong></td>
+<td> =</td>
+                <td>zero</td>
+            <td>
+<p>accuracy tolerance</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tolf~4"></span>
+              real(kind=wp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tolf</strong></td>
+<td> =</td>
+                <td>-one</td>
+            <td>
+<p>accuracy tolerance over f:  if <script type="math/tex"> |f| < tolf </script> then stop</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-toldf~4"></span>
+              real(kind=wp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>toldf</strong></td>
+<td> =</td>
+                <td>-one</td>
+            <td>
+<p>accuracy tolerance over df: if <script type="math/tex"> |f_{n+1} - f_n| < toldf </script> then stop.
+It's different from <code>acc</code> in the case of positive derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-toldx~4"></span>
+              real(kind=wp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>toldx</strong></td>
+<td> =</td>
+                <td>-one</td>
+            <td>
+<p>accuracy tolerance over dx: if <script type="math/tex"> |x_{n+1} - x_n| < toldx </script> then stop</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gradient_mode"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>gradient_mode</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>how the gradients are computed:</p><a href="../type/slsqp_solver.html#variable-gradient_mode" class="pull-right"><emph>Read more&hellip;</emph></a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gradient_delta"></span>
+              real(kind=wp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>gradient_delta</strong></td>
+<td> =</td>
+                <td>1.0e8_wp</td>
+            <td>
+<p>perturbation step size to approximate gradients
+by finite differences (<code>gradient_mode</code> 1-3).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alphamin~3"></span>
+              real(kind=wp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alphamin</strong></td>
+<td> =</td>
+                <td>0.1_wp</td>
+            <td>
+<p>min <script type="math/tex"> \alpha </script> for line search <script type="math/tex"> 0 < \alpha_{min} < \alpha_{max} \le 1 </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alphamax~3"></span>
+              real(kind=wp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alphamax</strong></td>
+<td> =</td>
+                <td>1.0_wp</td>
+            <td>
+<p>max <script type="math/tex"> \alpha </script> for line search <script type="math/tex"> 0 < \alpha_{min} < \alpha_{max} \le 1 </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iprint"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iprint</strong></td>
+<td> =</td>
+                <td>output_unit</td>
+            <td>
+<p>unit number of status printing (0 for no printing)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xl~5"></span>
+              real(kind=wp),
+            </td>
+              <td>private,</td>
+            <td>
+              dimension(:), allocatable
+            </td>
+            <td>::</td>
+            <td><strong>xl</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>lower bound on x</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xu~5"></span>
+              real(kind=wp),
+            </td>
+              <td>private,</td>
+            <td>
+              dimension(:), allocatable
+            </td>
+            <td>::</td>
+            <td><strong>xu</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>upper bound on x</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l_w~2"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>l_w</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>size of <code>w</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w~13"></span>
+              real(kind=wp),
+            </td>
+              <td>private,</td>
+            <td>
+              dimension(:), allocatable
+            </td>
+            <td>::</td>
+            <td><strong>w</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>real work array</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~7"></span>
+              procedure(<a href='../interface/func.html'>func</a>),
+            </td>
+              <td>private,</td>
+            <td>
+              pointer
+            </td>
+            <td>::</td>
+            <td><strong>f</strong></td>
+<td>=&gt; </td>
+                <td>null()</td>
+            <td>
+<p>problem function subroutine</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g~8"></span>
+              procedure(<a href='../interface/grad.html'>grad</a>),
+            </td>
+              <td>private,</td>
+            <td>
+              pointer
+            </td>
+            <td>::</td>
+            <td><strong>g</strong></td>
+<td>=&gt; </td>
+                <td>null()</td>
+            <td>
+<p>gradient subroutine</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-report"></span>
+              procedure(<a href='../interface/iterfunc.html'>iterfunc</a>),
+            </td>
+              <td>private,</td>
+            <td>
+              pointer
+            </td>
+            <td>::</td>
+            <td><strong>report</strong></td>
+<td>=&gt; </td>
+                <td>null()</td>
+            <td>
+<p>for reporting an iteration</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-report_msg"></span>
+              procedure(<a href='../interface/msgfunc.html'>msgfunc</a>),
+            </td>
+              <td>private,</td>
+            <td>
+              pointer
+            </td>
+            <td>::</td>
+            <td><strong>report_msg</strong></td>
+<td>=&gt; </td>
+                <td>null()</td>
+            <td>
+<p>for reporting a string message from slsqp to the user</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-linesearch_mode"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>linesearch_mode</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+<p>linesearch mode:</p><a href="../type/slsqp_solver.html#variable-linesearch_mode" class="pull-right"><emph>Read more&hellip;</emph></a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-linmin~2"></span>
+              type(<a href='../type/linmin_data.html'>linmin_data</a>),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>linmin</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>data formerly within <a href="../type/slsqp_solver.html#variable-linmin~2">linmin</a>.
+Only used when <code>linesearch_mode=2</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-slsqpb"></span>
+              type(<a href='../type/slsqpb_data.html'>slsqpb_data</a>),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>slsqpb</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>data formerly within <a href="../type/slsqp_solver.html#variable-slsqpb">slsqpb</a>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nnls_mode~7"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nnls_mode</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+<p>Which NNLS method to use:</p><a href="../type/slsqp_solver.html#variable-nnls_mode~7" class="pull-right"><emph>Read more&hellip;</emph></a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iter_ls~7"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iter_ls</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>max iterations in the least squares problem.
+if <code>&lt;=0</code>, defaults to <code>3*n</code>.
+(use by either <a href="../proc/nnls.html">nnls</a> or <a href="../proc/bvls.html">bvls</a>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-user_triggered_stop"></span>
+              logical,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>user_triggered_stop</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>if the <code>abort</code> method has been called
+to stop the iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-infinite_bound~2"></span>
+              real(kind=wp),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>infinite_bound</strong></td>
+<td> =</td>
+                <td>huge(one)</td>
+            <td>
+<p>"infinity" for the upper and lower bounds.
+if <code>xl&lt;=-infinite_bound</code> or <code>xu&gt;=infinite_bound</code>
+then these bounds are considered nonexistant.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/slsqp_solver.html#boundprocedure-initialize~2'>initialize</a></strong> => <a href='/home/runner/work/slsqp/slsqp/doc/proc/initialize_slsqp.html'>initialize_slsqp</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/slsqp_solver.html#boundprocedure-destroy~3'>destroy</a></strong> => <a href='/home/runner/work/slsqp/slsqp/doc/proc/destroy_slsqp.html'>destroy_slsqp</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/slsqp_solver.html#boundprocedure-optimize'>optimize</a></strong> => <a href='/home/runner/work/slsqp/slsqp/doc/proc/slsqp_wrapper.html'>slsqp_wrapper</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/slsqp_solver.html#boundprocedure-abort'>abort</a></strong> => <a href='/home/runner/work/slsqp/slsqp/doc/proc/stop_iterations.html'>stop_iterations</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, private ::
+  <strong><a href='../type/slsqp_solver.html#boundprocedure-report_message'>report_message</a></strong></td>
+                  <td>../../<p>for reporting messages to the user</p></td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Functions</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-mode_to_status_message"></span> <h3>private pure function <a href='../proc/mode_to_status_message.html'>mode_to_status_message</a>(imode) result(message)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Convert the <a href="../proc/slsqp.html">slsqp</a> <code>mode</code> flag to a message string.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-imode"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>imode</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>character(len=:), allocatable</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Subroutines</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-stop_iterations"></span> <h3>private  subroutine <a href='../proc/stop_iterations.html'>stop_iterations</a>(me)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>A method that the user can call to stop the iterations.
+(it can be called in any of the functions).
+SLSQP will stop at the end of the next iteration.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~9"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-initialize_slsqp"></span> <h3>private  subroutine <a href='../proc/initialize_slsqp.html'>initialize_slsqp</a>(me, n, m, meq, max_iter, acc, f, g, xl, xu, status_ok, linesearch_mode, iprint, report, alphamin, alphamax, gradient_mode, gradient_delta, tolf, toldf, toldx, max_iter_ls, nnls_mode, infinite_bound, report_msg)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>initialize the <a href="../type/slsqp_solver.html">slsqp_solver</a> class.  see <a href="../proc/slsqp.html">slsqp</a> for more details.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~10"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~20"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>the number of variables, <script type="math/tex"> n \ge 1 </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~17"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong></td>
+            <td>
+<p>total number of constraints, <script type="math/tex"> m \ge 0 </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-meq~5"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>meq</strong></td>
+            <td>
+<p>number of equality constraints, <script type="math/tex"> m_{eq} \ge 0 </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iter~5"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iter</strong></td>
+            <td>
+<p>maximum number of iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-acc~5"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>acc</strong></td>
+            <td>
+<p>accuracy</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~10"></span>
+              procedure(<a href='../interface/func.html'>func</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f</strong></td>
+            <td>
+<p>problem function</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g~10"></span>
+              procedure(<a href='../interface/grad.html'>grad</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>g</strong></td>
+            <td>
+<p>function to compute gradients (must be
+associated if <code>gradient_mode=0</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xl~6"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(n)
+            </td>
+            <td>::</td>
+            <td><strong>xl</strong></td>
+            <td>
+<p>lower bounds on <code>x</code>.
+<code>xl(i)=NaN</code> (or <code>xl(i)&lt;=-infinite_bound</code>) indicates to ignore <code>i</code>th bound</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xu~6"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(n)
+            </td>
+            <td>::</td>
+            <td><strong>xu</strong></td>
+            <td>
+<p>upper bounds on <code>x</code>.
+<code>xu(i)=NaN</code> (or <code>xu(i)&gt;=infinite_bound</code>) indicates to ignore <code>i</code>th bound</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-status_ok"></span>
+              logical,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>status_ok</strong></td>
+            <td>
+<p>will be false if there were errors</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-linesearch_mode~2"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>linesearch_mode</strong></td>
+            <td>
+<p>1 = inexact (default), 2 = exact</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iprint~2"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iprint</strong></td>
+            <td>
+<p>unit number of status messages (default=<code>output_unit</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-report~2"></span>
+              procedure(<a href='../interface/iterfunc.html'>iterfunc</a>),
+            </td>
+<td></td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>report</strong></td>
+            <td>
+<p>user-defined procedure that will be called once per iteration</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alphamin~4"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alphamin</strong></td>
+            <td>
+<p>minimum alpha for linesearch [default 0.1]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alphamax~4"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alphamax</strong></td>
+            <td>
+<p>maximum alpha for linesearch [default 1.0]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gradient_mode~2"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>gradient_mode</strong></td>
+            <td>
+<p>how the gradients are to be computed:</p><a href="../proc/initialize_slsqp.html#variable-gradient_mode~2" class="pull-right"><emph>Read more&hellip;</emph></a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gradient_delta~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>gradient_delta</strong></td>
+            <td>
+<p>perturbation step size (&gt;epsilon) to compute the approximated
+gradient by finite differences (<code>gradient_mode</code> 1-3).
+note that this is an absolute step that does not respect
+the <code>xl</code> or <code>xu</code> variable bounds.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tolf~5"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tolf</strong></td>
+            <td>
+<p>stopping criterion if <script type="math/tex"> |f| < tolf </script> then stop.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-toldf~5"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>toldf</strong></td>
+            <td>
+<p>stopping criterion if <script type="math/tex"> |f_{n+1} - f_n| < toldf </script> then stop</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-toldx~5"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>toldx</strong></td>
+            <td>
+<p>stopping criterion if <script type="math/tex"> ||x_{n+1} - x_n|| < toldx </script> then stop</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iter_ls~8"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iter_ls</strong></td>
+            <td>
+<p>maximum number of iterations in the <a href="../proc/nnls.html">nnls</a> problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nnls_mode~8"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nnls_mode</strong></td>
+            <td>
+<p>Which NNLS method to use:</p><a href="../proc/initialize_slsqp.html#variable-nnls_mode~8" class="pull-right"><emph>Read more&hellip;</emph></a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-infinite_bound~3"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>infinite_bound</strong></td>
+            <td>
+<p>"infinity" for the upper and lower bounds.
+if <code>xl&lt;=-infinite_bound</code> or <code>xu&gt;=infinite_bound</code>
+then these bounds are considered nonexistant.
+If not present then <code>huge()</code> is used for this.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-report_msg~2"></span>
+              procedure(<a href='../interface/msgfunc.html'>msgfunc</a>),
+            </td>
+<td></td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>report_msg</strong></td>
+            <td>
+<p>user-defined procedure that will be called
+with any warning or error messages.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-destroy_slsqp"></span> <h3>private  subroutine <a href='../proc/destroy_slsqp.html'>destroy_slsqp</a>(me)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>destructor for <a href="../type/slsqp_solver.html">slsqp_solver</a>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~11"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-slsqp_wrapper"></span> <h3>private  subroutine <a href='../proc/slsqp_wrapper.html'>slsqp_wrapper</a>(me, x, istat, iterations, status_message)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>main routine for calling <a href="../proc/slsqp.html">slsqp</a>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~12"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~19"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+<p><strong>in:</strong>  initial optimization variables,
+<strong>out:</strong> solution.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-istat"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>istat</strong></td>
+            <td>
+<p>status code (see <code>mode</code> in <a href="../proc/slsqp.html">slsqp</a>).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iterations"></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iterations</strong></td>
+            <td>
+<p>number of iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-status_message"></span>
+              character(len=:),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>status_message</strong></td>
+            <td>
+<p>string status message
+corresponding to <code>istat</code></p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-report_message"></span> <h3>private  subroutine <a href='../proc/report_message.html'>report_message</a>(me, str, ival, rval, fatal)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Report a message from an <a href="../type/slsqp_solver.html">slsqp_solver</a> class. This uses the <code>iprint</code>
+variable in the class as the unit number for printing. Note: for fatal errors,
+if no unit is specified, the <code>error_unit</code> is used.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~13"></span>
+              class(<a href='../type/slsqp_solver.html'>slsqp_solver</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-str~2"></span>
+              character(len=*),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>str</strong></td>
+            <td>
+<p>the message to report.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ival"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ival</strong></td>
+            <td>
+<p>optional integer to print after the message.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rval"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rval</strong></td>
+            <td>
+<p>optional real to print after the message.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fatal"></span>
+              logical,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>fatal</strong></td>
+            <td>
+<p>if True, then the program is stopped (default=False).</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+
+
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              slsqp
+ was developed by Jacob Williams<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

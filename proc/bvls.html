@@ -1,0 +1,1239 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran Implementation of the SLSQP Optimization Method">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>bvls &ndash; slsqp</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">slsqp </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>bvls
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="15.3% of total for procedures.">337 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/bvls_module.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/bvls_module.f90.html'>bvls_module.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/bvls_module.html'>bvls_module</a></li>
+            <li class="breadcrumb-item active" aria-current="page">bvls</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/bvls.html#src">bvls</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public  subroutine bvls(a, b, bnd, x, rnorm, nsetp, w, index, ierr, max_iter)  
+</h2>
+    
+
+    <p>Given an m by n matrix, <script type="math/tex">\mathbf{A}</script>, and an m-vector, <script type="math/tex">\mathbf{b}</script>,
+  compute an n-vector, <script type="math/tex">\mathbf{x}</script>, that solves the least squares problem:</p>
+<p>
+<script type="math/tex"> \mathbf{A} \mathbf{x} = \mathbf{b}</script>
+</p>
+<p>subject to <script type="math/tex"> \mathbf{x} </script> satisfying:</p>
+<p>
+<script type="math/tex"> \mathbf{x}_l \le \mathbf{x} \le \mathbf{x}_u </script>
+</p>
+<p>This algorithm is a generalization of <a href="../proc/nnls.html">nnls</a>, that solves
+  the least-squares problem, <code>A * X = B</code>, subject to all <code>X(J) &gt;= 0</code>.</p>
+<h3>History</h3>
+<ul>
+<li>The subroutine <a href="../proc/nnls.html">nnls</a> appeared in 'Solving least squares problems,'
+    by Lawson and Hanson, Prentice-Hall, 1974.  Work on BVLS was started
+    by C. L. Lawson and R. J. Hanson at Jet Propulsion Laboratory,
+    1973 June 12.  Many modifications were subsequently made.
+    This Fortran 90 code was completed in April, 1995 by R. J. Hanson.</li>
+</ul>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~11"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On entry A() contains the M by N matrix, A.
+On return A() contains the product matrix, Q*A, where
+Q is an M by M orthogonal matrix generated by this
+subroutine.  The dimensions are M=size(A,1) and N=size(A,2).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~9"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On entry B() contains the M-vector, B.
+On return, B() contains Q*B.  The same Q multiplies A.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bnd~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>bnd</strong></td>
+            <td>
+                <p>BND(1,J) is the lower bound for X(J).
+BND(2,J) is the upper bound for X(J).</p>
+<p>Require:  BND(1,J)  &lt;=  BND(2,J).</p>
+<p>The values BND(1,J) = -huge(ONE) and BND(2,J) = huge(ONE) are
+suggested choices to designate that there is no constraint in that
+direction.  The parameter ONE is 1.0 in the working precision.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~13"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p>On entry X() need not be initialized.  On return,
+X() will contain the solution N-vector.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rnorm~5"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rnorm</strong></td>
+            <td>
+                <p>Euclidean norm of the residual vector, b - A*X.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nsetp~3"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nsetp</strong></td>
+            <td>
+                <p>Indicates the number of components of the solution
+vector, X(), that are not at their constraint values.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w~12"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>w</strong></td>
+            <td>
+                <p>An N-array.  On return, W() will contain the dual solution
+vector.   Using Set definitions below:</p>
+<ul>
+<li>W(J) = 0 for all j in Set P,</li>
+<li>W(J)  &lt;=  0 for all j in Set Z, such that X(J) is at its
+  lower bound, and</li>
+<li>W(J)  &gt;=  0 for all j in Set Z, such that X(J) is at its
+  upper bound.</li>
+</ul>
+<p>If BND(1,J) = BND(2,J), so the variable X(J) is fixed,
+then W(J) will have an arbitrary value.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-index~3"></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>index</strong></td>
+            <td>
+                <p>An INTEGER working array of size N.  On exit the contents
+of this array define the sets P, Z, and F as follows:</p>
+<ul>
+<li>INDEX(1)   through INDEX(NSETP)    =  Set P.</li>
+<li>INDEX(IZ1) through INDEX(IZ2)      = Set Z.</li>
+<li>INDEX(IZ2+1) through INDEX(N)      = Set F.</li>
+</ul>
+<p>IZ1 = NSETP + 1 = NPP1</p>
+<p>Any of these sets may be empty.  Set F is those components
+that are constrained to a unique value by the given
+constraints.   Sets P and Z are those that are allowed a non-
+zero range of values.  Of these, set Z are those whose final
+value is a constraint value, while set P are those whose
+final value is not a constraint.  The value of IZ2 is not returned.</p>
+<p>It is computable as the number of bounds constraining a component
+of X uniquely.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ierr~2"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ierr</strong></td>
+            <td>
+                <p>Indicates status on return:</p>
+<ul>
+<li>0 -- Solution completed.</li>
+<li>1 -- M  &lt;=  0 or N  &lt;=  0</li>
+<li>2 -- B(:), X(:), BND(:,:), W(:), or INDEX(:) size or shape violation.</li>
+<li>3 -- Input bounds are inconsistent.</li>
+<li>4 -- Exceed maximum number of iterations.</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iter~3"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iter</strong></td>
+            <td>
+                <p>maximum number of iterations (if &lt;=0, then <code>3*n</code> is used)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~bvls~~CalledByGraph Pages: 1 -->
+<svg id="procbvlsCalledByGraph" width="641pt" height="22pt"
+ viewBox="0.00 0.00 641.00 22.30" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~bvls~~CalledByGraph" class="graph" transform="scale(0.7 0.7) rotate(0) translate(4 28)">
+<title>proc~~bvls~~CalledByGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 916,-28 916,4 -4,4"/>
+<!-- proc~bvls -->
+<g id="proc~~bvls~~CalledByGraph_node1" class="node">
+<title>proc~bvls</title>
+<polygon fill="none" stroke="black" points="912,-24 858,-24 858,0 912,0 912,-24"/>
+<text text-anchor="middle" x="885" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">bvls</text>
+</g>
+<!-- proc~bvls_wrapper -->
+<g id="proc~~bvls~~CalledByGraph_node2" class="node">
+<title>proc~bvls_wrapper</title>
+<g id="a_proc~~bvls~~CalledByGraph_node2"><a xlink:href="../proc/bvls_wrapper.html" xlink:title="bvls_wrapper">
+<polygon fill="#d9534f" stroke="#d9534f" points="822,-24 739,-24 739,0 822,0 822,-24"/>
+<text text-anchor="middle" x="780.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_wrapper</text>
+</a>
+</g>
+</g>
+<!-- proc~bvls_wrapper&#45;&gt;proc~bvls -->
+<g id="proc~~bvls~~CalledByGraph_edge1" class="edge">
+<title>proc~bvls_wrapper&#45;&gt;proc~bvls</title>
+<path fill="none" stroke="#000000" d="M822.01,-12C830.51,-12 839.42,-12 847.75,-12"/>
+<polygon fill="#000000" stroke="#000000" points="847.92,-15.5 857.92,-12 847.92,-8.5 847.92,-15.5"/>
+</g>
+<!-- proc~ldp -->
+<g id="proc~~bvls~~CalledByGraph_node3" class="node">
+<title>proc~ldp</title>
+<g id="a_proc~~bvls~~CalledByGraph_node3"><a xlink:href="../proc/ldp.html" xlink:title="ldp">
+<polygon fill="#d9534f" stroke="#d9534f" points="703,-24 649,-24 649,0 703,0 703,-24"/>
+<text text-anchor="middle" x="676" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~ldp&#45;&gt;proc~bvls_wrapper -->
+<g id="proc~~bvls~~CalledByGraph_edge2" class="edge">
+<title>proc~ldp&#45;&gt;proc~bvls_wrapper</title>
+<path fill="none" stroke="#000000" d="M703.13,-12C710.89,-12 719.67,-12 728.44,-12"/>
+<polygon fill="#000000" stroke="#000000" points="728.67,-15.5 738.67,-12 728.67,-8.5 728.67,-15.5"/>
+</g>
+<!-- proc~lsi -->
+<g id="proc~~bvls~~CalledByGraph_node4" class="node">
+<title>proc~lsi</title>
+<g id="a_proc~~bvls~~CalledByGraph_node4"><a xlink:href="../proc/lsi.html" xlink:title="lsi">
+<polygon fill="#d9534f" stroke="#d9534f" points="613,-24 559,-24 559,0 613,0 613,-24"/>
+<text text-anchor="middle" x="586" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsi</text>
+</a>
+</g>
+</g>
+<!-- proc~lsi&#45;&gt;proc~ldp -->
+<g id="proc~~bvls~~CalledByGraph_edge3" class="edge">
+<title>proc~lsi&#45;&gt;proc~ldp</title>
+<path fill="none" stroke="#000000" d="M613.4,-12C621.39,-12 630.31,-12 638.82,-12"/>
+<polygon fill="#000000" stroke="#000000" points="638.92,-15.5 648.92,-12 638.92,-8.5 638.92,-15.5"/>
+</g>
+<!-- proc~lsei -->
+<g id="proc~~bvls~~CalledByGraph_node5" class="node">
+<title>proc~lsei</title>
+<g id="a_proc~~bvls~~CalledByGraph_node5"><a xlink:href="../proc/lsei.html" xlink:title="lsei">
+<polygon fill="#d9534f" stroke="#d9534f" points="523,-24 469,-24 469,0 523,0 523,-24"/>
+<text text-anchor="middle" x="496" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsei</text>
+</a>
+</g>
+</g>
+<!-- proc~lsei&#45;&gt;proc~lsi -->
+<g id="proc~~bvls~~CalledByGraph_edge4" class="edge">
+<title>proc~lsei&#45;&gt;proc~lsi</title>
+<path fill="none" stroke="#000000" d="M523.4,-12C531.39,-12 540.31,-12 548.82,-12"/>
+<polygon fill="#000000" stroke="#000000" points="548.92,-15.5 558.92,-12 548.92,-8.5 548.92,-15.5"/>
+</g>
+<!-- proc~lsq -->
+<g id="proc~~bvls~~CalledByGraph_node6" class="node">
+<title>proc~lsq</title>
+<g id="a_proc~~bvls~~CalledByGraph_node6"><a xlink:href="../proc/lsq.html" xlink:title="lsq">
+<polygon fill="#d9534f" stroke="#d9534f" points="433,-24 379,-24 379,0 433,0 433,-24"/>
+<text text-anchor="middle" x="406" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lsq</text>
+</a>
+</g>
+</g>
+<!-- proc~lsq&#45;&gt;proc~lsei -->
+<g id="proc~~bvls~~CalledByGraph_edge5" class="edge">
+<title>proc~lsq&#45;&gt;proc~lsei</title>
+<path fill="none" stroke="#000000" d="M433.4,-12C441.39,-12 450.31,-12 458.82,-12"/>
+<polygon fill="#000000" stroke="#000000" points="458.92,-15.5 468.92,-12 458.92,-8.5 458.92,-15.5"/>
+</g>
+<!-- proc~slsqpb -->
+<g id="proc~~bvls~~CalledByGraph_node7" class="node">
+<title>proc~slsqpb</title>
+<g id="a_proc~~bvls~~CalledByGraph_node7"><a xlink:href="../proc/slsqpb.html" xlink:title="slsqpb">
+<polygon fill="#d9534f" stroke="#d9534f" points="343,-24 289,-24 289,0 343,0 343,-24"/>
+<text text-anchor="middle" x="316" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqpb</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqpb&#45;&gt;proc~lsq -->
+<g id="proc~~bvls~~CalledByGraph_edge6" class="edge">
+<title>proc~slsqpb&#45;&gt;proc~lsq</title>
+<path fill="none" stroke="#000000" d="M343.4,-12C351.39,-12 360.31,-12 368.82,-12"/>
+<polygon fill="#000000" stroke="#000000" points="368.92,-15.5 378.92,-12 368.92,-8.5 368.92,-15.5"/>
+</g>
+<!-- proc~slsqp -->
+<g id="proc~~bvls~~CalledByGraph_node8" class="node">
+<title>proc~slsqp</title>
+<g id="a_proc~~bvls~~CalledByGraph_node8"><a xlink:href="../proc/slsqp.html" xlink:title="slsqp">
+<polygon fill="#d9534f" stroke="#d9534f" points="253,-24 199,-24 199,0 253,0 253,-24"/>
+<text text-anchor="middle" x="226" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqp&#45;&gt;proc~slsqpb -->
+<g id="proc~~bvls~~CalledByGraph_edge7" class="edge">
+<title>proc~slsqp&#45;&gt;proc~slsqpb</title>
+<path fill="none" stroke="#000000" d="M253.4,-12C261.39,-12 270.31,-12 278.82,-12"/>
+<polygon fill="#000000" stroke="#000000" points="278.92,-15.5 288.92,-12 278.92,-8.5 278.92,-15.5"/>
+</g>
+<!-- proc~slsqp_wrapper -->
+<g id="proc~~bvls~~CalledByGraph_node9" class="node">
+<title>proc~slsqp_wrapper</title>
+<g id="a_proc~~bvls~~CalledByGraph_node9"><a xlink:href="../proc/slsqp_wrapper.html" xlink:title="slsqp_solver%slsqp_wrapper">
+<polygon fill="#d9534f" stroke="#d9534f" points="163,-24 0,-24 0,0 163,0 163,-24"/>
+<text text-anchor="middle" x="81.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_solver%slsqp_wrapper</text>
+</a>
+</g>
+</g>
+<!-- proc~slsqp_wrapper&#45;&gt;proc~slsqp -->
+<g id="proc~~bvls~~CalledByGraph_edge8" class="edge">
+<title>proc~slsqp_wrapper&#45;&gt;proc~slsqp</title>
+<path fill="none" stroke="#000000" d="M163.33,-12C172.14,-12 180.75,-12 188.61,-12"/>
+<polygon fill="#000000" stroke="#000000" points="188.81,-15.5 198.81,-12 188.81,-8.5 188.81,-15.5"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocbvlsCalledByGraph = svgPanZoom('#procbvlsCalledByGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">bvls</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">bnd</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">rnorm</span><span class="p">,</span><span class="w"> </span><span class="n">nsetp</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="nb">index</span><span class="p">,</span><span class="w"> </span><span class="n">ierr</span><span class="p">,</span><span class="w"> </span><span class="n">max_iter</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">implicit none</span>
+
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:,:),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="w">  </span><span class="c">!! On entry A() contains the M by N matrix, A.</span>
+<span class="w">                                                </span><span class="c">!! On return A() contains the product matrix, Q*A, where</span>
+<span class="w">                                                </span><span class="c">!! Q is an M by M orthogonal matrix generated by this</span>
+<span class="w">                                                </span><span class="c">!! subroutine.  The dimensions are M=size(A,1) and N=size(A,2).</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">b</span><span class="w">  </span><span class="c">!! On entry B() contains the M-vector, B.</span>
+<span class="w">                                                </span><span class="c">!! On return, B() contains Q*B.  The same Q multiplies A.</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:,:),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">bnd</span><span class="w">   </span><span class="c">!! BND(1,J) is the lower bound for X(J).</span>
+<span class="w">                                                </span><span class="c">!! BND(2,J) is the upper bound for X(J).</span>
+<span class="w">                                                </span><span class="c">!!</span>
+<span class="w">                                                </span><span class="c">!! Require:  BND(1,J)  &lt;=  BND(2,J).</span>
+<span class="w">                                                </span><span class="c">!!</span>
+<span class="w">                                                </span><span class="c">!! The values BND(1,J) = -huge(ONE) and BND(2,J) = huge(ONE) are</span>
+<span class="w">                                                </span><span class="c">!! suggested choices to designate that there is no constraint in that</span>
+<span class="w">                                                </span><span class="c">!! direction.  The parameter ONE is 1.0 in the working precision.</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="w">    </span><span class="c">!! On entry X() need not be initialized.  On return,</span>
+<span class="w">                                                </span><span class="c">!! X() will contain the solution N-vector.</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w">                </span><span class="kd">::</span><span class="w"> </span><span class="n">rnorm</span><span class="w"> </span><span class="c">!! Euclidean norm of the residual vector, b - A*X.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w">                 </span><span class="kd">::</span><span class="w"> </span><span class="n">nsetp</span><span class="w"> </span><span class="c">!! Indicates the number of components of the solution</span>
+<span class="w">                                                 </span><span class="c">!! vector, X(), that are not at their constraint values.</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="w">    </span><span class="c">!! An N-array.  On return, W() will contain the dual solution</span>
+<span class="w">                                                </span><span class="c">!! vector.   Using Set definitions below:</span>
+<span class="w">                                                </span><span class="c">!!</span>
+<span class="w">                                                </span><span class="c">!! * W(J) = 0 for all j in Set P,</span>
+<span class="w">                                                </span><span class="c">!! * W(J)  &lt;=  0 for all j in Set Z, such that X(J) is at its</span>
+<span class="w">                                                </span><span class="c">!!   lower bound, and</span>
+<span class="w">                                                </span><span class="c">!! * W(J)  &gt;=  0 for all j in Set Z, such that X(J) is at its</span>
+<span class="w">                                                </span><span class="c">!!   upper bound.</span>
+<span class="w">                                                </span><span class="c">!!</span>
+<span class="w">                                                </span><span class="c">!! If BND(1,J) = BND(2,J), so the variable X(J) is fixed,</span>
+<span class="w">                                                </span><span class="c">!! then W(J) will have an arbitrary value.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="nb">index</span><span class="w">    </span><span class="c">!! An INTEGER working array of size N.  On exit the contents</span>
+<span class="w">                                                    </span><span class="c">!! of this array define the sets P, Z, and F as follows:</span>
+<span class="w">                                                    </span><span class="c">!!</span>
+<span class="w">                                                    </span><span class="c">!! * INDEX(1)   through INDEX(NSETP)    =  Set P.</span>
+<span class="w">                                                    </span><span class="c">!! * INDEX(IZ1) through INDEX(IZ2)      = Set Z.</span>
+<span class="w">                                                    </span><span class="c">!! * INDEX(IZ2+1) through INDEX(N)      = Set F.</span>
+<span class="w">                                                    </span><span class="c">!!</span>
+<span class="w">                                                    </span><span class="c">!! IZ1 = NSETP + 1 = NPP1</span>
+<span class="w">                                                    </span><span class="c">!!</span>
+<span class="w">                                                    </span><span class="c">!! Any of these sets may be empty.  Set F is those components</span>
+<span class="w">                                                    </span><span class="c">!! that are constrained to a unique value by the given</span>
+<span class="w">                                                    </span><span class="c">!! constraints.   Sets P and Z are those that are allowed a non-</span>
+<span class="w">                                                    </span><span class="c">!! zero range of values.  Of these, set Z are those whose final</span>
+<span class="w">                                                    </span><span class="c">!! value is a constraint value, while set P are those whose</span>
+<span class="w">                                                    </span><span class="c">!! final value is not a constraint.  The value of IZ2 is not returned.</span>
+<span class="w">                                                    </span><span class="c">!!</span>
+<span class="w">                                                    </span><span class="c">!! It is computable as the number of bounds constraining a component</span>
+<span class="w">                                                    </span><span class="c">!! of X uniquely.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w">                 </span><span class="kd">::</span><span class="w"> </span><span class="n">ierr</span><span class="w"> </span><span class="c">!! Indicates status on return:</span>
+<span class="w">                                                </span><span class="c">!!</span>
+<span class="w">                                                </span><span class="c">!! * 0 -- Solution completed.</span>
+<span class="w">                                                </span><span class="c">!! * 1 -- M  &lt;=  0 or N  &lt;=  0</span>
+<span class="w">                                                </span><span class="c">!! * 2 -- B(:), X(:), BND(:,:), W(:), or INDEX(:) size or shape violation.</span>
+<span class="w">                                                </span><span class="c">!! * 3 -- Input bounds are inconsistent.</span>
+<span class="w">                                                </span><span class="c">!! * 4 -- Exceed maximum number of iterations.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">max_iter</span><span class="w"> </span><span class="c">!! maximum number of iterations (if &lt;=0, then `3*n` is used)</span>
+
+<span class="w">    </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">find</span><span class="p">,</span><span class="w"> </span><span class="n">hitbnd</span><span class="p">,</span><span class="w"> </span><span class="n">free1</span><span class="p">,</span><span class="w"> </span><span class="n">free2</span><span class="p">,</span><span class="w"> </span><span class="n">free</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iter</span><span class="w">     </span><span class="c">!! Iteration counter.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">itmax</span><span class="w">    </span><span class="c">!! Maximum number of iterations permitted.</span>
+<span class="w">                        </span><span class="c">!! Defaults to 3*n if `max_iter&lt;=0`.</span>
+<span class="w">                        </span><span class="c">!! This is usually larger than required.</span>
+<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">ibound</span><span class="p">,</span><span class="w"> </span><span class="n">ii</span><span class="p">,</span><span class="w"> </span><span class="n">ip</span><span class="p">,</span><span class="w"> </span><span class="n">iz</span><span class="p">,</span><span class="w"> </span><span class="n">iz1</span><span class="p">,</span><span class="w"> </span><span class="n">iz2</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">               </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">jj</span><span class="p">,</span><span class="w"> </span><span class="n">jz</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="nb">lbound</span><span class="p">,</span><span class="w"> </span><span class="n">npp1</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">s</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">asave</span><span class="p">,</span><span class="w"> </span><span class="n">cc</span><span class="p">,</span><span class="w"> </span><span class="nb">range</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                </span><span class="n">norm</span><span class="p">,</span><span class="w"> </span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">ss</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">unorm</span><span class="p">,</span><span class="w"> </span><span class="n">up</span><span class="p">,</span><span class="w"> </span><span class="n">ztest</span>
+
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">epsilon</span><span class="p">(</span><span class="n">one</span><span class="p">)</span><span class="w">  </span><span class="c">!! Determines the relative linear dependence of a column vector</span>
+<span class="w">                                              </span><span class="c">!! for a variable moved from its initial value.  This is used in</span>
+<span class="w">                                              </span><span class="c">!! one place with the default value EPS=EPSILON(ONE).  Other</span>
+<span class="w">                                              </span><span class="c">!! values, larger or smaller may be needed for some problems.</span>
+<span class="w">                                              </span><span class="c">!! Library software will likely make this an optional argument.</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">initialize</span><span class="p">()</span>
+<span class="w">    </span><span class="c">! The above call will set IERR.</span>
+
+<span class="w">    </span><span class="n">loopa</span><span class="p">:</span><span class="w"> </span><span class="k">do</span>
+
+<span class="w">        </span><span class="c">! Quit on error flag, or if all coefficients are already in the</span>
+<span class="w">        </span><span class="c">! solution, .or. if M columns of A have been triangularized.</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ierr</span><span class="w"> </span><span class="o">/=</span><span class="w">  </span><span class="mi">0</span><span class="w">  </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w">  </span><span class="n">iz1</span><span class="w">  </span><span class="o">&gt;</span><span class="w"> </span><span class="n">iz2</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">nsetp</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="k">exit </span><span class="n">loopa</span>
+
+<span class="w">        </span><span class="k">call </span><span class="n">select_another_coeff_to_solve_for</span><span class="p">()</span>
+
+<span class="w">        </span><span class="c">! See if no index was found to be moved from set Z to set P.</span>
+<span class="w">        </span><span class="c">! Then go to termination.</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">find</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">exit </span><span class="n">loopa</span>
+
+<span class="w">        </span><span class="k">call </span><span class="n">move_j_from_set_z_to_set_p</span><span class="p">()</span>
+
+<span class="w">        </span><span class="k">call </span><span class="n">test_set_p_against_constraints</span><span class="p">()</span>
+
+<span class="w">        </span><span class="c">! The above call may set IERR.</span>
+<span class="w">        </span><span class="c">! All coefficients in set P are strictly feasible.  Loop back.</span>
+
+<span class="w">    </span><span class="k">end do </span><span class="n">loopa</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">termination</span><span class="p">()</span>
+
+<span class="k">contains</span><span class="w">  </span><span class="c">! These are internal subroutines.</span>
+
+<span class="k">subroutine </span><span class="n">initialize</span><span class="p">()</span>
+
+<span class="w">   </span><span class="n">m</span><span class="o">=</span><span class="n">size</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">   </span><span class="n">n</span><span class="o">=</span><span class="n">size</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="w">  </span><span class="o">&lt;=</span><span class="w">  </span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">n</span><span class="w">  </span><span class="o">&lt;=</span><span class="w">  </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">ierr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="k">return</span>
+<span class="k">   end if</span>
+
+<span class="w">   </span><span class="c">! Check array sizes for consistency and with M and N.</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">ierr</span><span class="o">=</span><span class="mi">2</span>
+<span class="w">      </span><span class="k">return</span>
+<span class="k">   end if</span>
+<span class="k">   if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">ierr</span><span class="o">=</span><span class="mi">2</span>
+<span class="w">      </span><span class="k">return</span>
+<span class="k">   end if</span>
+<span class="k">   if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">bnd</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">ierr</span><span class="o">=</span><span class="mi">2</span>
+<span class="w">      </span><span class="k">return</span>
+<span class="k">   end if</span>
+<span class="k">   if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">bnd</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">ierr</span><span class="o">=</span><span class="mi">2</span>
+<span class="w">      </span><span class="k">return</span>
+<span class="k">   end if</span>
+<span class="k">   if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">ierr</span><span class="o">=</span><span class="mi">2</span>
+<span class="w">      </span><span class="k">return</span>
+<span class="k">   end if</span>
+<span class="k">   if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="nb">index</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">ierr</span><span class="o">=</span><span class="mi">2</span>
+<span class="w">      </span><span class="k">return</span>
+<span class="k">   end if</span>
+
+<span class="k">   </span><span class="n">ierr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">max_iter</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">itmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="n">n</span>
+<span class="w">   </span><span class="k">else</span>
+<span class="k">      </span><span class="n">itmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max_iter</span>
+<span class="w">   </span><span class="k">end if</span>
+<span class="k">   </span><span class="n">iter</span><span class="o">=</span><span class="mi">0</span>
+<span class="w">   </span><span class="c">! Initialize the array index().</span>
+<span class="w">   </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span>
+<span class="w">      </span><span class="nb">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">=</span><span class="n">i</span>
+<span class="w">   </span><span class="k">end do</span>
+
+<span class="k">   </span><span class="n">iz2</span><span class="o">=</span><span class="n">n</span>
+<span class="w">   </span><span class="n">iz1</span><span class="o">=</span><span class="mi">1</span>
+<span class="w">   </span><span class="n">nsetp</span><span class="o">=</span><span class="mi">0</span>
+<span class="w">   </span><span class="n">npp1</span><span class="o">=</span><span class="mi">1</span>
+
+<span class="w">   </span><span class="c">! Begin:  Loop on IZ to initialize  X().</span>
+<span class="w">   </span><span class="n">iz</span><span class="o">=</span><span class="n">iz1</span>
+<span class="w">   </span><span class="k">do</span>
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="n">iz</span><span class="w">  </span><span class="o">&gt;</span><span class="w">  </span><span class="n">iz2</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">exit</span>
+<span class="k">      </span><span class="n">j</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">iz</span><span class="p">)</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">bnd</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="o">-</span><span class="nb">huge</span><span class="p">(</span><span class="n">one</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         if</span><span class="w"> </span><span class="p">(</span><span class="n">bnd</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w">  </span><span class="nb">huge</span><span class="p">(</span><span class="n">one</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">         </span><span class="k">else</span>
+<span class="k">            </span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">min</span><span class="p">(</span><span class="n">zero</span><span class="p">,</span><span class="n">bnd</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+<span class="w">         </span><span class="k">end if</span>
+<span class="k">     else  if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">bnd</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="nb">huge</span><span class="p">(</span><span class="n">one</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="n">zero</span><span class="p">,</span><span class="n">bnd</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+<span class="w">     </span><span class="k">else</span>
+<span class="k">        </span><span class="nb">range</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bnd</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">bnd</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">range</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">           </span><span class="c">! Here X(J) is constrained to a single value.</span>
+<span class="w">           </span><span class="nb">index</span><span class="p">(</span><span class="n">iz</span><span class="p">)</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">iz2</span><span class="p">)</span>
+<span class="w">           </span><span class="nb">index</span><span class="p">(</span><span class="n">iz2</span><span class="p">)</span><span class="o">=</span><span class="n">j</span>
+<span class="w">           </span><span class="n">iz</span><span class="o">=</span><span class="n">iz</span><span class="o">-</span><span class="mi">1</span>
+<span class="w">           </span><span class="n">iz2</span><span class="o">=</span><span class="n">iz2</span><span class="o">-</span><span class="mi">1</span>
+<span class="w">           </span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">bnd</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">           </span><span class="n">w</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">         </span><span class="k">else  if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">range</span><span class="w">  </span><span class="o">&gt;</span><span class="w">  </span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">            </span><span class="c">!! The following statement sets X(J) to 0 if the constraint interval</span>
+<span class="w">            </span><span class="c">!! includes 0, and otherwise sets X(J) to the endpoint of the</span>
+<span class="w">            </span><span class="c">!! constraint interval that is closest to 0.</span>
+<span class="w">            </span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="n">bnd</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="w"> </span><span class="nb">min</span><span class="p">(</span><span class="n">bnd</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="n">zero</span><span class="p">))</span>
+<span class="w">         </span><span class="k">else</span>
+<span class="k">            </span><span class="n">ierr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">            </span><span class="k">return</span>
+<span class="k">         end if</span>
+<span class="k">   end if</span>
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">         </span><span class="c">! Change B() to reflect a nonzero starting value for X(J).</span>
+<span class="w">         </span><span class="n">b</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">m</span><span class="p">)</span><span class="o">=</span><span class="n">b</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">m</span><span class="p">)</span><span class="o">-</span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+<span class="w">      </span><span class="k">end if</span>
+<span class="k">      </span><span class="n">iz</span><span class="o">=</span><span class="n">iz</span><span class="o">+</span><span class="mi">1</span>
+<span class="w">   </span><span class="k">end do</span>
+
+<span class="k">end subroutine </span><span class="n">initialize</span>
+
+<span class="k">subroutine </span><span class="n">select_another_coeff_to_solve_for</span><span class="p">()</span>
+
+<span class="w">   </span><span class="c">!! 1. Search through set z for a new coefficient to solve for.</span>
+<span class="w">   </span><span class="c">!!    First select a candidate that is either an unconstrained</span>
+<span class="w">   </span><span class="c">!!    coefficient or else a constrained coefficient that has room</span>
+<span class="w">   </span><span class="c">!!    to move in the direction consistent with the sign of its dual</span>
+<span class="w">   </span><span class="c">!!    vector component.  Components of the dual (negative gradient)</span>
+<span class="w">   </span><span class="c">!!    vector will be computed as needed.</span>
+<span class="w">   </span><span class="c">!! 2. For each candidate start the transformation to bring this</span>
+<span class="w">   </span><span class="c">!!    candidate into the triangle, and then do two tests:  Test size</span>
+<span class="w">   </span><span class="c">!!    of new diagonal value to avoid extreme ill-conditioning, and</span>
+<span class="w">   </span><span class="c">!!    the value of this new coefficient to be sure it moved in the</span>
+<span class="w">   </span><span class="c">!!    expected direction.</span>
+<span class="w">   </span><span class="c">!! 3. If some coefficient passes all these conditions, set FIND = true,</span>
+<span class="w">   </span><span class="c">!!    The index of the selected coefficient is J = INDEX(IZ).</span>
+<span class="w">   </span><span class="c">!! 4. If no coefficient is selected, set FIND = false.</span>
+
+<span class="w">   </span><span class="n">find</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+<span class="w">   </span><span class="k">do </span><span class="n">iz</span><span class="o">=</span><span class="n">iz1</span><span class="p">,</span><span class="n">iz2</span>
+<span class="w">      </span><span class="n">j</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">iz</span><span class="p">)</span>
+
+<span class="w">      </span><span class="c">! Set FREE1 = true if X(J) is not at the left end-point of its</span>
+<span class="w">      </span><span class="c">! constraint region.</span>
+<span class="w">      </span><span class="c">! Set FREE2 = true if X(J) is not at the right end-point of its</span>
+<span class="w">      </span><span class="c">! constraint region.</span>
+<span class="w">      </span><span class="c">! Set FREE = true if X(J) is not at either end-point of its</span>
+<span class="w">      </span><span class="c">! constraint region.</span>
+
+<span class="w">     </span><span class="n">free1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">bnd</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">     </span><span class="n">free2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">bnd</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">     </span><span class="n">free</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">free1</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">free2</span>
+
+<span class="w">     </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">free</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        call </span><span class="n">test_coef_j_for_diag_elt_and_direction_of_change</span><span class="p">()</span>
+<span class="w">     </span><span class="k">else</span>
+<span class="w">        </span><span class="c">! Compute dual coefficient W(J).</span>
+<span class="w">        </span><span class="n">w</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="nb">dot_product</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="n">npp1</span><span class="p">:</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="n">b</span><span class="p">(</span><span class="n">npp1</span><span class="p">:</span><span class="n">m</span><span class="p">))</span>
+
+<span class="w">        </span><span class="c">! Can X(J) move in the direction indicated by the sign of W(J)?</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">           if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">free1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">call </span><span class="n">test_coef_j_for_diag_elt_and_direction_of_change</span><span class="p">()</span>
+<span class="w">        </span><span class="k">else  if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">           if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">free2</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">call </span><span class="n">test_coef_j_for_diag_elt_and_direction_of_change</span><span class="p">()</span>
+<span class="w">        </span><span class="k">end if</span>
+<span class="k">     end if</span>
+<span class="k">     if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">find</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
+<span class="k">   end do</span>
+
+<span class="k">end subroutine </span><span class="n">select_another_coeff_to_solve_for</span>
+
+<span class="k">subroutine </span><span class="n">test_coef_j_for_diag_elt_and_direction_of_change</span><span class="p">()</span>
+
+<span class="w">   </span><span class="c">!! The sign of W(J) is OK for J to be moved to set P.</span>
+<span class="w">   </span><span class="c">!! Begin the transformation and check new diagonal element to avoid</span>
+<span class="w">   </span><span class="c">!! near linear dependence.</span>
+
+<span class="w">   </span><span class="n">asave</span><span class="o">=</span><span class="n">a</span><span class="p">(</span><span class="n">npp1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">htc</span><span class="w"> </span><span class="p">(</span><span class="n">npp1</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="w"> </span><span class="n">up</span><span class="p">)</span>
+<span class="w">   </span><span class="n">unorm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nrm2</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">nsetp</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="n">npp1</span><span class="p">,</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">eps</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">unorm</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+
+<span class="w">      </span><span class="c">! Column J is sufficiently independent.  Copy b into Z, update Z.</span>
+<span class="w">      </span><span class="n">z</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">m</span><span class="p">)</span><span class="o">=</span><span class="n">b</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">m</span><span class="p">)</span>
+<span class="w">      </span><span class="c">! Compute product of transormation and updated right-hand side.</span>
+<span class="w">      </span><span class="n">norm</span><span class="o">=</span><span class="n">a</span><span class="p">(</span><span class="n">npp1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">      </span><span class="n">a</span><span class="p">(</span><span class="n">npp1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">up</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">sm</span><span class="o">=</span><span class="nb">dot_product</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="n">npp1</span><span class="p">:</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">/</span><span class="n">norm</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="n">npp1</span><span class="p">:</span><span class="n">m</span><span class="p">))</span><span class="o">/</span><span class="n">up</span>
+<span class="w">         </span><span class="n">z</span><span class="p">(</span><span class="n">npp1</span><span class="p">:</span><span class="n">m</span><span class="p">)</span><span class="o">=</span><span class="n">z</span><span class="p">(</span><span class="n">npp1</span><span class="p">:</span><span class="n">m</span><span class="p">)</span><span class="o">+</span><span class="n">sm</span><span class="o">*</span><span class="n">a</span><span class="p">(</span><span class="n">npp1</span><span class="p">:</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">         </span><span class="n">a</span><span class="p">(</span><span class="n">npp1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">norm</span>
+<span class="w">      </span><span class="k">end if</span>
+
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">&gt;</span><span class="w">  </span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">npp1</span><span class="p">)</span><span class="o">=</span><span class="n">z</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">npp1</span><span class="p">)</span><span class="o">+</span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">npp1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+<span class="w">      </span><span class="c">! Adjust Z() as though X(J) had been reset to zero.</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">free</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">find</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">true</span><span class="p">.</span>
+<span class="w">      </span><span class="k">else</span>
+<span class="w">         </span><span class="c">!! Solve for ZTEST ( proposed new value for X(J) ).</span>
+<span class="w">         </span><span class="c">!! Then set FIND to indicate if ZTEST has moved away from X(J) in</span>
+<span class="w">         </span><span class="c">!! the expected direction indicated by the sign of W(J).</span>
+<span class="w">         </span><span class="n">ztest</span><span class="o">=</span><span class="n">z</span><span class="p">(</span><span class="n">npp1</span><span class="p">)</span><span class="o">/</span><span class="n">a</span><span class="p">(</span><span class="n">npp1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">         </span><span class="n">find</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">zero</span><span class="w">  </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w">  </span><span class="n">ztest</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                </span><span class="p">(</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero</span><span class="w">  </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w">  </span><span class="n">ztest</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="w">      </span><span class="k">end if</span>
+<span class="k">   end if</span>
+
+<span class="w">   </span><span class="c">! If J was not accepted to be moved from set Z to set P,</span>
+<span class="w">   </span><span class="c">! restore A(NNP1,J).  Failing these tests may mean the computed</span>
+<span class="w">   </span><span class="c">! sign of W(J) is suspect, so here we set W(J) = 0.  This will</span>
+<span class="w">   </span><span class="c">! not affect subsequent computation, but cleans up the W() array.</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">find</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">a</span><span class="p">(</span><span class="n">npp1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">asave</span>
+<span class="w">      </span><span class="n">w</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">   </span><span class="k">end if</span>
+
+<span class="k">end subroutine </span><span class="n">test_coef_j_for_diag_elt_and_direction_of_change</span>
+
+<span class="k">subroutine </span><span class="n">move_j_from_set_z_to_set_p</span><span class="p">()</span>
+
+<span class="w">   </span><span class="c">!! The index  J=index(IZ)  has been selected to be moved from</span>
+<span class="w">   </span><span class="c">!! set Z to set P.  Z() contains the old B() adjusted as though X(J) = 0.</span>
+<span class="w">   </span><span class="c">!! A(*,J) contains the new Householder transformation vector.</span>
+
+<span class="w">   </span><span class="n">b</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">m</span><span class="p">)</span><span class="o">=</span><span class="n">z</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">m</span><span class="p">)</span>
+<span class="w">   </span><span class="nb">index</span><span class="p">(</span><span class="n">iz</span><span class="p">)</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">iz1</span><span class="p">)</span>
+<span class="w">   </span><span class="nb">index</span><span class="p">(</span><span class="n">iz1</span><span class="p">)</span><span class="o">=</span><span class="n">j</span>
+<span class="w">   </span><span class="n">iz1</span><span class="o">=</span><span class="n">iz1</span><span class="o">+</span><span class="mi">1</span>
+<span class="w">   </span><span class="n">nsetp</span><span class="o">=</span><span class="n">npp1</span>
+<span class="w">   </span><span class="n">npp1</span><span class="o">=</span><span class="n">npp1</span><span class="o">+</span><span class="mi">1</span>
+<span class="w">   </span><span class="c">! The following loop can be null or not required.</span>
+<span class="w">   </span><span class="n">norm</span><span class="o">=</span><span class="n">a</span><span class="p">(</span><span class="n">nsetp</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">   </span><span class="n">a</span><span class="p">(</span><span class="n">nsetp</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">up</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      do </span><span class="n">jz</span><span class="o">=</span><span class="n">iz1</span><span class="p">,</span><span class="n">iz2</span>
+<span class="w">         </span><span class="n">jj</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">jz</span><span class="p">)</span>
+<span class="w">         </span><span class="n">sm</span><span class="o">=</span><span class="nb">dot_product</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="n">nsetp</span><span class="p">:</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">/</span><span class="n">norm</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">nsetp</span><span class="p">:</span><span class="n">m</span><span class="p">,</span><span class="n">jj</span><span class="p">))</span><span class="o">/</span><span class="n">up</span>
+<span class="w">         </span><span class="n">a</span><span class="p">(</span><span class="n">nsetp</span><span class="p">:</span><span class="n">m</span><span class="p">,</span><span class="n">jj</span><span class="p">)</span><span class="o">=</span><span class="n">a</span><span class="p">(</span><span class="n">nsetp</span><span class="p">:</span><span class="n">m</span><span class="p">,</span><span class="n">jj</span><span class="p">)</span><span class="o">+</span><span class="n">sm</span><span class="o">*</span><span class="n">a</span><span class="p">(</span><span class="n">nsetp</span><span class="p">:</span><span class="n">m</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">      </span><span class="k">end do</span>
+<span class="k">   </span><span class="n">a</span><span class="p">(</span><span class="n">nsetp</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">norm</span>
+<span class="w">   </span><span class="k">end if</span>
+<span class="w">   </span><span class="c">! The following loop can be null.</span>
+<span class="w">   </span><span class="k">do </span><span class="n">l</span><span class="o">=</span><span class="n">npp1</span><span class="p">,</span><span class="n">m</span>
+<span class="w">      </span><span class="n">a</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">   </span><span class="k">end do</span><span class="c">!  L</span>
+
+<span class="w">   </span><span class="n">w</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">zero</span>
+
+<span class="w">   </span><span class="c">! Solve the triangular system.  Store this solution temporarily in Z().</span>
+<span class="w">   </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nsetp</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">nsetp</span><span class="p">)</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="p">)</span><span class="o">=</span><span class="n">z</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="p">)</span><span class="o">-</span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="p">,</span><span class="n">ii</span><span class="p">)</span><span class="o">*</span><span class="n">z</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="n">ii</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="w">      </span><span class="n">z</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">=</span><span class="n">z</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="n">a</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">ii</span><span class="p">)</span>
+<span class="w">   </span><span class="k">end do</span>
+
+<span class="k">end subroutine </span><span class="n">move_j_from_set_z_to_set_p</span>
+
+<span class="k">subroutine </span><span class="n">test_set_p_against_constraints</span><span class="p">()</span>
+
+<span class="w">   </span><span class="n">loopb</span><span class="p">:</span><span class="w"> </span><span class="k">do</span>
+<span class="w">      </span><span class="c">! The solution obtained by solving the current set P is in the array Z().</span>
+
+<span class="w">      </span><span class="n">iter</span><span class="o">=</span><span class="n">iter</span><span class="o">+</span><span class="mi">1</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">iter</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">itmax</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">ierr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">         </span><span class="k">exit </span><span class="n">loopb</span>
+<span class="w">      </span><span class="k">end if</span>
+
+<span class="k">      call </span><span class="n">see_if_all_constrained_coeffs_are_feasible</span><span class="p">()</span>
+
+<span class="w">      </span><span class="c">! The above call sets HITBND.  If HITBND = true then it also sets</span>
+<span class="w">      </span><span class="c">! ALPHA, JJ, and IBOUND.</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">hitbnd</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">exit </span><span class="n">loopb</span>
+
+<span class="w">      </span><span class="c">! Here ALPHA will be between 0 and 1 for interpolation</span>
+<span class="w">      </span><span class="c">! between the old X() and the new Z().</span>
+<span class="w">      </span><span class="k">do </span><span class="n">ip</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">nsetp</span>
+<span class="w">         </span><span class="n">l</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+<span class="w">         </span><span class="n">x</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">=</span><span class="n">x</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">+</span><span class="n">alpha</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="o">-</span><span class="n">x</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+<span class="w">      </span><span class="k">end do</span>
+
+<span class="k">      </span><span class="n">i</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span>
+<span class="w">      </span><span class="c">! Note:  The exit test is done at the end of the loop, so the loop</span>
+<span class="w">      </span><span class="c">! will always be executed at least once.</span>
+<span class="w">      </span><span class="k">do</span>
+
+<span class="w">         </span><span class="c">! Modify A(*,*), B(*) and the index arrays to move coefficient I</span>
+<span class="w">         </span><span class="c">! from set P to set Z.</span>
+
+<span class="w">         </span><span class="k">call </span><span class="n">move_coef_i_from_set_p_to_set_z</span>
+
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nsetp</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">exit </span><span class="n">loopb</span>
+
+<span class="w">         </span><span class="c">! See if the remaining coefficients in set P are feasible.  They should</span>
+<span class="w">         </span><span class="c">! be because of the way ALPHA was determined.  If any are infeasible</span>
+<span class="w">         </span><span class="c">! it is due to round-off error.  Any that are infeasible or on a boundary</span>
+<span class="w">         </span><span class="c">! will be set to the boundary value and moved from set P to set Z.</span>
+
+<span class="w">          </span><span class="n">ibound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">          </span><span class="k">do </span><span class="n">jj</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">nsetp</span>
+<span class="w">             </span><span class="n">i</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span>
+<span class="w">             </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">bnd</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">                 </span><span class="n">ibound</span><span class="o">=</span><span class="mi">1</span>
+<span class="w">                 </span><span class="k">exit</span>
+<span class="k">             else if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">bnd</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">                 </span><span class="n">ibound</span><span class="o">=</span><span class="mi">2</span>
+<span class="w">                 </span><span class="k">exit</span>
+<span class="k">             end if</span>
+<span class="k">         end do</span>
+<span class="k">         if</span><span class="w"> </span><span class="p">(</span><span class="n">ibound</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">exit</span>
+<span class="k">      end do</span>
+
+<span class="w">      </span><span class="c">! Copy B( ) into Z( ).  Then solve again and loop back.</span>
+<span class="w">      </span><span class="n">z</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">m</span><span class="p">)</span><span class="o">=</span><span class="n">b</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">m</span><span class="p">)</span>
+
+<span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nsetp</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">nsetp</span><span class="p">)</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="p">)</span><span class="o">=</span><span class="n">z</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="p">)</span><span class="o">-</span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="p">,</span><span class="n">ii</span><span class="p">)</span><span class="o">*</span><span class="n">z</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">         </span><span class="n">ii</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="w">         </span><span class="n">z</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">=</span><span class="n">z</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="n">a</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">ii</span><span class="p">)</span>
+<span class="w">      </span><span class="k">end do</span>
+<span class="k">   end do </span><span class="n">loopb</span>
+
+<span class="w">   </span><span class="c">! The following loop can be null.</span>
+<span class="w">   </span><span class="k">do </span><span class="n">ip</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">nsetp</span>
+<span class="w">      </span><span class="n">i</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+<span class="w">      </span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">=</span><span class="n">z</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+<span class="w">   </span><span class="k">end do</span>
+
+<span class="k">end subroutine </span><span class="n">test_set_p_against_constraints</span>
+
+<span class="k">subroutine </span><span class="n">see_if_all_constrained_coeffs_are_feasible</span><span class="p">()</span>
+
+<span class="w">   </span><span class="c">!! See if each coefficient in set P is strictly interior to its constraint region.</span>
+<span class="w">   </span><span class="c">!! If so, set HITBND = false.</span>
+<span class="w">   </span><span class="c">!! If not, set HITBND = true, and also set ALPHA, JJ, and IBOUND.</span>
+<span class="w">   </span><span class="c">!! Then ALPHA will satisfy  0.  &lt; ALPHA  &lt;=  1.</span>
+
+<span class="w">   </span><span class="n">alpha</span><span class="o">=</span><span class="n">two</span>
+<span class="w">   </span><span class="k">do </span><span class="n">ip</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">nsetp</span>
+<span class="w">      </span><span class="n">l</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">bnd</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">l</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="w">         </span><span class="c">! Z(IP) HITS LOWER BOUND</span>
+<span class="w">         </span><span class="nb">lbound</span><span class="o">=</span><span class="mi">1</span>
+<span class="w">      </span><span class="k">else  if</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">bnd</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">l</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="w">         </span><span class="c">! Z(IP) HITS UPPER BOUND</span>
+<span class="w">         </span><span class="nb">lbound</span><span class="o">=</span><span class="mi">2</span>
+<span class="w">      </span><span class="k">else</span>
+<span class="k">         </span><span class="nb">lbound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="k">end if</span>
+
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">lbound</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">t</span><span class="o">=</span><span class="p">(</span><span class="n">bnd</span><span class="p">(</span><span class="nb">lbound</span><span class="p">,</span><span class="n">l</span><span class="p">)</span><span class="o">-</span><span class="n">x</span><span class="p">(</span><span class="n">l</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">z</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="o">-</span><span class="n">x</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">           </span><span class="n">alpha</span><span class="o">=</span><span class="n">t</span>
+<span class="w">           </span><span class="n">jj</span><span class="o">=</span><span class="n">ip</span>
+<span class="w">           </span><span class="n">ibound</span><span class="o">=</span><span class="nb">lbound</span>
+<span class="nb">         </span><span class="k">end if</span>
+<span class="k">      end if</span>
+<span class="k">   end do</span>
+<span class="k">   </span><span class="n">hitbnd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">two</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero</span>
+
+<span class="k">end subroutine </span><span class="n">see_if_all_constrained_coeffs_are_feasible</span>
+
+<span class="k">subroutine </span><span class="n">move_coef_i_from_set_p_to_set_z</span><span class="p">()</span>
+
+<span class="w">   </span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">=</span><span class="n">bnd</span><span class="p">(</span><span class="n">ibound</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">jj</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">b</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">jj</span><span class="p">)</span><span class="o">=</span><span class="n">b</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">jj</span><span class="p">)</span><span class="o">-</span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">jj</span><span class="p">,</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="w">   </span><span class="c">! The following loop can be null.</span>
+<span class="w">   </span><span class="k">do </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">nsetp</span>
+<span class="w">      </span><span class="n">ii</span><span class="o">=</span><span class="nb">index</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+<span class="w">      </span><span class="nb">index</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">=</span><span class="n">ii</span>
+<span class="w">      </span><span class="k">call </span><span class="n">rotg</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">ii</span><span class="p">),</span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">),</span><span class="n">cc</span><span class="p">,</span><span class="n">ss</span><span class="p">)</span>
+<span class="w">      </span><span class="n">sm</span><span class="o">=</span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">ii</span><span class="p">)</span>
+<span class="w">      </span><span class="c">! The plane rotation is applied to two rows of A and the right-hand</span>
+<span class="w">      </span><span class="c">! side.  One row is moved to the scratch array S and then the updates</span>
+<span class="w">      </span><span class="c">! are computed.  The intent is for array operations to be performed</span>
+<span class="w">      </span><span class="c">! and minimal extra data movement.  One extra rotation is applied</span>
+<span class="w">      </span><span class="c">! to column II in this approach.</span>
+<span class="w">      </span><span class="n">s</span><span class="o">=</span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">)</span>
+<span class="w">      </span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">)</span><span class="o">=</span><span class="n">cc</span><span class="o">*</span><span class="n">s</span><span class="o">+</span><span class="n">ss</span><span class="o">*</span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">)</span>
+<span class="w">      </span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">)</span><span class="o">=</span><span class="n">cc</span><span class="o">*</span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">)</span><span class="o">-</span><span class="n">ss</span><span class="o">*</span><span class="n">s</span>
+<span class="w">      </span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">ii</span><span class="p">)</span><span class="o">=</span><span class="n">sm</span>
+<span class="w">      </span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">)</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">      </span><span class="n">sm</span><span class="o">=</span><span class="n">b</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="n">b</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">=</span><span class="n">cc</span><span class="o">*</span><span class="n">sm</span><span class="o">+</span><span class="n">ss</span><span class="o">*</span><span class="n">b</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+<span class="w">      </span><span class="n">b</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">=</span><span class="n">cc</span><span class="o">*</span><span class="n">b</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">-</span><span class="n">ss</span><span class="o">*</span><span class="n">sm</span>
+<span class="w">   </span><span class="k">end do</span>
+
+<span class="k">   </span><span class="n">npp1</span><span class="o">=</span><span class="n">nsetp</span>
+<span class="w">   </span><span class="n">nsetp</span><span class="o">=</span><span class="n">nsetp</span><span class="o">-</span><span class="mi">1</span>
+<span class="w">   </span><span class="n">iz1</span><span class="o">=</span><span class="n">iz1</span><span class="o">-</span><span class="mi">1</span>
+<span class="w">   </span><span class="nb">index</span><span class="p">(</span><span class="n">iz1</span><span class="p">)</span><span class="o">=</span><span class="n">i</span>
+
+<span class="k">end subroutine </span><span class="n">move_coef_i_from_set_p_to_set_z</span>
+
+<span class="k">subroutine </span><span class="n">termination</span><span class="p">()</span>
+
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ierr</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">      </span><span class="c">! Compute the norm of the residual vector.</span>
+<span class="w">      </span><span class="n">sm</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">npp1</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">sm</span><span class="o">=</span><span class="n">nrm2</span><span class="p">(</span><span class="n">b</span><span class="p">(</span><span class="n">npp1</span><span class="p">:</span><span class="n">m</span><span class="p">))</span>
+<span class="w">      </span><span class="k">else</span>
+<span class="k">         </span><span class="n">w</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">)</span><span class="o">=</span><span class="n">zero</span>
+<span class="w">      </span><span class="k">end if</span>
+<span class="k">      </span><span class="n">rnorm</span><span class="o">=</span><span class="n">sm</span>
+<span class="w">   </span><span class="k">end if</span>
+
+<span class="k">end subroutine </span><span class="n">termination</span>
+
+<span class="k">pure subroutine </span><span class="n">rotg</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span><span class="n">sb</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sa</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">sb</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">c</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w">   </span><span class="kd">::</span><span class="w"> </span><span class="n">s</span>
+
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">roe</span><span class="p">,</span><span class="nb">scale</span><span class="p">,</span><span class="n">r</span>
+
+<span class="w">   </span><span class="n">roe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sb</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">sb</span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">roe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sa</span>
+<span class="w">   </span><span class="nb">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">sb</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">scale</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">one</span>
+<span class="w">      </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">   </span><span class="k">else</span>
+<span class="k">      </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">scale</span><span class="o">*</span><span class="nb">sqrt</span><span class="p">((</span><span class="n">sa</span><span class="o">/</span><span class="nb">scale</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">sb</span><span class="o">/</span><span class="nb">scale</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">roe</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="n">r</span><span class="o">=-</span><span class="n">r</span>
+<span class="w">      </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sa</span><span class="o">/</span><span class="n">r</span>
+<span class="w">      </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sb</span><span class="o">/</span><span class="n">r</span>
+<span class="w">      </span><span class="n">sa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r</span>
+<span class="w">   </span><span class="k">end if</span>
+
+<span class="k">end subroutine </span><span class="n">rotg</span>
+
+<span class="k">pure function </span><span class="n">nrm2</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
+
+<span class="w">   </span><span class="c">!!  NRM2 returns the Euclidean norm of a vector via the function</span>
+<span class="w">   </span><span class="c">!!  name, so that</span>
+<span class="w">   </span><span class="c">!!</span>
+<span class="w">   </span><span class="c">!!  `NRM2 := sqrt( x&#39;*x )`</span>
+<span class="w">   </span><span class="c">!!</span>
+<span class="w">   </span><span class="c">!!### See also</span>
+<span class="w">   </span><span class="c">!!  * [[dnrm2]]</span>
+
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">norm</span>
+
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">absxi</span><span class="p">,</span><span class="w"> </span><span class="nb">scale</span><span class="p">,</span><span class="w"> </span><span class="n">ssq</span>
+<span class="w">   </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">ix</span>
+
+<span class="w">   </span><span class="n">n</span><span class="o">=</span><span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">norm</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">   </span><span class="k">else if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      </span><span class="n">norm</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="k">else</span>
+<span class="k">      </span><span class="nb">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zero</span>
+<span class="w">      </span><span class="n">ssq</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">one</span>
+<span class="w">      </span><span class="k">do </span><span class="n">ix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span>
+<span class="w">         </span><span class="n">absxi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="w"> </span><span class="n">ix</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">absxi</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">             if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">scale</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">absxi</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">                </span><span class="n">ssq</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ssq</span><span class="o">*</span><span class="p">(</span><span class="w"> </span><span class="nb">scale</span><span class="o">/</span><span class="n">absxi</span><span class="w"> </span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="w">                </span><span class="nb">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">absxi</span>
+<span class="w">             </span><span class="k">else</span>
+<span class="k">                </span><span class="n">ssq</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">ssq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">absxi</span><span class="o">/</span><span class="nb">scale</span><span class="w"> </span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="w">             </span><span class="k">end if</span>
+<span class="k">         end if</span>
+<span class="k">     end do</span>
+<span class="k">     </span><span class="n">norm</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nb">scale</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="w"> </span><span class="n">ssq</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="k">end if</span>
+
+<span class="k">end function </span><span class="n">nrm2</span>
+
+<span class="k">pure subroutine </span><span class="n">htc</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">up</span><span class="p">)</span>
+
+<span class="w">   </span><span class="c">!! Construct a Householder transformation.</span>
+
+<span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">dimension</span><span class="p">(:),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">u</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">up</span>
+
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">vnorm</span>
+
+<span class="w">   </span><span class="n">vnorm</span><span class="o">=</span><span class="n">nrm2</span><span class="p">(</span><span class="n">u</span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">size</span><span class="p">(</span><span class="n">u</span><span class="p">)))</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">u</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero</span><span class="p">)</span><span class="w"> </span><span class="n">vnorm</span><span class="o">=-</span><span class="n">vnorm</span>
+<span class="w">   </span><span class="n">up</span><span class="o">=</span><span class="n">u</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">-</span><span class="n">vnorm</span>
+<span class="w">   </span><span class="n">u</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">=</span><span class="n">vnorm</span>
+
+<span class="k">end subroutine </span><span class="n">htc</span>
+
+<span class="k">end subroutine </span><span class="n">bvls</span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              slsqp
+ was developed by Jacob Williams<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

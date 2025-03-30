@@ -1,0 +1,298 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran Implementation of the SLSQP Optimization Method">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>All Files &ndash; slsqp
+</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">slsqp </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="row" id='text'>
+        <div class="col-lg-12">
+			 <h1>Source Files</h1>
+			 <table class="table table-striped">
+			 <thead><tr><th>File</th><th>Description</th></tr></thead>
+			 <tbody>
+			   <tr>
+                 <td><a href='../sourcefile/bvls_module.f90.html'>bvls_module.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../sourcefile/slsqp_core.f90.html'>slsqp_core.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../sourcefile/slsqp_kinds.f90.html'>slsqp_kinds.F90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../sourcefile/slsqp_module.f90.html'>slsqp_module.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../sourcefile/slsqp_support.f90.html'>slsqp_support.F90</a></td>
+                 <td></td>
+               </tr>
+			 </tbody></table>
+			 <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: file~~graph~~FileGraph Pages: 1 -->
+<svg id="filegraphFileGraph" width="641pt" height="109pt"
+ viewBox="0.00 0.00 641.00 108.94" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="file~~graph~~FileGraph" class="graph" transform="scale(0.99 0.99) rotate(0) translate(4 106.3)">
+<title>file~~graph~~FileGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-106.3 645,-106.3 645,4 -4,4"/>
+<!-- sourcefile~bvls_module.f90 -->
+<g id="file~~graph~~FileGraph_node1" class="node">
+<title>sourcefile~bvls_module.f90</title>
+<g id="a_file~~graph~~FileGraph_node1"><a xlink:href="../sourcefile/bvls_module.f90.html" xlink:title="bvls_module.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="366,-71.05 266,-71.05 266,-47.05 366,-47.05 366,-71.05"/>
+<text text-anchor="middle" x="316" y="-56.65" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bvls_module.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~slsqp_core.f90 -->
+<g id="file~~graph~~FileGraph_node2" class="node">
+<title>sourcefile~slsqp_core.f90</title>
+<g id="a_file~~graph~~FileGraph_node2"><a xlink:href="../sourcefile/slsqp_core.f90.html" xlink:title="slsqp_core.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="230,-71.05 142,-71.05 142,-47.05 230,-47.05 230,-71.05"/>
+<text text-anchor="middle" x="186" y="-56.65" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_core.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~bvls_module.f90&#45;&gt;sourcefile~slsqp_core.f90 -->
+<g id="file~~graph~~FileGraph_edge3" class="edge">
+<title>sourcefile~bvls_module.f90&#45;&gt;sourcefile~slsqp_core.f90</title>
+<path fill="none" stroke="#000000" d="M265.88,-59.05C257.56,-59.05 248.88,-59.05 240.46,-59.05"/>
+<polygon fill="#000000" stroke="#000000" points="240.35,-55.55 230.35,-59.05 240.35,-62.55 240.35,-55.55"/>
+</g>
+<!-- sourcefile~slsqp_module.f90 -->
+<g id="file~~graph~~FileGraph_node4" class="node">
+<title>sourcefile~slsqp_module.f90</title>
+<g id="a_file~~graph~~FileGraph_node4"><a xlink:href="../sourcefile/slsqp_module.f90.html" xlink:title="slsqp_module.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="106,-51.05 0,-51.05 0,-27.05 106,-27.05 106,-51.05"/>
+<text text-anchor="middle" x="53" y="-36.65" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_module.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~slsqp_core.f90&#45;&gt;sourcefile~slsqp_module.f90 -->
+<g id="file~~graph~~FileGraph_edge6" class="edge">
+<title>sourcefile~slsqp_core.f90&#45;&gt;sourcefile~slsqp_module.f90</title>
+<path fill="none" stroke="#000000" d="M141.74,-52.45C133.6,-51.2 124.94,-49.88 116.35,-48.57"/>
+<polygon fill="#000000" stroke="#000000" points="116.75,-45.09 106.33,-47.04 115.69,-52.01 116.75,-45.09"/>
+</g>
+<!-- sourcefile~slsqp_kinds.f90 -->
+<g id="file~~graph~~FileGraph_node3" class="node">
+<title>sourcefile~slsqp_kinds.f90</title>
+<g id="a_file~~graph~~FileGraph_node3"><a xlink:href="../sourcefile/slsqp_kinds.f90.html" xlink:title="slsqp_kinds.F90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="641,-52.05 546,-52.05 546,-28.05 641,-28.05 641,-52.05"/>
+<text text-anchor="middle" x="593.5" y="-37.65" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_kinds.F90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~slsqp_kinds.f90&#45;&gt;sourcefile~bvls_module.f90 -->
+<g id="file~~graph~~FileGraph_edge1" class="edge">
+<title>sourcefile~slsqp_kinds.f90&#45;&gt;sourcefile~bvls_module.f90</title>
+<path fill="none" stroke="#000000" d="M573.76,-52.26C548.49,-67.75 501.51,-93.15 457,-99.05"/>
+<path fill="none" stroke="#000000" d="M455,-99.05C417.17,-104.06 375.28,-88.8 347.69,-75.71"/>
+<polygon fill="#000000" stroke="#000000" points="349.07,-72.49 338.55,-71.21 345.97,-78.77 349.07,-72.49"/>
+</g>
+<!-- sourcefile~slsqp_kinds.f90&#45;&gt;sourcefile~slsqp_core.f90 -->
+<g id="file~~graph~~FileGraph_edge4" class="edge">
+<title>sourcefile~slsqp_kinds.f90&#45;&gt;sourcefile~slsqp_core.f90</title>
+<path fill="none" stroke="#000000" d="M455,-99.05C377.23,-109.35 287.07,-89.26 233.65,-74"/>
+<polygon fill="#000000" stroke="#000000" points="234.37,-70.57 223.79,-71.12 232.41,-77.29 234.37,-70.57"/>
+</g>
+<!-- sourcefile~slsqp_kinds.f90&#45;&gt;sourcefile~slsqp_module.f90 -->
+<g id="file~~graph~~FileGraph_edge7" class="edge">
+<title>sourcefile~slsqp_kinds.f90&#45;&gt;sourcefile~slsqp_module.f90</title>
+<path fill="none" stroke="#000000" d="M550.37,-28.01C537.5,-24.69 523.25,-21.37 510,-19.05 403,-0.34 374.21,4.46 266,-5.05 230.48,-8.17 222.27,-13.82 187,-19.05"/>
+<path fill="none" stroke="#000000" d="M185,-19.05C162.49,-21.48 137.93,-24.99 116.21,-28.4"/>
+<polygon fill="#000000" stroke="#000000" points="115.46,-24.98 106.13,-30.01 116.56,-31.89 115.46,-24.98"/>
+</g>
+<!-- sourcefile~slsqp_support.f90 -->
+<g id="file~~graph~~FileGraph_node5" class="node">
+<title>sourcefile~slsqp_support.f90</title>
+<g id="a_file~~graph~~FileGraph_node5"><a xlink:href="../sourcefile/slsqp_support.f90.html" xlink:title="slsqp_support.F90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="510,-52.05 402,-52.05 402,-28.05 510,-28.05 510,-52.05"/>
+<text text-anchor="middle" x="456" y="-37.65" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">slsqp_support.F90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~slsqp_kinds.f90&#45;&gt;sourcefile~slsqp_support.f90 -->
+<g id="file~~graph~~FileGraph_edge9" class="edge">
+<title>sourcefile~slsqp_kinds.f90&#45;&gt;sourcefile~slsqp_support.f90</title>
+<path fill="none" stroke="#000000" d="M545.87,-40.05C537.62,-40.05 528.9,-40.05 520.28,-40.05"/>
+<polygon fill="#000000" stroke="#000000" points="520.23,-36.55 510.23,-40.05 520.23,-43.55 520.23,-36.55"/>
+</g>
+<!-- sourcefile~slsqp_support.f90&#45;&gt;sourcefile~bvls_module.f90 -->
+<g id="file~~graph~~FileGraph_edge2" class="edge">
+<title>sourcefile~slsqp_support.f90&#45;&gt;sourcefile~bvls_module.f90</title>
+<path fill="none" stroke="#000000" d="M401.65,-47.4C393.34,-48.54 384.72,-49.73 376.29,-50.89"/>
+<polygon fill="#000000" stroke="#000000" points="375.58,-47.45 366.15,-52.29 376.53,-54.39 375.58,-47.45"/>
+</g>
+<!-- sourcefile~slsqp_support.f90&#45;&gt;sourcefile~slsqp_core.f90 -->
+<g id="file~~graph~~FileGraph_edge5" class="edge">
+<title>sourcefile~slsqp_support.f90&#45;&gt;sourcefile~slsqp_core.f90</title>
+<path fill="none" stroke="#000000" d="M315,-19.05C281.56,-19.11 245.34,-31.7 220,-42.74"/>
+<polygon fill="#000000" stroke="#000000" points="218.52,-39.56 210.84,-46.86 221.4,-45.94 218.52,-39.56"/>
+</g>
+<!-- sourcefile~slsqp_support.f90&#45;&gt;sourcefile~slsqp_module.f90 -->
+<g id="file~~graph~~FileGraph_edge8" class="edge">
+<title>sourcefile~slsqp_support.f90&#45;&gt;sourcefile~slsqp_module.f90</title>
+<path fill="none" stroke="#000000" d="M401.88,-28.09C376.35,-23.34 345.23,-19 317,-19.05"/>
+<path fill="none" stroke="#000000" d="M315,-19.05C258.11,-19.16 243.27,-10.71 187,-19.05"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panfilegraphFileGraph = svgPanZoom('#filegraphFileGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#FileGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="FileGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="202pt" height="32pt"
+ viewBox="0.00 0.00 201.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 197.5,-28 197.5,4 -4,4"/>
+<!-- Source File -->
+<g id="node1" class="node">
+<title>Source File</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Source File</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="193.5,-24 88.5,-24 88.5,0 193.5,0 193.5,-24"/>
+<text text-anchor="middle" x="141" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a file to a file which it depends on. A file
+is dependent upon another if the latter must be compiled before the former
+can be.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              slsqp
+ was developed by Jacob Williams<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

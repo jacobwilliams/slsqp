@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran Implementation of the SLSQP Optimization Method">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="./favicon.png">
+
+    <title> slsqp </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="./css/fontawesome.min.css" rel="stylesheet">
+    <link href="./css/brands.min.css" rel="stylesheet">
+    <link href="./css/regular.min.css" rel="stylesheet">
+    <link href="./css/solid.min.css" rel="stylesheet">
+    <link href="./css/v4-font-face.min.css" rel="stylesheet">
+    <link href="./css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="./css/local.css" rel="stylesheet">
+    <link href="./css/pygments.css" rel="stylesheet">
+    <script src="./js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="./index.html">slsqp </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="./lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="./search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <!-- Main component for a primary marketing message or call to action -->
+    <div class="p-5 mb-4 bg-light border rounded-3" id="jumbotron">
+      <p>Modern Fortran Implementation of the SLSQP Optimization Method</p>
+        <p> Find us on&hellip;</p>
+      <p>
+        <a class="btn btn-lg btn-primary" href="https://github.com/jacobwilliams/slsqp" role="button">GitHub</a>
+        
+        
+        
+        
+      </p>
+    </div>
+
+      <div class="row" id='text'>
+        <div class=col-md-8>
+          <h1>slsqp</h1>
+          <h1><img alt="slsqp" src="media/logo.png"></h1>
+<p>Modern Fortran Edition of the SLSQP Optimizer</p>
+<h3>Status</h3>
+<p><a href="https://github.com/topics/fortran"><img alt="Language" src="https://img.shields.io/badge/-Fortran-734f96?logo=fortran&amp;logoColor=white"></a>
+<a href="https://github.com/jacobwilliams/slsqp/releases/latest"><img alt="GitHub release" src="https://img.shields.io/github/release/jacobwilliams/slsqp.svg"></a>
+<a href="https://github.com/jacobwilliams/slsqp/actions"><img alt="Build Status" src="https://github.com/jacobwilliams/slsqp/actions/workflows/CI.yml/badge.svg"></a>
+<a href="https://codecov.io/gh/jacobwilliams/slsqp"><img alt="codecov" src="https://codecov.io/gh/jacobwilliams/slsqp/branch/master/graph/badge.svg"></a>
+<a href="https://github.com/jacobwilliams/slsqp/commits/master"><img alt="last-commit" src="https://img.shields.io/github/last-commit/jacobwilliams/slsqp"></a></p>
+<h3>Description</h3>
+<p>This is an updated version of the SLSQP nonlinear constrained optimization code. It can be used to solve nonlinear programming problems that seek to minimize a scalar performance index subject to nonlinear equality and inequality constraints as well as bounds on the variables.</p>
+<p>Updates to the original code include:</p>
+<ul>
+<li>It has been translated into free-form source.</li>
+<li>It is now thread safe. The original version was not thread safe due to the use of saved variables in one of the subroutines.</li>
+<li>It no longer uses obsolescent and non-standard Fortran features. It should now be 100% standard compliant (Fortran 2008).</li>
+<li>It now has an easy-to-use object-oriented interface. The <code>slsqp_class</code> is used for all interactions with the solver. Methods include <code>initialize()</code>, <code>optimize()</code>, and <code>destroy()</code>.</li>
+<li>It includes updated versions of some of the third-party routines used in the original code (BLAS, LINPACK, and NNLS).</li>
+<li>Some new features were added to support printing error  messages and reporting iterations to the user.</li>
+<li>The user can now specify the max and min <code>alpha</code> to use during the line search.</li>
+<li>The user can supply a routine to compute the gradients of the objective function and constraints, or allow the code to estimate them using finite differences (backward, forward, or central).</li>
+<li>The documentation strings in the code have been converted to <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a> format, allowing for <a href="https://jacobwilliams.github.io/slsqp/">nicely formatted documentation</a> to be auto-generated.</li>
+<li>A couple of bug fixes noted elsewhere have been applied.</li>
+</ul>
+<h3>Building SLSQP</h3>
+<h4><strong>Fortran Package Manager</strong></h4>
+<p>The library can be built with the <a href="https://github.com/fortran-lang/fpm">Fortran Package Manager</a> using the provided <code>fpm.toml</code> file like so:</p>
+<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span>build<span class="w"> </span>--release
+</code></pre></div>
+
+<p>By default, the library is built with double precision (<code>real64</code>) real values. Explicitly specifying the real kind can be done using the following processor flags:</p>
+<table>
+<thead>
+<tr>
+<th>Preprocessor flag</th>
+<th>Kind</th>
+<th>Number of bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REAL32</code></td>
+<td><code>real(kind=real32)</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>REAL64</code></td>
+<td><code>real(kind=real64)</code></td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>REAL128</code></td>
+<td><code>real(kind=real128)</code></td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p>For example, to build a single precision version of the library, use:</p>
+<div class="codehilite"><pre><span></span><code>fpm build --profile release --flag &quot;-DREAL32&quot;
+</code></pre></div>
+
+<p>To use SLSQP within your fpm project, add the following to your <code>fpm.toml</code> file:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span>
+<span class="n">slsqp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="p">=</span><span class="s2">&quot;https://github.com/jacobwilliams/slsqp.git&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+
+<p>or, to use a specific version:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span>
+<span class="n">slsqp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="p">=</span><span class="s2">&quot;https://github.com/jacobwilliams/slsqp.git&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;1.3.0&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+
+<h2>Dependencies</h2>
+<p>The library requires some <a href="https://netlib.org/blas/">BLAS</a> routines, which are included. However, the user may also choose to link to an external BLAS library. This can be done by using the <code>HAS_BLAS</code> compiler directive. For example:</p>
+<div class="codehilite"><pre><span></span><code>fpm build --compiler gfortran --flag &quot;-DHAS_BLAS -lblas&quot;
+</code></pre></div>
+
+<p>However, note that an external BLAS can only be used if the library is compiled with double precision (<code>real64</code>) reals.</p>
+<h3>Documentation</h3>
+<p>The latest API documentation can be found <a href="https://jacobwilliams.github.io/slsqp/">here</a>. This was generated from the source code using <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>.</p>
+<h3>License</h3>
+<ul>
+<li>The original sourcecode and the modifications are released under a <a href="https://github.com/jacobwilliams/slsqp/blob/master/LICENSE">permissive BSD-style license</a>.</li>
+</ul>
+<h3>Development</h3>
+<ul>
+<li>Development continues on <a href="https://github.com/jacobwilliams/slsqp">GitHub</a>.</li>
+</ul>
+<h3>References</h3>
+<ul>
+<li><a href="http://www.netlib.org/toms/733">Original sourcecode at NETLIB</a></li>
+<li>D. Kraft, "<a href="https://degenerateconic.com/uploads/2018/03/DFVLR_FB_88_28.pdf">A software package for sequential quadratic programming</a>",
+  Technical Report DFVLR-FB 88-28, Institut für Dynamik der Flugsysteme,
+  Oberpfaffenhofen, July 1988.</li>
+<li>D. Kraft, "<a href="http://dl.acm.org/citation.cfm?id=192124">Algorithm 733: TOMP--Fortran modules for optimal control calculations</a>,"
+  ACM Transactions on Mathematical Software, Vol. 20, No. 3, p. 262-281 (1994).</li>
+<li>C. L. Lawson, R. J. Hanson, "Solving Least Squares Problems", Prentice Hall, 1974. (Revised 1995 edition)</li>
+</ul>
+        </div>
+          <div class="col-md-4">
+            <div class="card card-body bg-light">
+              <h2 class="card-title">Developer Info</h2>
+              <h4 class="card-text">Jacob Williams</h4>
+              <p class="card-text"></p>
+                <div class="text-center"><div class="btn-group" role="group">
+                    
+                    <a class="btn btn-lg btn-primary" href="https://github.com/jacobwilliams"><i class="fa fa-github fa-lg"></i></a>
+                    
+                    
+                    
+                    
+                    
+                    
+                </div></div>
+            </div>
+          </div>
+      </div>
+        <div class="row">
+          <hr>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Source Files</h3>
+              <ul><li><a href='sourcefile/bvls_module.f90.html'>bvls_module.f90</a></li><li><a href='sourcefile/slsqp_core.f90.html'>slsqp_core.f90</a></li><li><a href='sourcefile/slsqp_kinds.f90.html'>slsqp_kinds.F90</a></li><li><a href='sourcefile/slsqp_module.f90.html'>slsqp_module.f90</a></li><li><a href='sourcefile/slsqp_support.f90.html'>slsqp_support.F90</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/files.html"><em>All source files&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Modules</h3>
+              <ul><li><a href='module/bvls_module.html'>bvls_module</a></li><li><a href='module/slsqp_core.html'>slsqp_core</a></li><li><a href='module/slsqp_kinds.html'>slsqp_kinds</a></li><li><a href='module/slsqp_module.html'>slsqp_module</a></li><li><a href='module/slsqp_support.html'>slsqp_support</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/modules.html"><em>All modules&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Procedures</h3>
+              <ul><li><a href='proc/bvls.html'>bvls</a></li><li><a href='proc/bvls_wrapper.html'>bvls_wrapper</a></li><li><a href='proc/check_convergence.html'>check_convergence</a></li><li><a href='proc/daxpy.html'>daxpy</a></li><li><a href='proc/dcopy.html'>dcopy</a></li><li><a href='proc/ddot.html'>ddot</a></li><li><a href='proc/destroy_linmin_data.html'>destroy_linmin_data</a></li><li><a href='proc/destroy_slsqp.html'>destroy_slsqp</a></li><li><a href='proc/destroy_slsqpb_data.html'>destroy_slsqpb_data</a></li><li><a href='proc/dnrm2.html'>dnrm2</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/procedures.html"><em>All procedures&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Derived Types</h3>
+              <ul><li><a href='type/linmin_data.html'>linmin_data</a></li><li><a href='type/slsqp_solver.html'>slsqp_solver</a></li><li><a href='type/slsqpb_data.html'>slsqpb_data</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/types.html"><em>All derived types&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              slsqp
+ was developed by Jacob Williams<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>
