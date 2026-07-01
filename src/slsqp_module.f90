@@ -12,7 +12,6 @@
     use slsqp_support
     use slsqp_core
     use, intrinsic :: iso_fortran_env, only: error_unit,output_unit
-    use, intrinsic :: ieee_arithmetic, only: ieee_is_nan
 
     implicit none
 
@@ -231,10 +230,10 @@
         call me%report_message('error: invalid m value:', ival=m)
     else if (n<1) then
         call me%report_message('error: invalid n value:', ival=n)
-    else if (any(xl>xu .and. .not. ieee_is_nan(xl) .and. .not. ieee_is_nan(xu))) then
+    else if (any(xl>xu .and. .not. is_nan(xl) .and. .not. is_nan(xu))) then
         call me%report_message('error: lower bounds must be <= upper bounds.')
         do i=1,n
-            if (xl(i)>xu(i) .and. .not. ieee_is_nan(xl(i)) .and. .not. ieee_is_nan(xu(i))) then
+            if (xl(i)>xu(i) .and. .not. is_nan(xl(i)) .and. .not. is_nan(xu(i))) then
                 call me%report_message('  xl(i)>xu(i) for variable',ival=i)
             end if
         end do

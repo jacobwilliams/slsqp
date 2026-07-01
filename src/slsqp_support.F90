@@ -391,6 +391,20 @@
 
 #endif
 
+    pure elemental function is_nan(x) result(nan)
+        real(wp),intent(in) :: x
+        logical :: nan
+        nan = (x /= x)
+    end function is_nan
+
+    pure function quiet_nan() result(nan)
+        real(wp) :: nan
+        real(wp) :: zero_var
+
+        zero_var = zero  ! zero is already a module parameter here
+        nan = zero_var / zero_var
+    end function quiet_nan
+
 !*******************************************************************************
     end module slsqp_support
 !*******************************************************************************

@@ -9,7 +9,6 @@
     use slsqp_kinds
     use slsqp_support
     use bvls_module,     only: bvls_wrapper
-    use, intrinsic :: ieee_arithmetic, only: ieee_is_nan, ieee_value, ieee_quiet_nan
 
     implicit none
 
@@ -548,7 +547,7 @@
         mode = 0
         if ( h1<acc .and. h2<acc .and. &
              .not. inconsistent_linearization .and. &
-             .not. ieee_is_nan(f)) return
+             .not. is_nan(f)) return
         h1 = zero
         do j = 1 , m
             if ( j<=meq ) then
@@ -676,7 +675,7 @@
     logical :: ok ! temp variable
     real(wp),dimension(n) :: xmx0
 
-    if (h3>=acc .or. inconsistent_linearization .or. ieee_is_nan(f)) then
+    if (h3>=acc .or. inconsistent_linearization .or. is_nan(f)) then
         mode = not_converged
     else
 
@@ -865,7 +864,7 @@
       num_unbounded = 0
 
       do i=1,n
-         if (ieee_is_nan(xl(i)) .or. xl(i)<=-infbnd) then
+         if (is_nan(xl(i)) .or. xl(i)<=-infbnd) then
             num_unbounded = num_unbounded + 1
          else
             call update_w(xl(i), one)
@@ -873,7 +872,7 @@
       end do
 
       do i=1,n
-         if (ieee_is_nan(xu(i)) .or. xu(i)>=infbnd) then
+         if (is_nan(xu(i)) .or. xu(i)>=infbnd) then
             num_unbounded = num_unbounded + 1
          else
             call update_w(xu(i), -one)
@@ -888,7 +887,7 @@
          call dcopy(m,w(iw),1,y(1),1)
          if (n3 > 0) then
             !set rest of the multipliers to nan (they are not used)
-            y(m+1) = ieee_value(one, ieee_quiet_nan)
+            y(m+1) = quiet_nan()
             do i=m+2,m+n3+n3
                 y(i) = y(m+1)
             end do
@@ -1156,7 +1155,7 @@
     mode = 5
     do i = 1 , mg
         do j = 1 , n
-            if ( abs(e(j,j))<epmach .or. ieee_is_nan(e(j,j))) return
+            if ( abs(e(j,j))<epmach .or. is_nan(e(j,j))) return
             g(i,j) = (g(i,j)-ddot(j-1,g(i,1),lg,e(1,j),1))/e(j,j)
         end do
         h(i) = h(i) - ddot(n,g(i,1),lg,f,1)
@@ -1282,7 +1281,7 @@
                 if (rnorm>zero) then
                     !  compute solution of primal problem
                     fac=one-ddot(m,h,1,w(iy),1)
-                    if (ieee_is_nan(fac)) return
+                    if (is_nan(fac)) return
                     if (fac>=eps) then
                         mode=1
                         fac=one/fac
@@ -2266,9 +2265,9 @@
     real(wp),intent(in) :: infbnd !! "infinity" for the upper and lower bounds.
                                   !! Note that `NaN` may also be used to indicate no bound.
 
-    where (x<xl .and. xl>-infbnd .and. .not. ieee_is_nan(xl))
+    where (x<xl .and. xl>-infbnd .and. .not. is_nan(xl))
         x = xl
-    elsewhere (x>xu .and. xu<infbnd .and. .not. ieee_is_nan(xu))
+    elsewhere (x>xu .and. xu<infbnd .and. .not. is_nan(xu))
         x = xu
     end where
 

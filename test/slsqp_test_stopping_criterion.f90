@@ -7,7 +7,7 @@
 
     use slsqp_module
     use slsqp_kinds
-    use, intrinsic :: ieee_arithmetic, only: ieee_value, ieee_quiet_nan
+    use slsqp_support, only: quiet_nan
 
     implicit none
 
@@ -34,7 +34,7 @@
     real(wp),dimension(n) :: xu   !! upper bounds
     real(wp) :: nan !! not a number
 
-    nan = ieee_value(1.0_wp, ieee_quiet_nan)
+    nan = quiet_nan()
 
     ! test with some missing bounds:
     xl = [-1.0_wp, nan]
