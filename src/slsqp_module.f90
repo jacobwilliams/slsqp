@@ -40,8 +40,8 @@
                                            !! * 1 - approximate by basic backward differences
                                            !! * 2 - approximate by basic forward differences
                                            !! * 3 - approximate by basic central differences
-        real(wp) :: gradient_delta  = 1.0e8_wp !! perturbation step size to approximate gradients
-                                               !! by finite differences (`gradient_mode` 1-3).
+        real(wp) :: gradient_delta  = 1.0e-8_wp !! perturbation step size to approximate gradients
+                                                !! by finite differences (`gradient_mode` 1-3).
 
         !these two were not in the original code:
         real(wp) :: alphamin = 0.1_wp   !! min \( \alpha \) for line search \( 0 < \alpha_{min} < \alpha_{max} \le 1 \)
