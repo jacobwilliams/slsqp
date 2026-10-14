@@ -1750,7 +1750,7 @@
 
             ! compute the j-th transformation and apply it to a and b.
 
-            call h12(1,j,j+1,m,a(1,j),1,h(j),a(1,j+1),1,mda,n-j)
+            call h12(1,j,j+1,m,a(1,j),1,h(j),a(1,min(j+1,n)),1,mda,n-j)
             call h12(2,j,j+1,m,a(1,j),1,h(j),b,1,mdb,nb)
 
         end do
